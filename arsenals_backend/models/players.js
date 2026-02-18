@@ -16,7 +16,14 @@ const playerSchema = new mongoose.Schema({
     required: true
   },
   skill: {
-    type: [String]
+    type: String
+  },
+  rank: {
+    type: Number
+  },
+  games_played: {
+    type: Number,
+    default: 0
   }
 })
 
