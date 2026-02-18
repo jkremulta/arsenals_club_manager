@@ -9,13 +9,14 @@ playersRouter.get('/', async (request, response) => {
 })
 
 playersRouter.post('/', async (request, response) => {
-  const { name, age, gender, skill = [] } = request.body
+  const { name, age, gender, skill, rank } = request.body
 
   const newPlayer = new Player({
     name,
     age,
     gender,
-    skill
+    skill, 
+    rank
   })
 
   const savedPlayer = await newPlayer.save()
