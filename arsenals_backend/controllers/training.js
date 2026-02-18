@@ -1,13 +1,16 @@
 const trainingRouter = require('express').Router()
 const Training = require('../models/training')
+const trainingService = require('../services/training.service')
 
 trainingRouter.get('/', async (request, response) => {
   const training = await Training
     .find({})
-    .populate('attendance', { name: 1 })
+    .populate('attendance', { name: 1, games_played: 1 })
+    .populate('current_players')
   
   response.json(training)
 })
+
 
 trainingRouter.post('/startTraining', async (request, response) => {
   const { startTime } = request.body
@@ -67,5 +70,27 @@ trainingRouter.delete('/attendance/:id', async (request, response) => {
 
   response.status(204).end()
 })
+
+trainingRouter.post('/initializeGame', async (request, response) => {
+  const { skillGroup } = request.body
+
+  const players = await trainingService.getPlayersBySkillGroup(skillGroup)
+
+  return response.json(players)
+})
+
+trainingRouter.post('/startGame', async (request, response) => {
+  const players = await trainingService.startGame()
+
+  return response.json(players)
+})
+
+// learn about adding tokens and log in functionality 
+// make some middleware error handler
+// test
+
+
+
+
 
 module.exports = trainingRouter
