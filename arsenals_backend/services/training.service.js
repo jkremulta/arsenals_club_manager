@@ -10,6 +10,10 @@ const sortAndSlice = (players, desc = true, amount = 0) => {
 // sort and fill players based on skill group
 const sortPlayersBasedOnSkillGroup = async (skillGroup, group) => {
   const activeTraining = await Training.findOne({ isActive: true }).populate('attendance')
+  if (!activeTraining) {
+    throw new Error('No active training')
+  }
+
   const amountToFill = 14 - group.length
 
   const otherPlayers = activeTraining.attendance.filter(
@@ -69,6 +73,10 @@ const getPlayersBySkillGroup = async (skillGroup) => {
 
 const startGame = async () => {
   const activeTraining = await Training.findOne({ isActive: true })
+  if (!activeTraining) {
+    throw new Error('No active training')
+  }
+  
   const playerIds = activeTraining.current_players.map(p => p._id)
 
   // update the games_played for players in current_players

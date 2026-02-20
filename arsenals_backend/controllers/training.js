@@ -13,8 +13,6 @@ trainingRouter.get('/', async (request, response) => {
 
 
 trainingRouter.post('/startTraining', async (request, response) => {
-  const { startTime } = request.body
-
   const activeTraining = await Training.findOne({ isActive: true })
   if (activeTraining) {
     await Training.findByIdAndDelete(activeTraining.id)
@@ -22,6 +20,9 @@ trainingRouter.post('/startTraining', async (request, response) => {
       isActive: false
     })
   }
+  
+  const { startTime } = request.body || {}
+  if (!startTime) return response.status(400).json({ error: "startTime is required" })
 
   const newTraining = new Training({
     startTime: new Date(startTime),
@@ -33,7 +34,8 @@ trainingRouter.post('/startTraining', async (request, response) => {
 })
 
 trainingRouter.post('/attendance', async (request, response) => {
-  const { id } = request.body
+  const { id } = request.body || {}
+  if (!id) return response.status(400).json({ error: "id is required" })
 
   const activeTraining = await Training.findOne({ isActive: true })
 
@@ -72,7 +74,8 @@ trainingRouter.delete('/attendance/:id', async (request, response) => {
 })
 
 trainingRouter.post('/initializeGame', async (request, response) => {
-  const { skillGroup } = request.body
+  const { skillGroup } = request.body || {}
+  if (!skillGroup) return response.status(400).json({ error: "skill group is not defined" })
 
   const players = await trainingService.getPlayersBySkillGroup(skillGroup)
 
@@ -84,13 +87,6 @@ trainingRouter.post('/startGame', async (request, response) => {
 
   return response.json(players)
 })
-
-// learn about adding tokens and log in functionality 
-// make some middleware error handler
-// test
-
-
-
 
 
 module.exports = trainingRouter
