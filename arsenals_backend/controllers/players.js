@@ -24,7 +24,7 @@ playersRouter.post('/', async (request, response) => {
 })
 
 playersRouter.delete('/:id', async (request, response) => {
-  const id = request.params.id
+  const { id } = request.params
   
   await Player.findByIdAndDelete(id)
   response.status(204).end()
