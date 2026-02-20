@@ -4,6 +4,7 @@ const playersRouter = require('./controllers/players')
 const trainingRouter = require('./controllers/training')
 const logger = require('./utils/logger')
 const config = require('./utils/config')
+const middleware = require('./utils/middleware')
 
 const app = express()
 
@@ -16,5 +17,8 @@ mongoose
 app.use(express.json())
 app.use('/api/players', playersRouter)
 app.use('/api/training', trainingRouter)
+
+app.use(middleware.errorHandler)
+app.use(middleware.unknownEndpoint)
 
 module.exports = app
