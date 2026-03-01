@@ -1,6 +1,8 @@
 const playersRouter = require('express').Router()
 const Player = require('../models/players')
 
+// add token requirement to all routers here
+
 playersRouter.get('/', async (request, response) => {
   const players = await Player
     .find({})

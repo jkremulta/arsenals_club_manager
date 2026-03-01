@@ -1,11 +1,21 @@
 const attendanceRouter = require('express').Router()
 const Training = require('../models/training')
 
-// get all players from attendance
+// add a token requirement here
+attendanceRouter.get('/', async (request, response) => {
+  const activeTraining = await Training
+    .findOne({ isActive: true })
+    .populate('attendance', { name: 1, games_played: 1 })
 
+  if (!activeTraining) {
+    return response.status(404).json({ error: "No active training found" })
+  }
+  
+  response.json(activeTraining.attendance)
+})
 
 // add player in attendance
-attendanceRouter.post('/:id', async (request, response) => {
+attendanceRouter.post('/', async (request, response) => {
   const { id } = request.body || {}
   if (!id) return response.status(400).json({ error: "id is required" })
 
@@ -26,8 +36,8 @@ attendanceRouter.post('/:id', async (request, response) => {
   return response.status(201).json(updatedAttendance)
 })
 
-
 // removes player from attendance
+// add token requirement here
 attendanceRouter.delete('/:id', async (request, response) => {
   const { id } = request.params
 
