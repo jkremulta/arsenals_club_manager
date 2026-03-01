@@ -1,14 +1,21 @@
 const trainingRouter = require('express').Router()
 const Training = require('../models/training')
+const Player = require('../models/players')
 const trainingService = require('../services/training.service')
 
+// add token requirement to all routers here 
+
 trainingRouter.get('/', async (request, response) => {
-  const training = await Training
-    .find({})
+  const activeTraining = await Training
+    .findOne({ isActive: true })
     .populate('attendance', { name: 1, games_played: 1 })
     .populate('current_players')
+
+  if (!activeTraining) {
+    return response.status(404).json({ error: "No active training found" })
+  }
   
-  response.json(training)
+  response.json(activeTraining)
 })
 
 
@@ -38,6 +45,11 @@ trainingRouter.delete('/', async (request, response) => {
   if (!activeTraining) {
     return response.status(404).json({ error: "No active training found." })
   }
+
+  await Player.updateMany(
+    { _id: { $in: activeTraining.attendance } },
+    { $set: { games_played: 0 } }
+  )
 
   await Training.findByIdAndDelete(activeTraining.id)
 
