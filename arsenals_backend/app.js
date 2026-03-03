@@ -1,8 +1,12 @@
 const express = require('express')
 const mongoose = require('mongoose')
+
+const attendanceRouter = require('./controllers/attendance')
+const loginRouter = require('./controllers/login')
 const playersRouter = require('./controllers/players')
 const trainingRouter = require('./controllers/training')
-const attendanceRouter = require('./controllers/attendance')
+const usersRouter = require('./controllers/users')
+
 const logger = require('./utils/logger')
 const config = require('./utils/config')
 const middleware = require('./utils/middleware')
@@ -16,9 +20,12 @@ mongoose
   .catch(error => logger.error('error connecting to MongoDB', error.message))
 
 app.use(express.json())
+app.use('/api/attendance', attendanceRouter)
+app.use('/api/login', loginRouter)
 app.use('/api/players', playersRouter)
 app.use('/api/training', trainingRouter)
-app.use('/api/attendance', attendanceRouter)
+app.use('/api/users', usersRouter)
+
 
 app.use(middleware.errorHandler)
 app.use(middleware.unknownEndpoint)
