@@ -2,10 +2,10 @@ const trainingRouter = require('express').Router()
 const Training = require('../models/training')
 const Player = require('../models/players')
 const trainingService = require('../services/training.service')
+const { userExtractor } = require('../utils/middleware')
 
-// add token requirement to all routers here 
-
-trainingRouter.get('/', async (request, response) => {
+// gets all players in current training
+trainingRouter.get('/', userExtractor, async (request, response) => {
   const activeTraining = await Training
     .findOne({ isActive: true })
     .populate('attendance', { name: 1, games_played: 1 })
@@ -18,8 +18,8 @@ trainingRouter.get('/', async (request, response) => {
   response.json(activeTraining)
 })
 
-
-trainingRouter.post('/', async (request, response) => {
+// creates training
+trainingRouter.post('/', userExtractor, async (request, response) => {
   const activeTraining = await Training.findOne({ isActive: true })
   if (activeTraining) {
     return response.status(400).json({
@@ -39,7 +39,8 @@ trainingRouter.post('/', async (request, response) => {
   response.status(201).json(savedTraining)
 })
 
-trainingRouter.delete('/', async (request, response) => {
+// deletes currentTraining 
+trainingRouter.delete('/', userExtractor, async (request, response) => {
   const activeTraining = await Training.findOne({ isActive: true })
 
   if (!activeTraining) {
@@ -56,8 +57,8 @@ trainingRouter.delete('/', async (request, response) => {
   return response.status(200).json({ isActive: false })
 })
 
-
-trainingRouter.post('/initializeGame', async (request, response) => {
+// gets players for next game
+trainingRouter.post('/initializeGame', userExtractor, async (request, response) => {
   const { skillGroup } = request.body || {}
   if (!skillGroup) return response.status(400).json({ error: "skill group is not defined" })
 
@@ -66,7 +67,8 @@ trainingRouter.post('/initializeGame', async (request, response) => {
   return response.json(players)
 })
 
-trainingRouter.post('/startGame', async (request, response) => {
+// starts the game, this adds +1 to their games
+trainingRouter.post('/startGame', userExtractor, async (request, response) => {
   const players = await trainingService.startGame()
 
   return response.json(players)

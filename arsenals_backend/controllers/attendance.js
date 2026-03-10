@@ -2,7 +2,7 @@ const attendanceRouter = require('express').Router()
 const Training = require('../models/training')
 const { userExtractor } = require('../utils/middleware')
 
-// add a token requirement here
+// gets all players in attendance
 attendanceRouter.get('/', userExtractor, async (request, response) => {
 
   const activeTraining = await Training
@@ -39,7 +39,6 @@ attendanceRouter.post('/', async (request, response) => {
 })
 
 // removes player from attendance
-// add token requirement here
 attendanceRouter.delete('/:id', userExtractor, async (request, response) => {
   const { id } = request.params
 

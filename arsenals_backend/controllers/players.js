@@ -1,16 +1,17 @@
 const playersRouter = require('express').Router()
 const Player = require('../models/players')
+const { userExtractor } = require('../utils/middleware')
 
-// add token requirement to all routers here
 
-playersRouter.get('/', async (request, response) => {
+// get all players in db
+playersRouter.get('/', userExtractor, async (request, response) => {
   const players = await Player
     .find({})
   
   response.json(players)
 })
 
-playersRouter.post('/', async (request, response) => {
+playersRouter.post('/', userExtractor, async (request, response) => {
   const { name, age, gender, skill, rank } = request.body
 
   const newPlayer = new Player({
@@ -25,7 +26,7 @@ playersRouter.post('/', async (request, response) => {
   response.status(201).json(savedPlayer)
 })
 
-playersRouter.delete('/:id', async (request, response) => {
+playersRouter.delete('/:id', userExtractor, async (request, response) => {
   const { id } = request.params
   
   await Player.findByIdAndDelete(id)
