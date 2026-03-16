@@ -4,8 +4,8 @@ const playerSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    minlength: 3,
-    unique: true
+    minlength: 4,
+    maxlength: 50,
   },
   age: {
     type: Number,
