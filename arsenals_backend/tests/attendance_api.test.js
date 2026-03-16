@@ -2,9 +2,7 @@ const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 
-const Player = require('../models/players')
 const Training = require('../models/training')
-const User = require('../models/user')
 
 const helper = require('./test_helper')
 const supertest = require('supertest')
