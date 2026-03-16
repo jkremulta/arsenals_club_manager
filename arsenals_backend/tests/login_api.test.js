@@ -1,4 +1,4 @@
-const { test, after, beforeEach, describe } = require('node:test')
+const { test, after, beforeEach } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
@@ -16,7 +16,7 @@ beforeEach(async () => {
   await helper.initializeDb()
 })
 
-test('returns 401 for a non-existing username', async () => {
+test('post: returns 401 for a non-existing username', async () => {
   const user = {
     username: 'falseuser',
     password: 'falsepassword'
@@ -28,7 +28,7 @@ test('returns 401 for a non-existing username', async () => {
     .expect(401)
 })
 
-test('returns 401 for a wrong password', async () => {
+test('post: returns 401 for a wrong password', async () => {
   const user = {
     username: 'testuser',
     password: 'falsepassword'
@@ -41,7 +41,7 @@ test('returns 401 for a wrong password', async () => {
     .expect(401)
 })
 
-test('returns 200 with a token on a valid credential', async () => {
+test('post: returns 200 with a token on a valid credential', async () => {
   const user = {
     username: 'testuser',
     password: 'testpassword'
@@ -55,7 +55,7 @@ test('returns 200 with a token on a valid credential', async () => {
   assert.ok(response.body.token)
 })
 
-test('returned token should be a valid JWT', async () => {
+test('post: returned token should be a valid JWT', async () => {
    const user = {
     username: 'testuser',
     password: 'testpassword'
