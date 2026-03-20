@@ -18,7 +18,7 @@ beforeEach(async () => {
   token = await helper.loginAndGetToken()
 })
 
-test.only('get: returns 404 when no active training exists', async () => {
+test('get: returns 404 when no active training exists', async () => {
   await Training.deleteMany()
 
   await api
@@ -28,7 +28,7 @@ test.only('get: returns 404 when no active training exists', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-test.only('get: returns the active training with populated fields', async () => {
+test('get: returns the active training with populated fields', async () => {
   const response = await api
     .get('/api/training')
     .set('Authorization', `Bearer ${token}`)
@@ -38,14 +38,14 @@ test.only('get: returns the active training with populated fields', async () => 
   assert(response.body.attendance.length === helper.initialPlayers.length)
 })
 
-test.only('get: returns 401 without a token', async () => {
+test('get: returns 401 without a token', async () => {
   await api
     .get('/api/training')
     .expect(401)
     .expect('Content-Type', /application\/json/)
 })
 
-test.only('post: returns 400 when an active training already exists', async () => {
+test('post: returns 400 when an active training already exists', async () => {
   const training = {
     startTime: new Date()
   }
@@ -57,7 +57,7 @@ test.only('post: returns 400 when an active training already exists', async () =
     .expect(400)
 })
 
-test.only('post: returns 400 when startTime is missing', async () => {
+test('post: returns 400 when startTime is missing', async () => {
   await Training.deleteMany()
   
   const training = {
@@ -71,7 +71,7 @@ test.only('post: returns 400 when startTime is missing', async () => {
     .expect(400)
 })
 
-test.only('post: creates a training and returns 201', async () => {
+test('post: creates a training and returns 201', async () => {
   await Training.deleteMany()
 
   const training = {
@@ -85,7 +85,7 @@ test.only('post: creates a training and returns 201', async () => {
     .expect(201)
 })
 
-test.only('delete: returns 404 when no active training exists', async () => {
+test('delete: returns 404 when no active training exists', async () => {
   await Training.deleteMany()
 
   await api
@@ -94,7 +94,7 @@ test.only('delete: returns 404 when no active training exists', async () => {
     .expect(404)
 })
 
-test.only('delete: deletes the training and resets the games_played to 0 for players, returns 200', async () => {
+test('delete: deletes the training and resets the games_played to 0 for players, returns 200', async () => {
   await api
     .delete('/api/training')
     .set('Authorization', `Bearer ${token}`)
@@ -104,7 +104,7 @@ test.only('delete: deletes the training and resets the games_played to 0 for pla
   assert(playersInDb.every(p => p.games_played === 0))
 })
 
-test.only('delete: returns 401 without a token', async () => {
+test('delete: returns 401 without a token', async () => {
   await api
     .delete('/api/training')
     .expect(401)
