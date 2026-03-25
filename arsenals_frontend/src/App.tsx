@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import loginService from '../services/login'
+import { useState } from 'react'
+import loginService from './services/login'
 import { LoginForm } from '@/components/login-form'
-import { Button } from "@/components/ui/button"
+import TrainingDashboard from '@/components/TrainingDashboard'
 
 const App = () => {
   const [user, setUser] = useState(() => {
@@ -25,15 +25,9 @@ const App = () => {
   }
 
   if (user) {
-    return (
-    <div>
-      <div>
-        currently logged in
-      </div>
-      <Button onClick={handleLogout}>logout</Button>
-    </div>
-  )
+    return <TrainingDashboard onLogout={handleLogout} user={user} />
   }
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       <LoginForm className='w-96' onSubmit={handleLogin}/>
