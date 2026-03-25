@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import loginService from './services/login'
+import loginServices from './services/login'
 import { LoginForm } from '@/components/login-form'
-import TrainingDashboard from '@/components/TrainingDashboard'
+import Dashboard from './components/Dashboard'
 
 const App = () => {
   const [user, setUser] = useState(() => {
@@ -11,8 +11,8 @@ const App = () => {
 
   const handleLogin = async ({ username, password }) => {
     try {
-      const user = await loginService.login({ username, password })
-      setUser(user)
+      const user = await loginServices.login({ username, password })
+      setUser(user) 
       localStorage.setItem('loggedUser', JSON.stringify(user))
     } catch {
       console.log('wrong credentials')
@@ -23,16 +23,17 @@ const App = () => {
     setUser(null)
     localStorage.removeItem('loggedUser')
   }
+  
+  if (user) return <Dashboard onLogout={handleLogout} user={user}/>
 
-  if (user) {
-    return <TrainingDashboard onLogout={handleLogout} user={user} />
-  }
-
+  // login form
   return (
     <div className="flex min-h-screen items-center justify-center">
       <LoginForm className='w-96' onSubmit={handleLogin}/>
     </div>
   )
+  
 }
+
 
 export default App
