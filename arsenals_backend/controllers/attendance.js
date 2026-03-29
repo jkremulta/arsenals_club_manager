@@ -1,5 +1,6 @@
 const attendanceRouter = require('express').Router()
 const Training = require('../models/training')
+const Player = require('../models/players')
 const { userExtractor } = require('../utils/middleware')
 
 // gets all players in attendance
@@ -7,7 +8,7 @@ attendanceRouter.get('/', userExtractor, async (request, response) => {
 
   const activeTraining = await Training
     .findOne({ isActive: true })
-    .populate('attendance', { name: 1, games_played: 1 })
+    .populate('attendance', { name: 1, games_played: 1, paid: 1 })
 
   if (!activeTraining) {
     return response.status(404).json({ error: "No active training found" })
@@ -56,6 +57,37 @@ attendanceRouter.delete('/:id', userExtractor, async (request, response) => {
   await activeTraining.save()
 
   response.status(204).end()
+})
+
+attendanceRouter.put('/:id', userExtractor, async (request, response) => {
+  const { id } = request.params
+  const body = request.body
+  
+  const activeTraining = await Training.findOne({ isActive: true })
+  if(!activeTraining) {
+    return response.status(404).json({ error: 'No active training' })
+  }
+
+  const inAttendance = activeTraining.attendance.some(
+    p => p.toString() === id
+  )
+  if (!inAttendance) {
+    return response.status(404).json({ error: 'Player is not in attendance' })
+  }
+
+  const updatedPlayer = await Player.findByIdAndUpdate(
+    id,
+    { ...body },
+    { new: true }
+  )
+
+  if (!updatedPlayer) {
+    return response.status(404).json({ error: 'Player not found' })
+  }
+
+  const updatedTraining = await Training.findOne({ isActive: true })
+    .populate('attendance')
+  return response.json(updatedTraining)
 })
 
 module.exports = attendanceRouter
