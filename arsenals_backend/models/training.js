@@ -6,6 +6,10 @@ const trainingSchema = new mongoose.Schema({
     required: true
   },
   isActive: Boolean,
+  games_today: {
+    type: Number,
+    default: 0
+  },
   attendance: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Player'
