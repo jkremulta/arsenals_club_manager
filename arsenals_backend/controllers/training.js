@@ -8,8 +8,9 @@ const { userExtractor } = require('../utils/middleware')
 trainingRouter.get('/', userExtractor, async (request, response) => {
   const activeTraining = await Training
     .findOne({ isActive: true })
-    .populate('attendance', { name: 1, games_played: 1 })
+    .populate('attendance', { name: 1, games_played: 1, paid: 1 })
     .populate('current_players')
+    .populate('games_today')
 
   if (!activeTraining) {
     return response.status(404).json({ error: "No active training found" })
