@@ -50,7 +50,11 @@ trainingRouter.delete('/', userExtractor, async (request, response) => {
 
   await Player.updateMany(
     { _id: { $in: activeTraining.attendance } },
-    { $set: { games_played: 0 } }
+    { $set: { 
+      games_played: 0,
+      paid: false
+    } 
+  },
   )
 
   await Training.findByIdAndDelete(activeTraining.id)
