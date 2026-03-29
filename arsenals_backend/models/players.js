@@ -24,6 +24,10 @@ const playerSchema = new mongoose.Schema({
   games_played: {
     type: Number,
     default: 0
+  },
+  paid: {
+    type: Boolean,
+    default: false
   }
 })
 
