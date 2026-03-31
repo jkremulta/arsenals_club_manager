@@ -6,23 +6,46 @@ const authHeaders = (token) => ({
   headers: { Authorization: `Bearer ${token}` }
 })
 
-export const createTraining = async (startTime, token) => {
+const createTraining = async (startTime, token) => {
   const { data } = await axios.post(baseUrl, { startTime }, authHeaders(token))
   return data
 }
 
-export const deleteTraining = async (token) => {
+const deleteTraining = async (token) => {
   const { data } = await axios.delete(baseUrl, authHeaders(token))
   return data
 }
 
-export const getTraining = async (token) => {
+const getTraining = async (token) => {
   const { data } = await axios.get(baseUrl, authHeaders(token))
   return data
 }
 
+const initializeGame = async (skillGroup, token) => {
+  const { data } = await axios.post(
+    `${baseUrl}/initializeGame`,
+    { skillGroup },
+    authHeaders(token)
+  )
+
+  return data
+}
+
+const startGame = async (token) => {
+  const { data } = await axios.post(
+    `${baseUrl}/startGame`,
+    {},
+    authHeaders(token)
+  )
+  
+  return data
+}
+
+
 export default {
-  createTraining,
-  deleteTraining,
-  getTraining
+  get: getTraining,
+  post: createTraining,
+  delete: deleteTraining,
+  initializeGame,
+  startGame
 }

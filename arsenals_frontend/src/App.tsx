@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import loginServices from './services/login'
-import { LoginForm } from '@/components/login-form'
+import { LoginForm } from '@/components/LoginForm'
 import Dashboard from './components/Dashboard'
 
 const App = () => {
