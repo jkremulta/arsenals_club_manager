@@ -10,6 +10,7 @@ trainingRouter.get('/', userExtractor, async (request, response) => {
     .findOne({ isActive: true })
     .populate('attendance', { name: 1, games_played: 1, paid: 1 })
     .populate('current_players')
+    .populate('initialized_players')
     .populate('games_today')
 
   if (!activeTraining) {

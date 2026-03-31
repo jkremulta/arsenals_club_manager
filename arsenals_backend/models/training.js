@@ -17,6 +17,10 @@ const trainingSchema = new mongoose.Schema({
   current_players: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Player'
+  }],
+  initialized_players: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Player'
   }]
 })
 

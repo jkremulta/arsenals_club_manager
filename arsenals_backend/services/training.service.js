@@ -65,7 +65,7 @@ const getPlayersBySkillGroup = async (skillGroup) => {
   const playerIds = finalGroup.map(p => p._id)
   await Training.findOneAndUpdate(
     { isActive: true },
-    { current_players: playerIds }
+    { initialized_players: playerIds }
   )
 
   return finalGroup
@@ -73,19 +73,29 @@ const getPlayersBySkillGroup = async (skillGroup) => {
 
 const startGame = async () => {
   const activeTraining = await Training.findOne({ isActive: true })
+
   if (!activeTraining) {
     throw new Error('No active training')
   }
-  
-  const playerIds = activeTraining.current_players.map(p => p._id)
 
-  // update the games_played for players in current_players
+  const playerIds = activeTraining.initialized_players
+
+  if (!playerIds || playerIds.length === 0) {
+    throw new Error('No initialized players')
+  }
+
+  activeTraining.current_players = playerIds
+  activeTraining.initialized_players = []
+
   await Player.updateMany(
     { _id: { $in: playerIds } },
     { $inc: { games_played: 1 } }
   )
 
+  await activeTraining.save()
+
   const updatedPlayers = await Player.find({ _id: { $in: playerIds } })
+
   return updatedPlayers
 }
 
