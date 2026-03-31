@@ -34,9 +34,11 @@ attendanceRouter.post('/', async (request, response) => {
     return response.status(400).json({ error: "User is already in attendance" })
   }
 
+  await activeTraining.save()
+  const populated = await Training.findOne({ isActive: true })
+    .populate('attendance')
 
-  const updatedAttendance = await activeTraining.save()
-  return response.status(201).json(updatedAttendance)
+  return response.status(201).json(populated)
 })
 
 // removes player from attendance
