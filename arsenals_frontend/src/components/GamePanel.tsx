@@ -5,7 +5,7 @@ import {
   Play,
 } from 'lucide-react'
 
-function GamePanel({ currentGame, lastSkillGroup }) {
+function GamePanel({ currentGame, currentGameSkillGroup }) {
   return (
     <div className="flex h-full min-h-0 flex-col rounded-xl border border-emerald-500/20 bg-emerald-500/[0.03]">
       <div className="flex flex-shrink-0 items-center justify-between border-b border-emerald-500/10 bg-emerald-500/[0.04] px-4 py-3">
@@ -13,9 +13,9 @@ function GamePanel({ currentGame, lastSkillGroup }) {
           <Play size={13} />
           <p className="text-[11px] font-semibold uppercase tracking-widest">Game in progress</p>
         </div>
-        {lastSkillGroup && (
+        {currentGameSkillGroup && (
           <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] font-semibold capitalize text-emerald-400">
-            {lastSkillGroup}
+            {currentGameSkillGroup}
           </span>
         )}
       </div>
