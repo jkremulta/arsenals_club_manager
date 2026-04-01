@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import loginServices from './services/login'
-import { LoginForm } from '@/components/LoginForm'
-import Dashboard from './components/Dashboard'
+import { LoginForm } from '@/LoginForm'
+import Dashboard from './Dashboard'
 
 const App = () => {
   const [user, setUser] = useState(() => {

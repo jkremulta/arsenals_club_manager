@@ -118,7 +118,7 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                     <button
                       onClick={() => onRemove(player.id)}
                       disabled={removingId === player.id}
-                      className="flex h-6 w-6 items-center justify-center rounded text-white/20 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400"
+                      className="flex h-6 w-6 items-center justify-center rounded text-white/20 transition-opacity hover:bg-red-500/20 hover:text-red-400 md:group-hover:opacity-100"
                     >
                       {removingId === player.id
                         ? <Loader2 size={10} className="animate-spin" />

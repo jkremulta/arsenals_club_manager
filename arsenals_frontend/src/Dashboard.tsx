@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
-import trainingApi from '../services/training'
-import attendanceApi from '../services/attendance'
-import playersApi from '../services/players'
-import HamburgerDrawer from './HamburgerDrawer'
-import StatCard from './StatCard'
+import trainingApi from './services/training'
+import attendanceApi from './services/attendance'
+import playersApi from './services/players'
+import HamburgerDrawer from './components/HamburgerDrawer'
+import StatCard from './components/StatCard'
 
-import AttendancePanel from './AttendancePanel'
-import GamePanel from './GamePanel'
-import BottomNav from './BottomNav'
-import ControlsPanel from './ControlsPanel'
+import AttendancePanel from './components/AttendancePanel'
+import GamePanel from './components/GamePanel'
+import BottomNav from './components/BottomNav'
+import ControlsPanel from './components/ControlsPanel'
 
-import helper from '../utils/helper'
+import helper from './utils/helper'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -152,10 +152,14 @@ const Dashboard = ({ onLogout, user }) => {
   const handleAddPlayer = async (playerId) => {
     try {
       const response = await attendanceApi.post(playerId)
+      setAttendance(response.attendance)
+      setPaidIds(
+      new Set(response.attendance.filter(p => p.paid).map(p => p.id))
+      )
+
       toast.success('Player added.', {
         duration: 2000
       })
-      setAttendance(response.attendance)
     } catch(error) {
         toast.error(error?.response?.data?.error)
     }
