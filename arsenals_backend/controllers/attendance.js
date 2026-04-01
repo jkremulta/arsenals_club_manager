@@ -35,8 +35,7 @@ attendanceRouter.post('/', async (request, response) => {
 
   if (!activeTraining.attendance.includes(id)) {
     activeTraining.attendance.push(id)
-  } else {
-    return response.status(400).json({ error: "User is already in attendance" })
+    await activeTraining.save()
   }
 
   await activeTraining.save()
