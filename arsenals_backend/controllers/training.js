@@ -11,7 +11,6 @@ trainingRouter.get('/', userExtractor, async (request, response) => {
     .populate('attendance', { name: 1, games_played: 1, paid: 1 })
     .populate('current_players')
     .populate('initialized_players')
-    .populate('games_today')
 
   if (!activeTraining) {
     return response.status(404).json({ error: "No active training found" })
@@ -75,7 +74,8 @@ trainingRouter.post('/initializeGame', userExtractor, async (request, response) 
 
 // starts the game, this adds +1 to their games
 trainingRouter.post('/startGame', userExtractor, async (request, response) => {
-  const players = await trainingService.startGame()
+  const { skillGroup } = request.body || {}
+  const players = await trainingService.startGame(skillGroup)
 
   return response.json(players)
 })
