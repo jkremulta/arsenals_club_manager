@@ -8,7 +8,7 @@ attendanceRouter.get('/', userExtractor, async (request, response) => {
 
   const activeTraining = await Training
     .findOne({ isActive: true })
-    .populate('attendance', { name: 1, games_played: 1, paid: 1 })
+    .populate('attendance', { name: 1, games_played: 1, paid: 1, skill: 1 })
 
   // to stop error on log in
   if (!activeTraining) {
