@@ -59,7 +59,8 @@ const Dashboard = ({ onLogout, user }) => {
   const [removingId, setRemovingId] = useState(null)
 
   const [skillGroup, setSkillGroup]         = useState('')
-  const [lastSkillGroup, setLastSkillGroup] = useState('')
+  const [initializedSkillGroup, setInitializedSkillGroup] = useState('')
+  const [currentGameSkillGroup, setCurrentGameSkillGroup] = useState('')
 
   const [nextGamePlayers, setNextGamePlayers] = useState([])
   const [initLoading, setInitLoading]       = useState(false)
@@ -91,6 +92,8 @@ const Dashboard = ({ onLogout, user }) => {
     setNextGamePlayers(trainingRes.initialized_players)
     setPaidIds(new Set(attendanceRes.filter(p => p.paid).map(p => p.id)))
     setPlayers(playersRes)
+    setInitializedSkillGroup(trainingRes.initializedSkillGroup || '') 
+    setCurrentGameSkillGroup(trainingRes.currentGameSkillGroup || '') 
     
     console.log(trainingRes)
 }
@@ -129,6 +132,8 @@ const Dashboard = ({ onLogout, user }) => {
 
     setTraining(null)
     setAttendance([])
+    setSkillGroup('')
+    setCurrentGame([])
     setPaidIds(new Set())
   }
 
@@ -182,19 +187,34 @@ const Dashboard = ({ onLogout, user }) => {
 
   // ── Game ────────────────────────────────────────────────────────────────
   const handleInitializeGame = async () => {
-    const token = user.token
+  const token = user.token
 
-    if (!skillGroup) return toast.warning('Select a skill group first.')
-    setInitLoading(true)
-    try {
-      const res = await trainingApi.initializeGame(skillGroup, token)
-      if (res?.error) return toast.error(res.error)
-      setNextGamePlayers(res)
-      toast.success(`Game initialized — ${res.length} players queued.`)
-    } finally {
-      setInitLoading(false)
-    }
+  if (!skillGroup) {
+    return toast.warning('Select a skill group first.')
   }
+
+  setInitLoading(true)
+
+  try {
+    const res = await trainingApi.initializeGame(skillGroup, token)
+
+    // handle API-level errors (if your API returns { error })
+    if (res?.error) {
+      return toast.error(res.error)
+    }
+
+    setNextGamePlayers(res)
+    setInitializedSkillGroup(skillGroup)
+    toast.success(`Game initialized — ${res.length} players queued.`)
+
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.error
+    )
+  } finally {
+    setInitLoading(false)
+  }
+}
  
   const handleStartGame = async () => {
     const token = user.token
@@ -205,7 +225,7 @@ const Dashboard = ({ onLogout, user }) => {
       if (res?.error) return toast.error(res.error)
       setCurrentGame(nextGamePlayers)
       setNextGamePlayers([])
-      setLastSkillGroup(skillGroup)
+      setCurrentGameSkillGroup(initializedSkillGroup)
       toast.success('Game started!')
       fetchAll()
     } finally {
@@ -214,7 +234,7 @@ const Dashboard = ({ onLogout, user }) => {
   }
 
   const sharedControlsProps = {
-    training, skillGroup, setSkillGroup, lastSkillGroup,
+    training, skillGroup, setSkillGroup, initializedSkillGroup,
     nextGamePlayers, initLoading, startLoading,
     onInitialize: handleInitializeGame,
     onStartGame: handleStartGame,
@@ -353,7 +373,7 @@ const Dashboard = ({ onLogout, user }) => {
             {/* ── Desktop: 3-col layout ────────────────────────────────── */}
             <div className="mx-auto hidden w-full max-w-7xl flex-1 gap-4 overflow-hidden px-8 py-4 md:grid md:grid-cols-3">
               <AttendancePanel {...sharedAttendanceProps} />
-              <GamePanel currentGame={currentGame} lastSkillGroup={lastSkillGroup} />
+              <GamePanel currentGame={currentGame} currentGameSkillGroup={currentGameSkillGroup} />
               <ControlsPanel {...sharedControlsProps} />
             </div>
 
@@ -362,7 +382,7 @@ const Dashboard = ({ onLogout, user }) => {
               {activeTab === 'attendance' && (
                 <AttendancePanel {...sharedAttendanceProps} />
               )}
-              {activeTab === 'game' && <GamePanel currentGame={currentGame} lastSkillGroup={lastSkillGroup} />}
+              {activeTab === 'game' && <GamePanel currentGame={currentGame} currentGameSkillGroup={currentGameSkillGroup} />}
               {activeTab === 'controls' && <div className="overflow-y-auto"><ControlsPanel {...sharedControlsProps} /></div>}
             </div>
           </div>
