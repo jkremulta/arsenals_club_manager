@@ -87,12 +87,12 @@ const Dashboard = ({ onLogout, user }) => {
 
     setTraining(trainingRes)
     setAttendance(attendanceRes)
-    setCurrentGame(trainingRes.current_players || [])
-    setNextGamePlayers(trainingRes.initialized_players)
-    setPaidIds(new Set(attendanceRes.filter(p => p.paid).map(p => p.id)))
+    setCurrentGame(trainingRes?.current_players || [])
+    setNextGamePlayers(trainingRes?.initialized_players || [])
+    setPaidIds(new Set(attendanceRes?.filter(p => p.paid).map(p => p.id)))
     setPlayers(playersRes)
-    setInitializedSkillGroup(trainingRes.initializedSkillGroup || '') 
-    setCurrentGameSkillGroup(trainingRes.currentGameSkillGroup || '') 
+    setInitializedSkillGroup(trainingRes?.initializedSkillGroup || '') 
+    setCurrentGameSkillGroup(trainingRes?.currentGameSkillGroup || '') 
     
     console.log(trainingRes)
 }
