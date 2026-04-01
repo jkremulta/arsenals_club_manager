@@ -101,76 +101,96 @@ const Dashboard = ({ onLogout, user }) => {
     fetchAll()
   }, [user.token])
 
-
-
   const handleCreateTraining = async () => {
     const token = user.token
-    const response = await trainingApi.post(new Date(startTime).toISOString(), token)
 
-    if (response?.error) return toast.error(response.error)
+    try {
+      const response = await trainingApi.post(new Date(startTime).toISOString(), token)
+      toast.success('Training session created.', {
+        duration: 2000
+      })
 
-    toast.success('Training session created.', {
-      duration: 2000
-    })
+      setTraining(response)
+      setCreateOpen(false)
 
-    setTraining(response)
-    setCreateOpen(false)
+    } catch(error) {
+        toast.error(error?.response?.data?.error)
+
+        fetchAll()
+    }
   }
 
-  console.log(attendance)
   const handleEndTraining = async () => {
     const token = user.token
-    const response = await trainingApi.delete(token)
 
-    if (response?.error) return toast.error(response.error)
+    try {
+      await trainingApi.delete(token)
+      toast.success('Training ended.', {
+        duration: 2000
+      })
 
-    toast.success('Training ended. Game counts reset.', {
-      duration: 2000
-    })
+      setTraining(null)
+      setAttendance([])
+      setSkillGroup('')
+      setCurrentGame([])
+      setCurrentGameSkillGroup('')
+      setPaidIds(new Set())
 
-    setTraining(null)
-    setAttendance([])
-    setSkillGroup('')
-    setCurrentGame([])
-    setCurrentGameSkillGroup('')
-    setPaidIds(new Set())
-  }
+    } catch (error) {
+        toast.error(error?.response?.data?.error)
+        
+        // resets ui
+        setTraining(null)
+        setAttendance([])
+        setSkillGroup('')
+        setCurrentGame([])
+        setCurrentGameSkillGroup('')
+        setPaidIds(new Set())
+    }
+}
 
   const handleAddPlayer = async (playerId) => {
-    const token = user.token
-    const response = await attendanceApi.post(playerId, token)
-    if (response?.error) return toast.error(response.error)
-    toast.success('Player added.', {
-      duration: 2000
-    })
-
-    setAttendance(response.attendance)
-    setPaidIds(prev => new Set(prev))
+    try {
+      const response = await attendanceApi.post(playerId)
+      toast.success('Player added.', {
+        duration: 2000
+      })
+      setAttendance(response.attendance)
+    } catch(error) {
+        toast.error(error?.response?.data?.error)
+    }
   }
 
   const handleRemovePlayer = async (id) => {
     const token = user.token
-    setRemovingId(id)
-    await attendanceApi.delete(id, token)
-    setAttendance((prev) => prev.filter((p) => p.id !== id))
-    setPaidIds((prev) => { const n = new Set(prev); n.delete(id); return n })
-    setRemovingId(null)
-    toast.success('Player removed.', {
-      duration: 2000
-    })
+    try {
+      setRemovingId(id)
+      await attendanceApi.delete(id, token)
+      setAttendance((prev) => prev.filter((p) => p.id !== id))
+      setPaidIds((prev) => { const n = new Set(prev); n.delete(id); return n })
+      setRemovingId(null)
+      toast.success('Player removed.', {
+        duration: 2000
+      })
+    } catch(error) {
+      toast.error(error?.response?.data?.error)
+    }
   }
 
   const togglePaid = async (id) => {
     const token = user.token
-    const isCurrentlyPaid = paidIds.has(id)
-    const updatedTraining = await attendanceApi.put(id, token, { paid: !isCurrentlyPaid })
-    const newPaidIds = new Set(
-      updatedTraining.attendance.filter(p => p.paid).map(p => p.id)
-    )
+    try {
+      const isCurrentlyPaid = paidIds.has(id)
+      const updatedTraining = await attendanceApi.put(id, token, { paid: !isCurrentlyPaid })
+      const newPaidIds = new Set(
+        updatedTraining.attendance.filter(p => p.paid).map(p => p.id)
+      )
     setPaidIds(newPaidIds)
+    } catch(error) {
+      toast.error(error?.response?.data?.error)
+    }
+    
   }
-
-  
 
   const attendanceIds = new Set(attendance.map(p => p.id))
   const sharedAttendanceProps = {
@@ -186,60 +206,57 @@ const Dashboard = ({ onLogout, user }) => {
 
   // ── Game ────────────────────────────────────────────────────────────────
   const handleInitializeGame = async () => {
-  const token = user.token
+    const token = user.token
 
-  if (!skillGroup) {
-    return toast.warning('Select a skill group first.')
-  }
-
-  setInitLoading(true)
-
-  try {
-    const res = await trainingApi.initializeGame(skillGroup, token)
-
-    // handle API-level errors (if your API returns { error })
-    if (res?.error) {
-      return toast.error(res.error)
+    if (!skillGroup) {
+      return toast.warning('Select a skill group first.')
     }
 
-    setNextGamePlayers(res)
-    setInitializedSkillGroup(skillGroup)
-    toast.success(`Game initialized — ${res.length} players queued.`)
+    setInitLoading(true)
 
-  } catch (error) {
-    toast.error(
-      error?.response?.data?.error
-    )
-  } finally {
-    setInitLoading(false)
-  }
+    try {
+      const response = await trainingApi.initializeGame(skillGroup, token)
+
+      setNextGamePlayers(response)
+      setInitializedSkillGroup(skillGroup)
+      toast.success(`Game initialized — ${response.length} players queued.`)
+
+    } catch (error) {
+        toast.error(error?.response?.data?.error)
+    } finally {
+      setInitLoading(false)
+    }
 }
  
   const handleStartGame = async () => {
     const token = user.token
 
     setStartLoading(true)
+
     try {
-      const res = await trainingApi.startGame(token)
-      if (res?.error) return toast.error(res.error)
+      await trainingApi.startGame(token)
+
       setCurrentGame(nextGamePlayers)
       setNextGamePlayers([])
       setCurrentGameSkillGroup(initializedSkillGroup)
+
       toast.success('Game started!')
       fetchAll()
-    } finally {
+  
+    } catch (error) {
+      toast.error(error?.response?.data?.error)
+    } 
+    
+    finally {
       setStartLoading(false)
     }
   }
 
   const sharedControlsProps = {
-    training, skillGroup, setSkillGroup, initializedSkillGroup,
+    skillGroup, setSkillGroup, initializedSkillGroup,
     nextGamePlayers, initLoading, startLoading,
     onInitialize: handleInitializeGame,
     onStartGame: handleStartGame,
-    onCreateTraining: handleCreateTraining,
-    onEndTraining: handleEndTraining,
-    createOpen, setCreateOpen, startTime, setStartTime,
   }
 
   return (
