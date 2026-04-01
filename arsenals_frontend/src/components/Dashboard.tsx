@@ -112,9 +112,11 @@ const Dashboard = ({ onLogout, user }) => {
     })
 
     setTraining(response)
+    setAvailablePlayers(players)
     setCreateOpen(false)
   }
 
+  console.log(attendance)
   const handleEndTraining = async () => {
     const token = user.token
     const response = await trainingApi.delete(token)
@@ -188,7 +190,6 @@ const Dashboard = ({ onLogout, user }) => {
       const res = await trainingApi.initializeGame(skillGroup, token)
       if (res?.error) return toast.error(res.error)
       setNextGamePlayers(res)
-      setLastSkillGroup(skillGroup)
       toast.success(`Game initialized — ${res.length} players queued.`)
     } finally {
       setInitLoading(false)
@@ -204,6 +205,7 @@ const Dashboard = ({ onLogout, user }) => {
       if (res?.error) return toast.error(res.error)
       setCurrentGame(nextGamePlayers)
       setNextGamePlayers([])
+      setLastSkillGroup(skillGroup)
       toast.success('Game started!')
       fetchAll()
     } finally {
