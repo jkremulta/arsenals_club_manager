@@ -10,9 +10,14 @@ attendanceRouter.get('/', userExtractor, async (request, response) => {
     .findOne({ isActive: true })
     .populate('attendance', { name: 1, games_played: 1, paid: 1 })
 
+  // to stop error on log in
   if (!activeTraining) {
-    return response.status(404).json({ error: "No active training found" })
+    return response.status(200).json([])
   }
+
+  // if (!activeTraining) {
+  //   return response.status(404).json({ error: "No active training found" })
+  // }
   
   response.json(activeTraining.attendance)
 })

@@ -12,8 +12,13 @@ trainingRouter.get('/', userExtractor, async (request, response) => {
     .populate('current_players')
     .populate('initialized_players')
 
+  // if (!activeTraining) {
+  //   return response.status(404).json({ error: "No active training found" })
+  // }
+
+  // to stop error on get on log in
   if (!activeTraining) {
-    return response.status(404).json({ error: "No active training found" })
+    return response.status(200).json(null)
   }
   
   response.json(activeTraining)
