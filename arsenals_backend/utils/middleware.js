@@ -38,7 +38,7 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).json({ error: error.message })
   } else if (error.name === 'MongoServerError' && error.message.includes('E11000 duplicate key error')) {
     return response.status(400).json({ error: 'expected `username/name` to be unique' })
-  } else if (error.message === 'No active training') {
+  } else if (error.message === 'No active training' || error.message === 'You need 14 players in attendance to play.') {
     return response.status(400).json({ error: error.message })
   } else if (error.name === 'JsonWebTokenError') {
     return response.status(401).json({ error: 'invalid token' })
