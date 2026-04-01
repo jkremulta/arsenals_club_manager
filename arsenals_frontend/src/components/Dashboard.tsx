@@ -65,7 +65,6 @@ const Dashboard = ({ onLogout, user }) => {
   const [nextGamePlayers, setNextGamePlayers] = useState([])
   const [initLoading, setInitLoading]       = useState(false)
   const [startLoading, setStartLoading]     = useState(false)
-  const [availablePlayers, setAvailablePlayers] = useState([])
   const [activeTab, setActiveTab] = useState('attendance')
   const [startTime, setStartTime] = useState(() => {
     const now = new Date()
@@ -115,7 +114,6 @@ const Dashboard = ({ onLogout, user }) => {
     })
 
     setTraining(response)
-    setAvailablePlayers(players)
     setCreateOpen(false)
   }
 
@@ -134,6 +132,7 @@ const Dashboard = ({ onLogout, user }) => {
     setAttendance([])
     setSkillGroup('')
     setCurrentGame([])
+    setCurrentGameSkillGroup('')
     setPaidIds(new Set())
   }
 
