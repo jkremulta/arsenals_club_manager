@@ -55,6 +55,10 @@ const getPlayersBySkillGroup = async (skillGroup) => {
     throw new Error('No active training')
   }
 
+  if (activeTraining.attendance.length !== 14) {
+    throw new Error('You need 14 players in attendance to play.')
+  }
+
   const filteredPlayers = activeTraining.attendance
     .filter(player => player.skill === skillGroup)
     .sort((a, b) => a.games_played - b.games_played)
@@ -86,6 +90,8 @@ const startGame = async () => {
 
   activeTraining.current_players = playerIds
   activeTraining.initialized_players = []
+  activeTraining.games_today += 1
+  activeTraining.lastSkillGroup = skillGroup || activeTraining.lastSkillGroup || ''
 
   await Player.updateMany(
     { _id: { $in: playerIds } },
