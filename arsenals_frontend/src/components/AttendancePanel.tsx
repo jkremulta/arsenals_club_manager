@@ -18,14 +18,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Users, UserPlus, Loader2, X, ChevronDown } from 'lucide-react'
 
-const skillPill = (skill) => {
-  switch (skill) {
-    case 'advanced':     return { label: 'Adv', className: 'bg-red-500/15 text-red-400' }
-    case 'intermediate': return { label: 'Int', className: 'bg-yellow-500/15 text-yellow-400' }
-    case 'beginner':     return { label: 'Beg', className: 'bg-emerald-500/15 text-emerald-400' }
-    default:             return { label: '—',   className: 'bg-white/10 text-white/30' }
-  }
-}
 
 function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, removingId, onAdd, onRemove, onTogglePaid }) {
   const [addOpen, setAddOpen] = useState(false)
@@ -71,8 +63,8 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                       className="cursor-pointer text-white/70 aria-selected:bg-white/10 aria-selected:text-white"
                     >
                       <span className="text-sm">{p.name}
-                        <span className={`ml-2 rounded px-1.5 py-0.5 text-[9px] font-semibold ${skillPill(p.skill).className}`}>
-                        {skillPill(p.skill).label}
+                        <span className={`ml-2 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(p.skill).className}`}>
+                        {helper.skillPill(p.skill).label}
                         </span>
                       </span>
                       
@@ -105,8 +97,8 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                 >
                   <div className="flex min-w-0 items-center gap-2.5">
                     <span className="truncate text-[13px] font-medium text-white/75">{player.name}</span>
-                    <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${skillPill(player.skill).className}`}>
-                      {skillPill(player.skill).label}
+                    <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
+                      {helper.skillPill(player.skill).label}
                     </span>
                   </div>
                   <div className="flex flex-shrink-0 items-center gap-2">

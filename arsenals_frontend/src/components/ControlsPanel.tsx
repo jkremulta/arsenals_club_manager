@@ -1,15 +1,6 @@
 import helper from '../utils/helper'
-
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+
 import {
   Select,
   SelectContent,
@@ -17,28 +8,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Play, Zap, Trash2, Loader2 } from 'lucide-react'
+import { Play, Zap, Loader2 } from 'lucide-react'
 
 const SKILL_GROUPS = ['beginner', 'intermediate', 'advanced']
 
 function ControlsPanel({
-  training, skillGroup, setSkillGroup, initializedSkillGroup,
+  skillGroup, setSkillGroup, initializedSkillGroup,
   nextGamePlayers, initLoading, startLoading,
-  onInitialize, onStartGame,
-  onCreateTraining, onEndTraining,
-  createOpen, setCreateOpen, startTime, setStartTime,
+  onInitialize, onStartGame
 }) {
   // Start Game is only enabled when there are queued players
   const canStart = nextGamePlayers.length > 0 && !startLoading
@@ -117,10 +96,12 @@ function ControlsPanel({
                   <span className="w-5 text-[10px] font-bold text-violet-500/50">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-[10px] font-bold text-violet-400">
-                    {helper.initials(player.name)}
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="truncate text-[13px] font-medium text-white/75">{player.name}</span>
+                    <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
+                      {helper.skillPill(player.skill).label}
+                    </span>
                   </div>
-                  <span className="text-[12px] text-white/65">{player.name}</span>
                 </div>
               ))}
             </div>

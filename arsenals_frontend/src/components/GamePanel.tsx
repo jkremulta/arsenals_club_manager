@@ -33,10 +33,12 @@ function GamePanel({ currentGame, currentGameSkillGroup }) {
                 <span className="w-5 text-[10px] font-bold text-emerald-500/50">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-[10px] font-bold text-emerald-400">
-                  {helper.initials(player.name)}
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="truncate text-[13px] font-medium text-white/75">{player.name}</span>
+                  <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
+                    {helper.skillPill(player.skill).label}
+                  </span>
                 </div>
-                <span className="text-[13px] text-white/70">{player.name}</span>
               </div>
             ))}
           </div>
