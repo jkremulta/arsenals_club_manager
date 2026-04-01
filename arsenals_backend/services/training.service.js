@@ -69,39 +69,34 @@ const getPlayersBySkillGroup = async (skillGroup) => {
   const playerIds = finalGroup.map(p => p._id)
   await Training.findOneAndUpdate(
     { isActive: true },
-    { initialized_players: playerIds }
+    { initialized_players: playerIds,
+      initializedSkillGroup: skillGroup
+    }
   )
 
   return finalGroup
 }
 
-const startGame = async () => {
+const startGame = async () => {  // ← no need to pass lastSkillGroup, it's already in the DB
   const activeTraining = await Training.findOne({ isActive: true })
-
-  if (!activeTraining) {
-    throw new Error('No active training')
-  }
+  if (!activeTraining) throw new Error('No active training')
 
   const playerIds = activeTraining.initialized_players
-
-  if (!playerIds || playerIds.length === 0) {
-    throw new Error('No initialized players')
-  }
+  if (!playerIds || playerIds.length === 0) throw new Error('No initialized players')
 
   activeTraining.current_players = playerIds
+  activeTraining.currentGameSkillGroup = activeTraining.initializedSkillGroup
   activeTraining.initialized_players = []
+  activeTraining.initializedSkillGroup = ''
   activeTraining.games_today += 1
-  activeTraining.lastSkillGroup = skillGroup || activeTraining.lastSkillGroup || ''
 
   await Player.updateMany(
     { _id: { $in: playerIds } },
     { $inc: { games_played: 1 } }
   )
-
   await activeTraining.save()
 
   const updatedPlayers = await Player.find({ _id: { $in: playerIds } })
-
   return updatedPlayers
 }
 

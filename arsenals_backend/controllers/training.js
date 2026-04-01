@@ -74,8 +74,7 @@ trainingRouter.post('/initializeGame', userExtractor, async (request, response) 
 
 // starts the game, this adds +1 to their games
 trainingRouter.post('/startGame', userExtractor, async (request, response) => {
-  const { skillGroup } = request.body || {}
-  const players = await trainingService.startGame(skillGroup)
+  const players = await trainingService.startGame()
 
   return response.json(players)
 })

@@ -18,9 +18,8 @@ const trainingSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Player'
   }],
-  lastSkillGroup: {
-    type: String
-  },
+  initializedSkillGroup: String,
+  currentGameSkillGroup: String,
   initialized_players: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Player'
