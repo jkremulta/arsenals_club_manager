@@ -29,7 +29,7 @@ function GamePanel({ currentGame, currentGameSkillGroup }) {
         ) : (
           <div className="space-y-0.5 p-2">
             {currentGame.map((player, i) => (
-              <div key={player._id} className="flex items-center gap-3 rounded-md px-3 py-2.5 hover:bg-white/[0.03]">
+              <div key={player.id} className="flex items-center gap-3 rounded-md px-3 py-2.5 hover:bg-white/[0.03]">
                 <span className="w-5 text-[10px] font-bold text-emerald-500/50">
                   {String(i + 1).padStart(2, '0')}
                 </span>
