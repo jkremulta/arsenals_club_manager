@@ -7,12 +7,7 @@ const capitalize = (str = '') => {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-const initials = (name = '') => {
-  return name.charAt(0).toUpperCase()
-}
-
 export default {
   formatTime,
-  initials,
   capitalize
 }
