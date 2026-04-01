@@ -160,6 +160,7 @@ const Dashboard = ({ onLogout, user }) => {
       toast.success('Player added.', {
         duration: 2000
       })
+
     } catch(error) {
         toast.error(error?.response?.data?.error)
     }
