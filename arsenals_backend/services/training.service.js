@@ -77,7 +77,7 @@ const getPlayersBySkillGroup = async (skillGroup) => {
   return finalGroup
 }
 
-const startGame = async () => {  // ← no need to pass lastSkillGroup, it's already in the DB
+const startGame = async (currentGameSkillGroup) => { 
   const activeTraining = await Training.findOne({ isActive: true })
   if (!activeTraining) throw new Error('No active training')
 
@@ -89,6 +89,7 @@ const startGame = async () => {  // ← no need to pass lastSkillGroup, it's alr
   activeTraining.initialized_players = []
   activeTraining.initializedSkillGroup = ''
   activeTraining.games_today += 1
+  activeTraining.games_by_skill[currentGameSkillGroup] += 1
 
   await Player.updateMany(
     { _id: { $in: playerIds } },

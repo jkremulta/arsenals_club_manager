@@ -65,6 +65,7 @@ const Dashboard = ({ onLogout, user }) => {
       setPlayers(playersRes)
       setInitializedSkillGroup(trainingRes?.initializedSkillGroup || '')
       setCurrentGameSkillGroup(trainingRes?.currentGameSkillGroup || '')
+      console.log('training', trainingRes)
 
     } catch (error) {
       // 401s are handled by the axios interceptor which calls logout
@@ -215,7 +216,8 @@ const Dashboard = ({ onLogout, user }) => {
     setStartLoading(true)
 
     try {
-      await trainingApi.startGame(token)
+      console.log(currentGameSkillGroup)
+      await trainingApi.startGame(initializedSkillGroup, token)
 
       setCurrentGame(nextGamePlayers)
       setNextGamePlayers([])

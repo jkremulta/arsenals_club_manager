@@ -10,6 +10,11 @@ const trainingSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  games_by_skill: {
+    beginner: { type: Number, default: 0 },
+    intermediate: { type: Number, default: 0 },
+    advanced: { type: Number, default: 0 }
+  },
   attendance: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Player'

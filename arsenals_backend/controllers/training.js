@@ -57,7 +57,12 @@ trainingRouter.delete('/', userExtractor, async (request, response) => {
     { _id: { $in: activeTraining.attendance } },
     { $set: { 
       games_played: 0,
-      paid: false
+      paid: false,
+      games_by_skill: {
+        beginner: 0,
+        intermediate: 0,
+        advanced: 0
+      }
     } 
   },
   )
@@ -79,7 +84,8 @@ trainingRouter.post('/initializeGame', userExtractor, async (request, response) 
 
 // starts the game, this adds +1 to their games
 trainingRouter.post('/startGame', userExtractor, async (request, response) => {
-  const players = await trainingService.startGame()
+  const { currentGameSkillGroup } = request.body || {}
+  const players = await trainingService.startGame(currentGameSkillGroup)
 
   return response.json(players)
 })

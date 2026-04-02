@@ -31,10 +31,10 @@ const initializeGame = async (skillGroup, token) => {
   return data
 }
 
-const startGame = async (token) => {
+const startGame = async (currentGameSkillGroup, token) => {
   const { data } = await axios.post(
     `${baseUrl}/startGame`,
-    {},
+    { currentGameSkillGroup },
     authHeaders(token)
   )
   
