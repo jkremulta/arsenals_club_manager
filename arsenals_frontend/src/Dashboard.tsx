@@ -57,10 +57,6 @@ const Dashboard = ({ onLogout, user }) => {
         playersApi.get(token),
       ])
 
-      if (trainingRes?.error) return toast.error(trainingRes.error)
-      if (attendanceRes?.error) return toast.error(attendanceRes.error)
-      if (playersRes?.error) return toast.error(playersRes.error)
-
       setTraining(trainingRes)
       setAttendance(attendanceRes)
       setCurrentGame(trainingRes?.current_players || [])
@@ -69,6 +65,7 @@ const Dashboard = ({ onLogout, user }) => {
       setPlayers(playersRes)
       setInitializedSkillGroup(trainingRes?.initializedSkillGroup || '')
       setCurrentGameSkillGroup(trainingRes?.currentGameSkillGroup || '')
+
     } catch (error) {
       // 401s are handled by the axios interceptor which calls logout
     }
@@ -204,7 +201,9 @@ const Dashboard = ({ onLogout, user }) => {
       toast.success(`Game initialized — ${response.length} players queued.`)
 
     } catch (error) {
-        toast.error(error?.response?.data?.error)
+        toast.error(error?.response?.data?.error, {
+          duration: 2000
+        })
     } finally {
       setInitLoading(false)
     }
@@ -243,7 +242,7 @@ const Dashboard = ({ onLogout, user }) => {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#0a0a0a] font-sans text-white">
-      <Toaster theme="dark" position="top-right" />
+      <Toaster theme="dark" position="top-right" richColors />
 
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <Header
