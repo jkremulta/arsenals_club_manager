@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   Dialog,
   DialogContent,
@@ -26,6 +28,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
 
 import {
   Play,
@@ -37,6 +40,26 @@ import {
 
 
 function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTraining, onEndTraining, createOpen, setCreateOpen, startTime, setStartTime }) {
+  const [sessionLoading, setSessionLoading] = useState(false)
+  
+  const handleCreate = async () => {
+    setSessionLoading(true)
+    try {
+      await onCreateTraining()
+    } finally {
+      setSessionLoading(false)
+    }
+  }
+  
+  const handleEnd = async () => {
+    setSessionLoading(true)
+    try {
+      await onEndTraining()
+    } finally {
+      setSessionLoading(false)
+    }
+  }
+  
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent
@@ -89,7 +112,16 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
                   />
                 </div>
                 <DialogFooter>
-                  <Button onClick={onCreateTraining} className="bg-emerald-600 hover:bg-emerald-500">Create Session</Button>
+                  <Button
+                    onClick={handleCreate}  // ← was onCreateTraining
+                    disabled={sessionLoading}
+                    className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
+                  >
+                    {sessionLoading
+                      ? <Loader2 size={14} className="mr-2 animate-spin" />
+                      : null}
+                    Create Session
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -110,7 +142,16 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel className="border-white/10 bg-transparent text-white/60 hover:bg-white/5">Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={onEndTraining} className="bg-red-600 hover:bg-red-500">End Session</AlertDialogAction>
+                  <AlertDialogAction
+                    onClick={handleEnd}  // ← was onEndTraining
+                    disabled={sessionLoading}
+                    className="bg-red-600 hover:bg-red-500 disabled:opacity-50"
+                  >
+                    {sessionLoading
+                      ? <Loader2 size={14} className="mr-2 animate-spin" />
+                      : null}
+                    End Session
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

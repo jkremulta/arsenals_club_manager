@@ -18,12 +18,22 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Users, UserPlus, Loader2, X, ChevronDown } from 'lucide-react'
 
-
 function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, removingId, onAdd, onRemove, onTogglePaid }) {
   const [addOpen, setAddOpen] = useState(false)
+  const [addLoading, setAddLoading] = useState(false)
+
+  const handleAdd = async (id) => {
+    setAddLoading(true)
+    setAddOpen(false)
+    try {
+      await onAdd(id)
+    } finally {
+      setAddLoading(false)
+    }
+  }
 
   return (
-    <div className="flex h-full min-h-0 flex-col rounded-xl border border-white/[0.06] bg-white/[0.02]">  
+    <div className="flex h-full min-h-0 flex-col rounded-xl border border-white/[0.06] bg-white/[0.02]">
       <div className="flex flex-shrink-0 items-center justify-between px-4 py-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-widest text-white/55">
@@ -35,10 +45,17 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
         </div>
         <Popover open={addOpen} onOpenChange={setAddOpen}>
           <PopoverTrigger asChild>
-            <Button size="sm" variant="outline" className="h-8 border-white/10 bg-white/5 text-xs text-white/70 hover:bg-white/10 hover:text-white">
-              <UserPlus size={12} className="mr-1.5" />
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={addLoading}
+              className="h-8 border-white/10 bg-white/5 text-xs text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-50"
+            >
+              {addLoading
+                ? <Loader2 size={12} className="mr-1.5 animate-spin" />
+                : <UserPlus size={12} className="mr-1.5" />}
               Add
-              <ChevronDown size={10} className="ml-1 text-white/30" />
+              {!addLoading && <ChevronDown size={10} className="ml-1 text-white/30" />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-64 border-white/10 bg-[#141414] p-0" align="end">
@@ -56,18 +73,14 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                     <CommandItem
                       key={p.id}
                       value={p.name}
-                      onSelect={() => {
-                        onAdd(p.id)
-                        setAddOpen(false)
-                      }}
+                      onSelect={() => handleAdd(p.id)}
                       className="cursor-pointer text-white/70 aria-selected:bg-white/10 aria-selected:text-white"
                     >
                       <span className="text-sm">{p.name}
                         <span className={`ml-2 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(p.skill).className}`}>
-                        {helper.skillPill(p.skill).label}
+                          {helper.skillPill(p.skill).label}
                         </span>
                       </span>
-                      
                     </CommandItem>
                   ))}
                 </CommandGroup>
