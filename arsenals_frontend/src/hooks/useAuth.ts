@@ -1,5 +1,6 @@
 import loginServices from '../services/login'
-import { useState } from 'react'
+import { setUnauthorizedHandler } from '@/services/axiosInstance'
+import { useState, useEffect } from 'react'
 
 const useAuth = () => {
   const [user, setUser] = useState(() => {
@@ -7,15 +8,29 @@ const useAuth = () => {
     return saved ? JSON.parse(saved) : null
   })
 
+  // re-register handler on page refresh if user is already logged in
+  useEffect(() => {
+    if (user) {
+      setUnauthorizedHandler(logout)
+    }
+  }, [])
+
   const login = async (credentials) => {
-    const user = await loginServices.login(credentials)
-    setUser(user)
-    localStorage.setItem('loggedUser', JSON.stringify(user))
+    try {
+      const user = await loginServices.login(credentials)
+      setUser(user)
+      localStorage.setItem('loggedUser', JSON.stringify(user))
+      setUnauthorizedHandler(logout)
+    } catch(error) {
+        const message = error.response?.data?.error
+        throw new Error(message)
+    }
   }
 
   const logout = () => {
     setUser(null)
     localStorage.removeItem('loggedUser')
+    setUnauthorizedHandler(null)
   }
 
   return {

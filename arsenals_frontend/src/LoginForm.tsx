@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Activity } from 'lucide-react'
+import { useState } from 'react'
 
 export function LoginForm({
   className,
@@ -9,13 +10,22 @@ export function LoginForm({
 }: Omit<React.ComponentProps<'div'>, 'onSubmit'> & {
   onSubmit: (data: { username: string; password: string }) => void
 }) {
-  const handleSubmit = (e: React.BaseSyntheticEvent) => {
-    e.preventDefault()
-    const form = e.currentTarget
-    const username = (form.elements.namedItem('username') as HTMLInputElement).value
-    const password = (form.elements.namedItem('password') as HTMLInputElement).value
-    onSubmit({ username, password })
+
+const [error, setError] = useState('')
+
+const handleSubmit = async (e: React.BaseSyntheticEvent) => {
+  e.preventDefault()
+  const form = e.currentTarget
+  const username = (form.elements.namedItem('username') as HTMLInputElement).value
+  const password = (form.elements.namedItem('password') as HTMLInputElement).value
+  
+  try {
+    setError('')
+    await onSubmit({ username, password })
+  } catch (error) {
+    setError(error.message)
   }
+}
 
   return (
     <div
@@ -82,6 +92,10 @@ export function LoginForm({
         >
           Sign in
         </Button>
+
+        {error && (
+          <p className="text-center text-[12px] text-red-400">{error}</p>
+        )}
       </form>
     </div>
   )

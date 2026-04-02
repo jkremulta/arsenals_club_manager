@@ -72,29 +72,30 @@ const Dashboard = ({ onLogout, user }) => {
     return now.toISOString().slice(0, 16)
   })
   
-
   const fetchAll = async () => {
-    const token = user.token
-    const [trainingRes, attendanceRes, playersRes] = await Promise.all([
-      trainingApi.get(token),
-      attendanceApi.get(token),
-      playersApi.get(token),
-    ])
+    try {
+      const token = user.token
+      const [trainingRes, attendanceRes, playersRes] = await Promise.all([
+        trainingApi.get(token),
+        attendanceApi.get(token),
+        playersApi.get(token),
+      ])
 
-    if (trainingRes?.error) return toast.error(trainingRes.error)
-    if (attendanceRes?.error) return toast.error(attendanceRes.error)
-    if (playersRes?.error) return toast.error(playersRes.error)
+      if (trainingRes?.error) return toast.error(trainingRes.error)
+      if (attendanceRes?.error) return toast.error(attendanceRes.error)
+      if (playersRes?.error) return toast.error(playersRes.error)
 
-    setTraining(trainingRes)
-    setAttendance(attendanceRes)
-    setCurrentGame(trainingRes?.current_players || [])
-    setNextGamePlayers(trainingRes?.initialized_players || [])
-    setPaidIds(new Set(attendanceRes?.filter(p => p.paid).map(p => p.id)))
-    setPlayers(playersRes)
-    setInitializedSkillGroup(trainingRes?.initializedSkillGroup || '') 
-    setCurrentGameSkillGroup(trainingRes?.currentGameSkillGroup || '') 
-    
-    console.log(trainingRes)
+      setTraining(trainingRes)
+      setAttendance(attendanceRes)
+      setCurrentGame(trainingRes?.current_players || [])
+      setNextGamePlayers(trainingRes?.initialized_players || [])
+      setPaidIds(new Set(attendanceRes?.filter(p => p.paid).map(p => p.id)))
+      setPlayers(playersRes)
+      setInitializedSkillGroup(trainingRes?.initializedSkillGroup || '')
+      setCurrentGameSkillGroup(trainingRes?.currentGameSkillGroup || '')
+    } catch (error) {
+      // 401s are handled by the axios interceptor which calls logout
+    }
 }
 
   useEffect(() => {
