@@ -236,11 +236,12 @@ const Dashboard = ({ onLogout, user }) => {
   }
 
   const sharedControlsProps = {
-    skillGroup, setSkillGroup, initializedSkillGroup,
-    nextGamePlayers, initLoading, startLoading,
-    onInitialize: handleInitializeGame,
-    onStartGame: handleStartGame,
-  }
+  skillGroup, setSkillGroup, initializedSkillGroup,
+  nextGamePlayers, initLoading, startLoading,
+  onInitialize: handleInitializeGame,
+  onStartGame: handleStartGame,
+  gamesBySkill: training?.games_by_skill,
+}
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#0a0a0a] font-sans text-white">

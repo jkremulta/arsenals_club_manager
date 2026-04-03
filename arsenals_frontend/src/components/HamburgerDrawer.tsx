@@ -46,6 +46,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
     setSessionLoading(true)
     try {
       await onCreateTraining()
+      onClose(false)
     } finally {
       setSessionLoading(false)
     }
@@ -55,6 +56,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
     setSessionLoading(true)
     try {
       await onEndTraining()
+      onClose(false)
     } finally {
       setSessionLoading(false)
     }

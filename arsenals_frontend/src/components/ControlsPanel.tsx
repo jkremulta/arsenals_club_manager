@@ -17,7 +17,7 @@ const SKILL_GROUPS = ['beginner', 'intermediate', 'advanced']
 function ControlsPanel({
   skillGroup, setSkillGroup, initializedSkillGroup,
   nextGamePlayers, initLoading, startLoading,
-  onInitialize, onStartGame
+  onInitialize, onStartGame, gamesBySkill
 }) {
   // Start Game is only enabled when there are queued players
   const canStart = nextGamePlayers.length > 0 && !startLoading
@@ -27,7 +27,24 @@ function ControlsPanel({
 
       {/* ── Game controls card ─────────────────────────────────────────── */}
       <div className="flex-shrink-0 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <div className='flex justify-between'>
         <p className="text-[11px] font-semibold uppercase tracking-widest text-white/55">Game Controls</p>
+        <div className='flex gap-2'>
+          {SKILL_GROUPS.map((skill) => {
+            const count = gamesBySkill?.[skill] ?? 0
+            const { label, className } = helper.skillPill(skill)
+
+            return (
+              <div key={skill} className="flex min-w-0 items-center gap-2.5">
+                <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${className}`}>
+                  {label} · {count}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+        
         <p className="mb-3 mt-0.5 text-[11px] text-white/30">Initialize then start</p>
 
         <div className="flex flex-col gap-2">
