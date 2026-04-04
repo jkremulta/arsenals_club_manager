@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
-import PlayersPage from './components/PlayersPage'
+import PlayersPage from './PlayersPage'
 import Dashboard from './Dashboard'
 import useAuth from './hooks/useAuth'
 import { LoginForm } from '@/LoginForm'
