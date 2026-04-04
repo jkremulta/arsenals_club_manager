@@ -31,6 +31,9 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
 
     return a.name.localeCompare(b.name)
   })
+  const sortedAvailablePlayers = [...availablePlayers].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  )
 
   const handleAdd = async (id) => {
     setAddLoading(true)
@@ -79,7 +82,7 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                   No players available
                 </CommandEmpty>
                 <CommandGroup>
-                  {availablePlayers.map((p) => (
+                  {sortedAvailablePlayers.map((p) => (
                     <CommandItem
                       key={p.id}
                       value={p.name}
@@ -87,9 +90,6 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                       className="cursor-pointer text-white/70 aria-selected:bg-white/10 aria-selected:text-white"
                     >
                       <span className="text-sm">{p.name}
-                        <span className={`ml-2 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(p.skill).className}`}>
-                          {helper.skillPill(p.skill).label}
-                        </span>
                       </span>
                     </CommandItem>
                   ))}
