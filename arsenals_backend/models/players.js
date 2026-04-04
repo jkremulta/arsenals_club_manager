@@ -7,8 +7,8 @@ const playerSchema = new mongoose.Schema({
     minlength: 4,
     maxlength: 50,
   },
-  age: {
-    type: Number,
+  birthday: {
+    type: Date,
     required: true
   },
   gender: {
