@@ -130,6 +130,7 @@ function PlayersPage({ user }) {
 
     const payload = {
       ...form,
+      name: form.name.trim(),
       skill: derivedSkill,
     }
 

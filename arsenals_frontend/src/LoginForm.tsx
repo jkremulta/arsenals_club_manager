@@ -16,8 +16,8 @@ const [error, setError] = useState('')
 const handleSubmit = async (e: React.BaseSyntheticEvent) => {
   e.preventDefault()
   const form = e.currentTarget
-  const username = (form.elements.namedItem('username') as HTMLInputElement).value
-  const password = (form.elements.namedItem('password') as HTMLInputElement).value
+  const username = (form.elements.namedItem('username') as HTMLInputElement).value.trim()
+  const password = (form.elements.namedItem('password') as HTMLInputElement).value.trim()
   
   try {
     setError('')
