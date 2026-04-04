@@ -51,7 +51,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
 
         {/* Desktop controls */}
         <div className="hidden items-center gap-3 md:flex">
-          <span className="text-xs text-muted-foreground">{user?.username}</span>
+          <span className="text-xs text-muted-foreground">{helper.capitalize(user?.username)}</span>
           <Separator orientation="vertical" className="bg-border" />
           {!training ? (
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>

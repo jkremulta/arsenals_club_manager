@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
+import helper from '../utils/helper'
 import { Loader2, Play, Trash2, LogOut, Users } from 'lucide-react'
 
 function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTraining,
@@ -39,7 +40,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
       <SheetContent side="right" className="flex w-56 flex-col p-0">
         <SheetHeader className="border-b border-border px-4 py-4">
           <SheetTitle className="text-left text-[13px] font-semibold">
-            {user?.username}
+            {helper.capitalize(user?.username)}
           </SheetTitle>
           <p className="text-left text-[11px] text-muted-foreground">Admin</p>
         </SheetHeader>
