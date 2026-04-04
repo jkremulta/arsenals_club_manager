@@ -255,7 +255,7 @@ const Dashboard = ({ onLogout, user }) => {
 }
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-[#0a0a0a] font-sans text-white">
+    <div className="flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground">
       <Toaster theme="dark" position="top-right" richColors />
 
       {/* ── Header ──────────────────────────────────────────────────────── */}
@@ -291,20 +291,20 @@ const Dashboard = ({ onLogout, user }) => {
       <div className="flex flex-1 flex-col overflow-hidden">
         {dashboardLoading ? (
           <div className="flex flex-1 items-center justify-center p-8">
-            <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-white/10 bg-white/[0.02] py-16 text-center">
-              <Loader2 size={30} className="mb-3 animate-spin text-white/25" />
-              <p className="text-sm font-medium text-white/45">Loading dashboard</p>
-              <p className="mt-1 text-xs text-white/20">Checking training session state...</p>
-            </div>
+            <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-border bg-card py-16 text-center">
+  <Loader2 size={30} className="mb-3 animate-spin text-muted-foreground/40" />
+  <p className="text-sm font-medium text-muted-foreground">Loading dashboard</p>
+  <p className="mt-1 text-xs text-muted-foreground/60">Checking training session state...</p>
+</div>
           </div>
         ) : !training ? (
           /* No session state */
           <div className="flex flex-1 items-center justify-center p-8">
-            <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-dashed border-white/10 py-16 text-center">
-              <AlertCircle size={30} className="mb-3 text-white/20" />
-              <p className="text-sm font-medium text-white/40">No active training session</p>
-              <p className="mt-1 text-xs text-white/20">Open the menu to start a session</p>
-            </div>
+            <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-dashed border-border py-16 text-center">
+  <AlertCircle size={30} className="mb-3 text-muted-foreground/40" />
+  <p className="text-sm font-medium text-muted-foreground">No active training session</p>
+  <p className="mt-1 text-xs text-muted-foreground/60">Open the menu to start a session</p>
+</div>
           </div>
         ) : (
           <div className="flex flex-1 flex-col overflow-hidden">

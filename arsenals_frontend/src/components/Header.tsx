@@ -24,45 +24,35 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
 
   const handleCreate = async () => {
     setSessionLoading(true)
-    try {
-      await onCreateTraining()
-    } finally {
-      setSessionLoading(false)
-    }
+    try { await onCreateTraining() }
+    finally { setSessionLoading(false) }
   }
 
   const handleEnd = async () => {
     setSessionLoading(true)
-    try {
-      await onEndTraining()
-    } finally {
-      setSessionLoading(false)
-    }
+    try { await onEndTraining() }
+    finally { setSessionLoading(false) }
   }
 
   return (
-    <header className="flex-shrink-0 border-b border-white/[0.06] px-4 py-3 md:px-8 md:py-4">
+    <header className="flex-shrink-0 border-b border-border px-4 py-3 md:px-8 md:py-4">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center">
-            <img
-              src={arsenalsLogo}
-              alt="Arsenals logo"
-              className="h-full w-full object-contain"
-            />
+            <img src={arsenalsLogo} alt="Arsenals logo" className="h-full w-full object-contain" />
           </div>
           <div>
-            <h1 className="text-[14px] font-semibold tracking-tight md:text-[15px]">Arsenal Tchoukball Club</h1>
+            <h1 className="text-[14px] font-semibold tracking-tight text-foreground md:text-[15px]">Arsenal Tchoukball Club</h1>
             {training?.startTime && (
-              <p className="text-[10px] text-white/40 md:text-[11px]">Session · {helper.formatTime(training.startTime)}</p>
+              <p className="text-[10px] text-muted-foreground/60 md:text-[11px]">Session · {helper.formatTime(training.startTime)}</p>
             )}
           </div>
         </div>
 
         {/* Desktop controls */}
         <div className="hidden items-center gap-3 md:flex">
-          <span className="text-xs text-white/30">{user?.username}</span>
-          <Separator orientation="vertical" className="bg-white/10" />
+          <span className="text-xs text-muted-foreground">{user?.username}</span>
+          <Separator orientation="vertical" className="bg-border" />
           {!training ? (
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
@@ -71,29 +61,27 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
                   Start Session
                 </Button>
               </DialogTrigger>
-              <DialogContent className="border-white/10 bg-[#111] text-white">
+              <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Create Training Session</DialogTitle>
-                  <DialogDescription className="text-white/50">Set the official start time for this session.</DialogDescription>
+                  <DialogDescription>Set the official start time for this session.</DialogDescription>
                 </DialogHeader>
                 <div className="py-2">
-                  <label className="mb-1.5 block text-xs text-white/50">Start Time</label>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Start Time</label>
                   <input
                     type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/50"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-emerald-500/50"
                   />
                 </div>
                 <DialogFooter>
                   <Button
-                    onClick={handleCreate}  // ← was onCreateTraining
+                    onClick={handleCreate}
                     disabled={sessionLoading}
                     className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
                   >
-                    {sessionLoading
-                      ? <Loader2 size={14} className="mr-2 animate-spin" />
-                      : null}
+                    {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
                     Create Session
                   </Button>
                 </DialogFooter>
@@ -107,23 +95,21 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
                   End Session
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="border-white/10 bg-[#111] text-white">
+              <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>End this training session?</AlertDialogTitle>
-                  <AlertDialogDescription className="text-white/50">
+                  <AlertDialogDescription>
                     This will reset all game counts and delete the active session. This cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel className="border-white/10 bg-transparent text-white/60 hover:bg-white/5">Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={handleEnd}  // ← was onEndTraining
+                    onClick={handleEnd}
                     disabled={sessionLoading}
                     className="bg-red-600 hover:bg-red-500 disabled:opacity-50"
                   >
-                    {sessionLoading
-                      ? <Loader2 size={14} className="mr-2 animate-spin" />
-                      : null}
+                    {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
                     End Session
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -134,24 +120,29 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
             size="sm"
             variant="ghost"
             onClick={() => navigate('/players')}
-            className="text-xs text-white/40 hover:bg-white/5 hover:text-white/70"
+            className="text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             <Users size={13} className="mr-1.5" />
             Players
           </Button>
-          <Button size="sm" variant="ghost" onClick={onLogout} className="text-xs text-white/40 hover:bg-white/5 hover:text-white/70">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onLogout}
+            className="text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
+          >
             Logout
           </Button>
         </div>
 
         {/* Mobile hamburger */}
         <button
-          className="flex flex-col gap-1 rounded p-2 hover:bg-white/[0.06] md:hidden"
+          className="flex flex-col gap-1 rounded p-2 hover:bg-accent md:hidden"
           onClick={onHamburgerClick}
         >
-          <span className="block h-[1.5px] w-[18px] rounded bg-white/60" />
-          <span className="block h-[1.5px] w-[18px] rounded bg-white/60" />
-          <span className="block h-[1.5px] w-[18px] rounded bg-white/60" />
+          <span className="block h-[1.5px] w-[18px] rounded bg-foreground/60" />
+          <span className="block h-[1.5px] w-[18px] rounded bg-foreground/60" />
+          <span className="block h-[1.5px] w-[18px] rounded bg-foreground/60" />
         </button>
       </div>
     </header>

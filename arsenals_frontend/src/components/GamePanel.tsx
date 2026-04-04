@@ -1,9 +1,6 @@
 import helper from '@/utils/helper'
 import { ScrollArea } from '@/components/ui/scroll-area'
- 
-import {
-  Play,
-} from 'lucide-react'
+import { Play } from 'lucide-react'
 
 function GamePanel({ currentGame, currentGameSkillGroup }) {
   return (
@@ -22,19 +19,19 @@ function GamePanel({ currentGame, currentGameSkillGroup }) {
       <ScrollArea className="flex-1 overflow-hidden">
         {!currentGame || currentGame.length === 0 ? (
           <div className="flex flex-col items-center py-12 text-center">
-            <Play size={22} className="mb-2 text-white/10" />
-            <p className="text-xs text-white/30">No game running</p>
-            <p className="mt-1 text-[11px] text-white/20">Initialize and start a game</p>
+            <Play size={22} className="mb-2 text-muted-foreground/30" />
+            <p className="text-xs text-muted-foreground">No game running</p>
+            <p className="mt-1 text-[11px] text-muted-foreground/60">Initialize and start a game</p>
           </div>
         ) : (
           <div className="space-y-0.5 p-2">
             {currentGame.map((player, i) => (
-              <div key={player.id} className="flex items-center gap-3 rounded-md px-3 py-2.5 hover:bg-white/[0.03]">
+              <div key={player.id} className="flex items-center gap-3 rounded-md px-3 py-2.5 hover:bg-accent">
                 <span className="w-5 text-[10px] font-bold text-emerald-500/50">
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <div className="flex min-w-0 items-center gap-2.5">
-                  <span className="truncate text-[13px] font-medium text-white/75">{player.name}</span>
+                  <span className="truncate text-[13px] font-medium text-foreground/75">{player.name}</span>
                   <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
                     {helper.skillPill(player.skill).label}
                   </span>

@@ -1,94 +1,64 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Dialog, DialogContent, DialogDescription, DialogFooter,
+  DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog'
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
+  Sheet, SheetContent, SheetHeader, SheetTitle,
 } from '@/components/ui/sheet'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
+  AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Play, Trash2, LogOut, Users } from 'lucide-react'
 
-import {
-  Play,
-  Trash2,
-  LogOut,
-  Users,
-} from 'lucide-react'
+function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTraining,
+  onEndTraining, createOpen, setCreateOpen, startTime, setStartTime }) {
 
-
-function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTraining, onEndTraining, createOpen, setCreateOpen, startTime, setStartTime }) {
   const [sessionLoading, setSessionLoading] = useState(false)
-  
+  const navigate = useNavigate()
+
   const handleCreate = async () => {
     setSessionLoading(true)
-    try {
-      await onCreateTraining()
-      onClose(false)
-    } finally {
-      setSessionLoading(false)
-    }
-  }
-  
-  const handleEnd = async () => {
-    setSessionLoading(true)
-    try {
-      await onEndTraining()
-      onClose(false)
-    } finally {
-      setSessionLoading(false)
-    }
+    try { await onCreateTraining(); onClose(false) }
+    finally { setSessionLoading(false) }
   }
 
-  const navigate = useNavigate()
-  
+  const handleEnd = async () => {
+    setSessionLoading(true)
+    try { await onEndTraining(); onClose(false) }
+    finally { setSessionLoading(false) }
+  }
+
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent
-        side="right"
-        className="flex w-56 flex-col border-white/[0.08] bg-[#141414] p-0 text-white"
-      >
-        <SheetHeader className="border-b border-white/[0.07] px-4 py-4">
-          <SheetTitle className="text-left text-[13px] font-semibold text-white">
+      <SheetContent side="right" className="flex w-56 flex-col p-0">
+        <SheetHeader className="border-b border-border px-4 py-4">
+          <SheetTitle className="text-left text-[13px] font-semibold">
             {user?.username}
           </SheetTitle>
-          <p className="text-left text-[11px] text-white/35">Admin</p>
+          <p className="text-left text-[11px] text-muted-foreground">Admin</p>
         </SheetHeader>
- 
+
         <div className="flex flex-col py-2">
-          <button onClick={() => { navigate('/players'); onClose() }} className="flex items-center gap-3 px-4 py-3 text-[13px] text-white/60 hover:bg-white/[0.04]">
+          <button
+            onClick={() => { navigate('/players'); onClose() }}
+            className="flex items-center gap-3 px-4 py-3 text-[13px] text-muted-foreground hover:bg-accent"
+          >
             <Users size={15} />
             Players
           </button>
         </div>
- 
-        <Separator className="bg-white/[0.07]" />
- 
+
+        <Separator />
+
         {/* Session control */}
         <div className="px-4 py-3">
-          <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-white/35">Session</p>
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Session</p>
           {!training ? (
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
@@ -97,29 +67,27 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
                   Start Session
                 </Button>
               </DialogTrigger>
-              <DialogContent className="border-white/10 bg-[#111] text-white">
+              <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Create Training Session</DialogTitle>
-                  <DialogDescription className="text-white/50">Set the official start time for this session.</DialogDescription>
+                  <DialogDescription>Set the official start time for this session.</DialogDescription>
                 </DialogHeader>
                 <div className="py-2">
-                  <label className="mb-1.5 block text-xs text-white/50">Start Time</label>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Start Time</label>
                   <input
                     type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/50"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-emerald-500/50"
                   />
                 </div>
                 <DialogFooter>
                   <Button
-                    onClick={handleCreate}  // ← was onCreateTraining
+                    onClick={handleCreate}
                     disabled={sessionLoading}
                     className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
                   >
-                    {sessionLoading
-                      ? <Loader2 size={14} className="mr-2 animate-spin" />
-                      : null}
+                    {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
                     Create Session
                   </Button>
                 </DialogFooter>
@@ -133,23 +101,21 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
                   End Session
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="border-white/10 bg-[#111] text-white">
+              <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>End this training session?</AlertDialogTitle>
-                  <AlertDialogDescription className="text-white/50">
+                  <AlertDialogDescription>
                     This will reset all game counts and delete the active session. This cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel className="border-white/10 bg-transparent text-white/60 hover:bg-white/5">Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={handleEnd}  // ← was onEndTraining
+                    onClick={handleEnd}
                     disabled={sessionLoading}
                     className="bg-red-600 hover:bg-red-500 disabled:opacity-50"
                   >
-                    {sessionLoading
-                      ? <Loader2 size={14} className="mr-2 animate-spin" />
-                      : null}
+                    {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
                     End Session
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -157,8 +123,8 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
             </AlertDialog>
           )}
         </div>
- 
-        <div className="mt-auto border-t border-white/[0.07]">
+
+        <div className="mt-auto border-t border-border">
           <button
             onClick={onLogout}
             className="flex w-full items-center gap-3 px-4 py-4 text-[13px] text-red-400 hover:bg-red-500/[0.06]"
