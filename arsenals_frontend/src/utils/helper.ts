@@ -7,6 +7,17 @@ const capitalize = (str = '') => {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
+const skillFromRank = (rank) => {
+  const numericRank = Number(rank)
+
+  if (!Number.isFinite(numericRank)) return ''
+  if (numericRank < 0.5 || numericRank > 10) return ''
+  if (!Number.isInteger(numericRank * 2)) return ''
+  if (numericRank <= 5) return 'beginner'
+  if (numericRank <= 8) return 'intermediate'
+  return 'advanced'
+}
+
 // skill pill
 const skillPill = (skill) => {
   switch (skill) {
@@ -19,5 +30,6 @@ const skillPill = (skill) => {
 export default {
   formatTime,
   capitalize,
+  skillFromRank,
   skillPill
 }

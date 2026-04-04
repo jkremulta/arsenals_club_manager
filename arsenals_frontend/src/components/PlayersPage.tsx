@@ -36,10 +36,12 @@ import {
   X,
 } from 'lucide-react'
 
-const SKILLS = ['beginner', 'intermediate', 'advanced']
 const formatBirthday = (value) => value ? new Date(value).toISOString().slice(0, 10) : ''
 
-const EMPTY_FORM = { name: '', birthday: '', gender: '', rank: '', skill: '' }
+const EMPTY_FORM = { name: '', birthday: '', gender: '', rank: '' }
+const SKILL_SORT_ORDER = { beginner: 0, intermediate: 1, advanced: 2 }
+const GENDER_SORT_ORDER = { Male: 0, M: 0, Female: 1, F: 1 }
+const STATIC_SORT_OPTIONS = new Set(['skill_lowest', 'skill_highest', 'birthday_youngest', 'birthday_oldest'])
 
 function PlayersPage({ user }) {
   const navigate = useNavigate()
@@ -47,11 +49,14 @@ function PlayersPage({ user }) {
   const [players, setPlayers]       = useState([])
   const [loading, setLoading]       = useState(true)
   const [search, setSearch]         = useState('')
+  const [sortDirection, setSortDirection] = useState('asc')
   const [formOpen, setFormOpen]     = useState(false)
   const [editingId, setEditingId]   = useState(null)
   const [form, setForm]             = useState(EMPTY_FORM)
+  const [sortBy, setSortBy]         = useState('name')
   const [submitting, setSubmitting] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
+  const derivedSkill = helper.skillFromRank(form.rank)
 
   // ── Fetch ────────────────────────────────────────────────────────────
   const fetchPlayers = async () => {
@@ -82,7 +87,6 @@ function PlayersPage({ user }) {
       birthday: formatBirthday(player.birthday),
       gender: player.gender ?? '',
       rank:   player.rank   ?? '',
-      skill:  player.skill  ?? '',
     })
     setFormOpen(true)
   }
@@ -94,22 +98,43 @@ function PlayersPage({ user }) {
   }
 
   const handleField = (key, value) => setForm(prev => ({ ...prev, [key]: value }))
+  const handleSortChange = (nextSortBy) => {
+    if (STATIC_SORT_OPTIONS.has(nextSortBy)) {
+      setSortBy(nextSortBy)
+      setSortDirection('asc')
+      return
+    }
+
+    if (sortBy === nextSortBy) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+      return
+    }
+
+    setSortBy(nextSortBy)
+    setSortDirection('asc')
+  }
 
   const handleSubmit = async () => {
-    if (!form.name.trim() || !form.skill) return toast.warning('Name and skill are required.')
+    if (!form.name.trim() || !derivedSkill) return toast.warning('Name and a valid rank are required.')
+
+    const payload = {
+      ...form,
+      skill: derivedSkill,
+    }
+
     setSubmitting(true)
     try {
       if (editingId) {
-        await playersApi.put(editingId, form, user.token)
+        await playersApi.put(editingId, payload, user.token)
         toast.success('Player updated.')
       } else {
-        await playersApi.post(form, user.token)
+        await playersApi.post(payload, user.token)
         toast.success('Player registered.')
       }
       closeForm()
       fetchPlayers()
-    } catch (error) {
-      toast.error(error?.response?.data?.error)
+    } catch {
+      toast.error('Player already exists.')
     } finally {
       setSubmitting(false)
     }
@@ -129,9 +154,41 @@ function PlayersPage({ user }) {
   }
 
   // ── Filtered list ────────────────────────────────────────────────────
-  const filtered = players.filter(p =>
-    p.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = players
+    .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      let result = 0
+
+      switch (sortBy) {
+        case 'birthday':
+        case 'birthday_oldest':
+          result = new Date(a.birthday).getTime() - new Date(b.birthday).getTime()
+          break
+        case 'birthday_youngest':
+          result = new Date(b.birthday).getTime() - new Date(a.birthday).getTime()
+          break
+        case 'skill':
+        case 'skill_lowest':
+          result = (SKILL_SORT_ORDER[a.skill] ?? 99) - (SKILL_SORT_ORDER[b.skill] ?? 99)
+          break
+        case 'skill_highest':
+          result = (SKILL_SORT_ORDER[b.skill] ?? 99) - (SKILL_SORT_ORDER[a.skill] ?? 99)
+          break
+        case 'rank':
+          result = (Number(a.rank) || 0) - (Number(b.rank) || 0)
+          break
+        case 'gender':
+          result = (GENDER_SORT_ORDER[a.gender] ?? 99) - (GENDER_SORT_ORDER[b.gender] ?? 99)
+          break
+        case 'name':
+        default:
+          result = a.name.localeCompare(b.name)
+          break
+      }
+
+      const usesExplicitDirection = ['skill_lowest', 'skill_highest', 'birthday_youngest', 'birthday_oldest'].includes(sortBy)
+      return usesExplicitDirection ? result : (sortDirection === 'asc' ? result : -result)
+    })
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#0a0a0a] font-sans text-white">
@@ -189,7 +246,14 @@ function PlayersPage({ user }) {
                   { key: 'rank',   label: 'Rank',   placeholder: '5',              type: 'number', span: '' },
                 ].map(({ key, label, placeholder, type, span }) => (
                   <div key={key} className={`flex flex-col gap-1.5 ${span}`}>
-                    <label className="text-[10px] font-medium text-white/45">{label}</label>
+                    <div className="flex items-center gap-2">
+                      <label className="text-[10px] font-medium text-white/45">{label}</label>
+                      {key === 'rank' && (
+                        <span className={`rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(derivedSkill).className}`}>
+                          {derivedSkill ? helper.capitalize(derivedSkill) : '—'}
+                        </span>
+                      )}
+                    </div>
                     <Input
                       type={type}
                       value={form[key]}
@@ -217,25 +281,6 @@ function PlayersPage({ user }) {
                 </div>
               </div>
 
-              <div className="mt-3 flex flex-col gap-1.5">
-                <label className="text-[10px] font-medium text-white/45">Skill</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {SKILLS.map(s => (
-                    <button
-                      key={s}
-                      onClick={() => handleField('skill', s)}
-                      className={`rounded-lg border py-2 text-[12px] font-medium capitalize transition-all ${
-                        form.skill === s
-                          ? 'border-emerald-500/35 bg-emerald-500/15 text-emerald-400'
-                          : 'border-white/10 bg-white/[0.04] text-white/40 hover:bg-white/[0.07] hover:text-white/60'
-                      }`}
-                    >
-                      {helper.capitalize(s)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="mt-4 flex justify-end gap-2">
                 <Button
                   variant="outline"
@@ -248,7 +293,7 @@ function PlayersPage({ user }) {
                 <Button
                   size="sm"
                   onClick={handleSubmit}
-                  disabled={submitting || !form.name.trim() || !form.skill}
+                  disabled={submitting || !form.name.trim() || !derivedSkill}
                   className="bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-40"
                 >
                   {submitting && <Loader2 size={13} className="mr-1.5 animate-spin" />}
@@ -260,24 +305,97 @@ function PlayersPage({ user }) {
 
           {/* ── Search ───────────────────────────────────────────────── */}
           <div className="flex-shrink-0">
-            <input
+            <Input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search players..."
-              className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-white/20"
+              className="w-full border-white/10 bg-white/[0.04] text-white placeholder:text-white/25 focus-visible:border-white/20 focus-visible:ring-0"
             />
           </div>
 
           {/* ── Player list ──────────────────────────────────────────── */}
           <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
             {/* Table head — desktop only */}
-            <div className="hidden flex-shrink-0 grid-cols-12 gap-3 border-b border-white/[0.05] px-4 py-2.5 md:grid">
-              <span className="col-span-4 text-[10px] font-semibold uppercase tracking-widest text-white/35">Name</span>
-              <span className="col-span-2 text-[10px] font-semibold uppercase tracking-widest text-white/35">Skill</span>
-              <span className="col-span-2 text-[10px] font-semibold uppercase tracking-widest text-white/35">Birthday</span>
-              <span className="col-span-2 text-[10px] font-semibold uppercase tracking-widest text-white/35">Rank</span>
-              <span className="col-span-2 text-[10px] font-semibold uppercase tracking-widest text-white/35 text-right">Actions</span>
+            <div className="hidden flex-shrink-0 grid-cols-14 gap-3 border-b border-white/[0.05] px-4 py-2.5 md:grid">
+              <div className="col-span-4 flex items-center">
+                <button
+                  type="button"
+                  onClick={() => handleSortChange('name')}
+                  className={`text-[10px] font-semibold uppercase tracking-widest transition-colors ${
+                    sortBy === 'name' ? 'text-white/70' : 'text-white/35 hover:text-white/55'
+                  }`}
+                >
+                  Name
+                  {sortBy === 'name' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
+                </button>
+              </div>
+              <div className="col-span-2 flex items-center">
+                <button
+                  type="button"
+                  onClick={() => handleSortChange('skill')}
+                  className={`text-[10px] font-semibold uppercase tracking-widest transition-colors ${
+                    sortBy === 'skill' ? 'text-white/70' : 'text-white/35 hover:text-white/55'
+                  }`}
+                >
+                  Skill
+                  {sortBy === 'skill' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
+                </button>
+              </div>
+              <div className="col-span-3 flex items-center">
+                <button
+                  type="button"
+                  onClick={() => handleSortChange('birthday')}
+                  className={`text-[10px] font-semibold uppercase tracking-widest transition-colors ${
+                    sortBy === 'birthday' ? 'text-white/70' : 'text-white/35 hover:text-white/55'
+                  }`}
+                >
+                  Birthday
+                  {sortBy === 'birthday' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
+                </button>
+              </div>
+              <div className="col-span-2 flex items-center">
+                <button
+                  type="button"
+                  onClick={() => handleSortChange('rank')}
+                  className={`text-[10px] font-semibold uppercase tracking-widest transition-colors ${
+                    sortBy === 'rank' ? 'text-white/70' : 'text-white/35 hover:text-white/55'
+                  }`}
+                >
+                  Rank
+                  {sortBy === 'rank' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
+                </button>
+              </div>
+              <div className="col-span-2 flex items-center">
+                <button
+                  type="button"
+                  onClick={() => handleSortChange('gender')}
+                  className={`text-[10px] font-semibold uppercase tracking-widest transition-colors ${
+                    sortBy === 'gender' ? 'text-white/70' : 'text-white/35 hover:text-white/55'
+                  }`}
+                >
+                  Gender
+                  {sortBy === 'gender' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
+                </button>
+              </div>
+              <div className="col-span-1" />
+            </div>
+
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-white/[0.05] px-3 py-2 md:hidden">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-white/35">Sort Players</span>
+              <Select value={sortBy} onValueChange={handleSortChange}>
+                <SelectTrigger className="h-7 w-32 border-white/10 bg-white/[0.04] px-2 text-[9px] font-semibold uppercase tracking-widest text-white/60">
+                  <SelectValue placeholder="Sort" />
+                </SelectTrigger>
+                <SelectContent position="popper" align="end" className="border-white/10 bg-[#111] text-white">
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="gender">Gender</SelectItem>
+                  <SelectItem value="skill_lowest"><span className="flex items-center">Skill: Lowest</span></SelectItem>
+                  <SelectItem value="skill_highest"><span className="flex items-center">Skill: Highest</span></SelectItem>
+                  <SelectItem value="birthday_youngest"><span className="flex items-center">Age: Youngest</span></SelectItem>
+                  <SelectItem value="birthday_oldest"><span className="flex items-center">Age: Oldest</span></SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <ScrollArea className="flex-1 min-h-0">
@@ -295,16 +413,13 @@ function PlayersPage({ user }) {
                   {filtered.map((player, i) => (
                     <div key={player.id}>
                       {/* Desktop row */}
-                      <div className="group hidden items-center rounded-md px-3 py-2.5 transition-colors hover:bg-white/[0.04] md:grid md:grid-cols-12 md:gap-3">
+                      <div className="group hidden items-center rounded-md px-3 py-2.5 transition-colors hover:bg-white/[0.04] md:grid md:grid-cols-14 md:gap-3">
                         <span className="col-span-4 truncate text-[13px] font-medium text-white/75">{player.name}</span>
-                        <span className="col-span-2">
-                          <span className={`rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
-                            {helper.skillPill(player.skill).label}
-                          </span>
-                        </span>
-                        <span className="col-span-2 text-[12px] text-white/40">{formatBirthday(player.birthday) || '—'}</span>
-                        <span className="col-span-2 text-[12px] text-white/40">{player.rank ?? '—'}</span>
-                        <div className="col-span-2 flex items-center justify-end gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="col-span-2 text-[12px] text-white/40">{helper.capitalize(player.skill)}</span>
+                        <span className="col-span-3 text-[12px] text-white/40">{formatBirthday(player.birthday) || '—'}</span>
+                        <span className="col-span-2 pl-3 text-[12px] text-white/40">{player.rank ?? '—'}</span>
+                        <span className="col-span-2 pl-2 text-[12px] text-white/40">{player.gender ?? '—'}</span>
+                        <div className="col-span-1 flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openEdit(player)}
                             className="flex h-7 w-7 items-center justify-center rounded border border-white/[0.08] bg-white/[0.04] text-white/40 hover:bg-white/[0.08] hover:text-white/70"
@@ -323,12 +438,10 @@ function PlayersPage({ user }) {
                         <div className="flex min-w-0 flex-col gap-1">
                           <div className="flex items-center gap-2">
                             <span className="truncate text-[13px] font-medium text-white/75">{player.name}</span>
-                            <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
-                              {helper.skillPill(player.skill).label}
-                            </span>
+                            
                           </div>
                           <span className="text-[11px] text-white/30">
-                            Birthday {formatBirthday(player.birthday) || '—'} · Rank {player.rank ?? '—'}
+                            {helper.capitalize(player.skill) ?? '—' } · {formatBirthday(player.birthday) || '—'} · {player.gender}
                           </span>
                         </div>
                         <div className="flex flex-shrink-0 items-center gap-1.5 ml-3">
