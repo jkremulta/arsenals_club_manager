@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const mongoose = require('mongoose')
 
@@ -28,6 +29,15 @@ app.use('/api/players', playersRouter)
 app.use('/api/training', trainingRouter)
 app.use('/api/users', usersRouter)
 
+app.use(express.static(path.join(__dirname, 'dist')))
+
+app.get('/{*any}', (request, response, next) => {
+  if (request.path.startsWith('/api/')) {
+    return next()
+  }
+
+  response.sendFile(path.join(__dirname, 'dist', 'index.html'))
+})
 
 app.use(middleware.errorHandler)
 app.use(middleware.unknownEndpoint)
