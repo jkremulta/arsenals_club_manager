@@ -42,6 +42,7 @@ const EMPTY_FORM = { name: '', birthday: '', gender: '', rank: '' }
 const SKILL_SORT_ORDER = { beginner: 0, intermediate: 1, advanced: 2 }
 const GENDER_SORT_ORDER = { Male: 0, M: 0, Female: 1, F: 1 }
 const STATIC_SORT_OPTIONS = new Set(['skill_lowest', 'skill_highest', 'birthday_youngest', 'birthday_oldest'])
+const OWNER_USERNAME = 'joshiee02'
 
 function PlayersPage({ user }) {
   const navigate = useNavigate()
@@ -64,6 +65,7 @@ function PlayersPage({ user }) {
     form.rank &&
     derivedSkill
   )
+  const canManagePlayers = user?.username === OWNER_USERNAME
 
   // ── Fetch ────────────────────────────────────────────────────────────
   const fetchPlayers = async () => {
@@ -232,7 +234,6 @@ function PlayersPage({ user }) {
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <div className="mx-auto w-full max-w-4xl flex-1 overflow-hidden px-4 py-4 md:px-8 md:py-6 flex flex-col gap-4">
-
           {/* ── Register / Edit form ─────────────────────────────────── */}
           {formOpen && (
             <div className="flex-shrink-0 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 md:p-5">
@@ -431,13 +432,16 @@ function PlayersPage({ user }) {
                         <div className="col-span-1 flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openEdit(player)}
-                            className="flex h-7 w-7 items-center justify-center rounded border border-white/[0.08] bg-white/[0.04] text-white/40 hover:bg-white/[0.08] hover:text-white/70"
+                            disabled={!canManagePlayers}
+                            title={canManagePlayers ? 'Edit player' : 'Only joshiee02 can edit players'}
+                            className="flex h-7 w-7 items-center justify-center rounded border border-white/[0.08] bg-white/[0.04] text-white/40 hover:bg-white/[0.08] hover:text-white/70 disabled:cursor-not-allowed disabled:opacity-30"
                           >
                             <Pencil size={12} />
                           </button>
                           <DeleteButton
                             onConfirm={() => handleDelete(player.id)}
                             loading={deletingId === player.id}
+                            disabled={!canManagePlayers}
                           />
                         </div>
                       </div>
@@ -456,13 +460,16 @@ function PlayersPage({ user }) {
                         <div className="flex flex-shrink-0 items-center gap-1.5 ml-3">
                           <button
                             onClick={() => openEdit(player)}
-                            className="flex h-8 w-8 items-center justify-center rounded border border-white/[0.08] bg-white/[0.04] text-white/40 hover:bg-white/[0.08] hover:text-white/70"
+                            disabled={!canManagePlayers}
+                            title={canManagePlayers ? 'Edit player' : 'Only joshiee02 can edit players'}
+                            className="flex h-8 w-8 items-center justify-center rounded border border-white/[0.08] bg-white/[0.04] text-white/40 hover:bg-white/[0.08] hover:text-white/70 disabled:cursor-not-allowed disabled:opacity-30"
                           >
                             <Pencil size={13} />
                           </button>
                           <DeleteButton
                             onConfirm={() => handleDelete(player.id)}
                             loading={deletingId === player.id}
+                            disabled={!canManagePlayers}
                           />
                         </div>
                       </div>
@@ -494,13 +501,14 @@ function PlayersPage({ user }) {
 }
 
 // ── Delete confirm button ─────────────────────────────────────────────────
-function DeleteButton({ onConfirm, loading }) {
+function DeleteButton({ onConfirm, loading, disabled = false }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <button
-          disabled={loading}
-          className="flex h-7 w-7 items-center justify-center rounded border border-red-500/20 bg-red-500/[0.06] text-red-400/60 hover:bg-red-500/[0.12] hover:text-red-400 md:h-7 md:w-7 h-8 w-8"
+          disabled={loading || disabled}
+          title={disabled ? 'Only joshiee02 can delete players' : 'Delete player'}
+          className="flex h-7 w-7 items-center justify-center rounded border border-red-500/20 bg-red-500/[0.06] text-red-400/60 hover:bg-red-500/[0.12] hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30 md:h-7 md:w-7 h-8 w-8"
         >
           {loading
             ? <Loader2 size={12} className="animate-spin" />
