@@ -40,7 +40,7 @@ playersRouter.put('/:id', userExtractor, async (request, response) => {
       rank,
     },
     {
-      new: true,
+      returnDocument: 'after',
       runValidators: true,
       context: 'query',
     }
