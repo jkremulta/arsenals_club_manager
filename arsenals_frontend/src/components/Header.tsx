@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Loader2, Users } from 'lucide-react'
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter,
   DialogHeader, DialogTitle, DialogTrigger,
@@ -18,6 +19,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
   createOpen, setCreateOpen, startTime, setStartTime, onHamburgerClick }) {
 
   const [sessionLoading, setSessionLoading] = useState(false)
+  const navigate = useNavigate()
 
   const handleCreate = async () => {
     setSessionLoading(true)
@@ -123,6 +125,15 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
               </AlertDialogContent>
             </AlertDialog>
           )}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => navigate('/players')}
+            className="text-xs text-white/40 hover:bg-white/5 hover:text-white/70"
+          >
+            <Users size={13} className="mr-1.5" />
+            Players
+          </Button>
           <Button size="sm" variant="ghost" onClick={onLogout} className="text-xs text-white/40 hover:bg-white/5 hover:text-white/70">
             Logout
           </Button>
