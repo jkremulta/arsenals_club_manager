@@ -50,8 +50,10 @@ const Dashboard = ({ onLogout, user }) => {
     return now.toTimeString().slice(0, 5)
   })
   
-  const fetchAll = async () => {
-    setDashboardLoading(true)
+  const fetchAll = async ({ showLoader = true } = {}) => {
+    if (showLoader) {
+      setDashboardLoading(true)
+    }
 
     try {
       const token = user.token
@@ -233,7 +235,7 @@ const Dashboard = ({ onLogout, user }) => {
       setCurrentGameSkillGroup(initializedSkillGroup)
 
       toast.success('Game started!')
-      fetchAll()
+      fetchAll({ showLoader: false })
   
     } catch (error) {
       toast.error(error?.response?.data?.error)

@@ -21,6 +21,16 @@ import { Users, UserPlus, Loader2, X, ChevronDown } from 'lucide-react'
 function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, removingId, onAdd, onRemove, onTogglePaid }) {
   const [addOpen, setAddOpen] = useState(false)
   const [addLoading, setAddLoading] = useState(false)
+  const sortedAttendance = [...attendance].sort((a, b) => {
+    const gamesA = a.games_played ?? 0
+    const gamesB = b.games_played ?? 0
+
+    if (gamesA !== gamesB) {
+      return gamesA - gamesB
+    }
+
+    return a.name.localeCompare(b.name)
+  })
 
   const handleAdd = async (id) => {
     setAddLoading(true)
@@ -100,7 +110,7 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
           </div>
         ) : (
           <div className="space-y-0.5 p-2">
-            {attendance.map((player) => {
+            {sortedAttendance.map((player) => {
               const isPaid = paidIds.has(player.id)
               const isPlaying = currentGame?.some((p) => p.id === player.id)
               return (
