@@ -18,6 +18,7 @@ import { toast } from 'sonner'
 
 import {
   AlertCircle,
+  Loader2,
   Users,
   ShieldCheck,
   Trophy,
@@ -41,6 +42,7 @@ const Dashboard = ({ onLogout, user }) => {
   const [nextGamePlayers, setNextGamePlayers] = useState([])
   const [initLoading, setInitLoading]       = useState(false)
   const [startLoading, setStartLoading]     = useState(false)
+  const [dashboardLoading, setDashboardLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('attendance')
   const [startTime, setStartTime] = useState(() => {
     const now = new Date()
@@ -49,6 +51,8 @@ const Dashboard = ({ onLogout, user }) => {
   })
   
   const fetchAll = async () => {
+    setDashboardLoading(true)
+
     try {
       const token = user.token
       const [trainingRes, attendanceRes, playersRes] = await Promise.all([
@@ -69,6 +73,8 @@ const Dashboard = ({ onLogout, user }) => {
 
     } catch (error) {
       // 401s are handled by the axios interceptor which calls logout
+    } finally {
+      setDashboardLoading(false)
     }
 }
 
@@ -278,7 +284,15 @@ const Dashboard = ({ onLogout, user }) => {
 
       {/* ── Middle: flex-1 so it fills space between header and bottom nav ── */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {!training ? (
+        {dashboardLoading ? (
+          <div className="flex flex-1 items-center justify-center p-8">
+            <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-white/10 bg-white/[0.02] py-16 text-center">
+              <Loader2 size={30} className="mb-3 animate-spin text-white/25" />
+              <p className="text-sm font-medium text-white/45">Loading dashboard</p>
+              <p className="mt-1 text-xs text-white/20">Checking training session state...</p>
+            </div>
+          </div>
+        ) : !training ? (
           /* No session state */
           <div className="flex flex-1 items-center justify-center p-8">
             <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-dashed border-white/10 py-16 text-center">
