@@ -60,7 +60,6 @@ function PlayersPage({ user }) {
   const derivedSkill = helper.skillFromRank(form.rank)
   const isFormComplete = Boolean(
     form.name.trim() &&
-    form.birthday &&
     form.gender &&
     form.rank &&
     derivedSkill
@@ -125,7 +124,7 @@ function PlayersPage({ user }) {
 
   const handleSubmit = async () => {
     if (!isFormComplete) {
-      return toast.warning('All player fields are required.')
+      return toast.warning('Name, gender, and rank are required.')
     }
 
     const payload = {
