@@ -57,6 +57,13 @@ function PlayersPage({ user }) {
   const [submitting, setSubmitting] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const derivedSkill = helper.skillFromRank(form.rank)
+  const isFormComplete = Boolean(
+    form.name.trim() &&
+    form.birthday &&
+    form.gender &&
+    form.rank &&
+    derivedSkill
+  )
 
   // ── Fetch ────────────────────────────────────────────────────────────
   const fetchPlayers = async () => {
@@ -115,7 +122,9 @@ function PlayersPage({ user }) {
   }
 
   const handleSubmit = async () => {
-    if (!form.name.trim() || !derivedSkill) return toast.warning('Name and a valid rank are required.')
+    if (!isFormComplete) {
+      return toast.warning('All player fields are required.')
+    }
 
     const payload = {
       ...form,
@@ -133,8 +142,8 @@ function PlayersPage({ user }) {
       }
       closeForm()
       fetchPlayers()
-    } catch {
-      toast.error('Player already exists.')
+    } catch (error) {
+        toast.error(error?.response?.data?.error)
     } finally {
       setSubmitting(false)
     }
@@ -293,7 +302,7 @@ function PlayersPage({ user }) {
                 <Button
                   size="sm"
                   onClick={handleSubmit}
-                  disabled={submitting || !form.name.trim() || !derivedSkill}
+                  disabled={submitting || !isFormComplete}
                   className="bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-40"
                 >
                   {submitting && <Loader2 size={13} className="mr-1.5 animate-spin" />}
