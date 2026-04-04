@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Activity } from 'lucide-react'
 import { useState } from 'react'
+import arsenalsLogo from './components/icons/arsenals logo transparent.png'
 
 export function LoginForm({
   className,
@@ -34,12 +34,16 @@ const handleSubmit = async (e: React.BaseSyntheticEvent) => {
     >
       {/* Logo */}
       <div className="mb-8 flex flex-col items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20">
-          <Activity size={18} className="text-emerald-400" />
+        <div className="flex h-12 w-12 items-center justify-center">
+          <img
+            src={arsenalsLogo}
+            alt="Arsenals logo"
+            className="h-full w-full object-contain"
+          />
         </div>
         <div className="text-center">
           <h1 className="text-[18px] font-semibold tracking-tight text-white">
-            Arsenal Training
+            Arsenal Tchoukball Club
           </h1>
           <p className="mt-0.5 text-[13px] text-white/40">
             Sign in to your account
