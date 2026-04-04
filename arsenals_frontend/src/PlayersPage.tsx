@@ -233,8 +233,7 @@ function PlayersPage({ user }) {
                 { key: 'name',     label: 'Name',     span: 'col-span-4' },
                 { key: 'skill',    label: 'Skill',    span: 'col-span-2' },
                 { key: 'birthday', label: 'Birthday', span: 'col-span-3' },
-                { key: 'rank',     label: 'Rank',     span: 'col-span-2' },
-                { key: 'gender',   label: 'Gender',   span: 'col-span-2' },
+                { key: 'gender',   label: 'Gender',   span: 'col-span-4' },
               ].map(({ key, label, span }) => (
                 <div key={key} className={`${span} flex items-center`}>
                   <button
@@ -286,11 +285,10 @@ function PlayersPage({ user }) {
                     <div key={player.id}>
                       {/* Desktop row */}
                       <div className="group hidden items-center rounded-md px-3 py-2.5 transition-colors hover:bg-accent md:grid md:grid-cols-14 md:gap-3">
-                        <span className="col-span-4 truncate text-[13px] font-medium text-foreground/75">{player.name}</span>
-                        <span className="col-span-2 text-[12px] text-muted-foreground">{helper.capitalize(player.skill)}</span>
-                        <span className="col-span-3 text-[12px] text-muted-foreground">{formatBirthday(player.birthday) || '—'}</span>
-                        <span className="col-span-2 pl-3 text-[12px] text-muted-foreground">{player.rank ?? '—'}</span>
-                        <span className="col-span-2 pl-2 text-[12px] text-muted-foreground">{player.gender ?? '—'}</span>
+                       <span className="col-span-4 truncate text-[13px] font-medium text-foreground/75">{player.name}</span>
+                      <span className="col-span-2 text-[12px] text-muted-foreground">{helper.capitalize(player.skill)}</span>
+                      <span className="col-span-3 text-[12px] text-muted-foreground">{formatBirthday(player.birthday) || '—'}</span>
+                      <span className="col-span-4 pl-2 text-[12px] text-muted-foreground">{player.gender ?? '—'}</span>
                         <div className="col-span-1 flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openEdit(player)}
