@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import {
   Dialog,
@@ -34,8 +35,7 @@ import {
   Play,
   Trash2,
   LogOut,
-  Settings,
-  User,
+  Users,
 } from 'lucide-react'
 
 
@@ -61,6 +61,8 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
       setSessionLoading(false)
     }
   }
+
+  const navigate = useNavigate()
   
   return (
     <Sheet open={open} onOpenChange={onClose}>
@@ -76,13 +78,9 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
         </SheetHeader>
  
         <div className="flex flex-col py-2">
-          <button className="flex items-center gap-3 px-4 py-3 text-[13px] text-white/60 hover:bg-white/[0.04]">
-            <User size={15} />
-            Profile
-          </button>
-          <button className="flex items-center gap-3 px-4 py-3 text-[13px] text-white/60 hover:bg-white/[0.04]">
-            <Settings size={15} />
-            Settings
+          <button onClick={() => { navigate('/players'); onClose() }} className="flex items-center gap-3 px-4 py-3 text-[13px] text-white/60 hover:bg-white/[0.04]">
+            <Users size={15} />
+            Players
           </button>
         </div>
  
