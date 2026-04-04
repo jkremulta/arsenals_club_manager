@@ -8,20 +8,20 @@ const app = require('../app')
 const api = supertest(app)
 
 const initialPlayers = [
-  { name: "Juan Dela Cruz", age: 20, gender: "M", skill: "Intermediate", rank: 7 },
-  { name: "Miguel Santos", age: 22, gender: "M", skill: "Advanced", rank: 9 },
-  { name: "Carlo Reyes", age: 19, gender: "M", skill: "Beginner", rank: 3 },
-  { name: "Paolo Navarro", age: 21, gender: "M", skill: "Intermediate", rank: 6 },
-  { name: "Angela Cruz", age: 20, gender: "F", skill: "Advanced", rank: 8 },
-  { name: "Sofia Garcia", age: 23, gender: "F", skill: "Intermediate", rank: 7 },
-  { name: "Daniel Flores", age: 24, gender: "M", skill: "Advanced", rank: 8.5 },
-  { name: "Carla Mendoza", age: 21, gender: "F", skill: "Beginner", rank: 3.5 },
-  { name: "Rafael Castillo", age: 20, gender: "M", skill: "Intermediate", rank: 6.5 },
-  { name: "Lucia Ramos", age: 22, gender: "F", skill: "Advanced", rank: 8 },
-  { name: "Paolo Santos", age: 19, gender: "M", skill: "Beginner", rank: 2.5 },
-  { name: "Mia Lopez", age: 20, gender: "F", skill: "Intermediate", rank: 7 },
-  { name: "Carlos Rivera", age: 23, gender: "M", skill: "Advanced", rank: 9 },
-  { name: "Isabel Cruz", age: 21, gender: "F", skill: "Intermediate", rank: 7.5 }
+  { name: "Juan Dela Cruz", birthday: "2004-01-14", gender: "M", skill: "Intermediate", rank: 7 },
+  { name: "Miguel Santos", birthday: "2002-06-02", gender: "M", skill: "Advanced", rank: 9 },
+  { name: "Carlo Reyes", birthday: "2005-03-10", gender: "M", skill: "Beginner", rank: 3 },
+  { name: "Paolo Navarro", birthday: "2003-09-19", gender: "M", skill: "Intermediate", rank: 6 },
+  { name: "Angela Cruz", birthday: "2004-05-27", gender: "F", skill: "Advanced", rank: 8 },
+  { name: "Sofia Garcia", birthday: "2001-11-08", gender: "F", skill: "Intermediate", rank: 7 },
+  { name: "Daniel Flores", birthday: "2000-07-12", gender: "M", skill: "Advanced", rank: 8.5 },
+  { name: "Carla Mendoza", birthday: "2003-02-21", gender: "F", skill: "Beginner", rank: 3.5 },
+  { name: "Rafael Castillo", birthday: "2004-10-16", gender: "M", skill: "Intermediate", rank: 6.5 },
+  { name: "Lucia Ramos", birthday: "2002-04-05", gender: "F", skill: "Advanced", rank: 8 },
+  { name: "Paolo Santos", birthday: "2005-12-01", gender: "M", skill: "Beginner", rank: 2.5 },
+  { name: "Mia Lopez", birthday: "2004-08-23", gender: "F", skill: "Intermediate", rank: 7 },
+  { name: "Carlos Rivera", birthday: "2001-01-30", gender: "M", skill: "Advanced", rank: 9 },
+  { name: "Isabel Cruz", birthday: "2003-06-14", gender: "F", skill: "Intermediate", rank: 7.5 }
 ]
 
 const initializeDb = async ({ withAttendance = true } = {}) => {
