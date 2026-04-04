@@ -35,7 +35,7 @@ test('get: returns 401 without a token', async () => {
 test('post: creates a player and returns 201 with the saved data', async () => {
   const player = { 
     name: "Dummy Player", 
-    age: 18, 
+    birthday: "2006-04-04", 
     gender: "M", 
     skill: "Intermediate", 
     rank: 6.5 
@@ -56,7 +56,7 @@ test('post: creates a player and returns 201 with the saved data', async () => {
 test('post: returns 401 without a token', async () => {
   const player = { 
     name: "Dummy Player", 
-    age: 18, 
+    birthday: "2006-04-04", 
     gender: "M", 
     skill: "Intermediate", 
     rank: 6.5 
