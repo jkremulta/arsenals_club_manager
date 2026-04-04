@@ -312,7 +312,7 @@ const Dashboard = ({ onLogout, user }) => {
                 <AttendancePanel {...sharedAttendanceProps} />
               )}
               {activeTab === 'game' && <GamePanel currentGame={currentGame} currentGameSkillGroup={currentGameSkillGroup} />}
-              {activeTab === 'controls' && <div className="overflow-y-auto"><ControlsPanel {...sharedControlsProps} /></div>}
+              {activeTab === 'controls' && <ControlsPanel {...sharedControlsProps} />}
             </div>
           </div>
         )}
