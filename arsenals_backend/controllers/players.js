@@ -12,11 +12,11 @@ playersRouter.get('/', userExtractor, async (request, response) => {
 })
 
 playersRouter.post('/', userExtractor, async (request, response) => {
-  const { name, age, gender, skill, rank } = request.body
+  const { name, birthday, gender, skill, rank } = request.body
 
   const newPlayer = new Player({
     name,
-    age,
+    birthday,
     gender,
     skill, 
     rank
@@ -24,6 +24,33 @@ playersRouter.post('/', userExtractor, async (request, response) => {
 
   const savedPlayer = await newPlayer.save()
   response.status(201).json(savedPlayer)
+})
+
+playersRouter.put('/:id', userExtractor, async (request, response) => {
+  const { id } = request.params
+  const { name, birthday, gender, skill, rank } = request.body
+
+  const updatedPlayer = await Player.findByIdAndUpdate(
+    id,
+    {
+      name,
+      birthday,
+      gender,
+      skill,
+      rank,
+    },
+    {
+      new: true,
+      runValidators: true,
+      context: 'query',
+    }
+  )
+
+  if (!updatedPlayer) {
+    return response.status(404).json({ error: 'player not found' })
+  }
+
+  response.json(updatedPlayer)
 })
 
 playersRouter.delete('/:id', userExtractor, async (request, response) => {
