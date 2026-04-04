@@ -105,7 +105,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
                 <div className="py-2">
                   <label className="mb-1.5 block text-xs text-white/50">Start Time</label>
                   <input
-                    type="datetime-local"
+                    type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                     className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/50"

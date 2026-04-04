@@ -47,7 +47,7 @@ const Dashboard = ({ onLogout, user }) => {
   const [startTime, setStartTime] = useState(() => {
     const now = new Date()
     now.setSeconds(0, 0)
-    return now.toISOString().slice(0, 16)
+    return now.toTimeString().slice(0, 5)
   })
   
   const fetchAll = async () => {
@@ -84,9 +84,12 @@ const Dashboard = ({ onLogout, user }) => {
 
   const handleCreateTraining = async () => {
     const token = user.token
+    const [hours = '0', minutes = '0'] = startTime.split(':')
+    const startDate = new Date()
+    startDate.setHours(Number(hours), Number(minutes), 0, 0)
 
     try {
-      const response = await trainingApi.post(new Date(startTime).toISOString(), token)
+      const response = await trainingApi.post(startDate.toISOString(), token)
       toast.success('Training session created.', {
         duration: 2000
       })
