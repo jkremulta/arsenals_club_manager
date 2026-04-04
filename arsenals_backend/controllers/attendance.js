@@ -83,7 +83,7 @@ attendanceRouter.put('/:id', userExtractor, async (request, response) => {
   const updatedPlayer = await Player.findByIdAndUpdate(
     id,
     { ...body },
-    { new: true }
+    { returnDocument: 'after' }
   )
 
   if (!updatedPlayer) {
