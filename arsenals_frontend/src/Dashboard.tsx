@@ -120,6 +120,7 @@ const Dashboard = ({ onLogout, user }) => {
       setSkillGroup('')
       setCurrentGame([])
       setCurrentGameSkillGroup('')
+      setNextGamePlayers([])
       setPaidIds(new Set())
 
     } catch (error) {
@@ -131,6 +132,7 @@ const Dashboard = ({ onLogout, user }) => {
         setSkillGroup('')
         setCurrentGame([])
         setCurrentGameSkillGroup('')
+        setNextGamePlayers([])
         setPaidIds(new Set())
     }
 }
@@ -246,11 +248,25 @@ const Dashboard = ({ onLogout, user }) => {
     }
   }
 
+  const handleReplace = async (outPlayerId, inPlayerId) => {
+    const token = user.token
+    try {
+      const updatedPlayers = await trainingApi.replacePlayer(outPlayerId, inPlayerId, token)
+      setNextGamePlayers(updatedPlayers)
+      toast.success('Player replaced.')
+    } catch (error) {
+      toast.error(error?.response?.data?.error)
+    }
+  }
+
   const sharedControlsProps = {
   skillGroup, setSkillGroup, initializedSkillGroup,
-  nextGamePlayers, initLoading, startLoading,
+  nextGamePlayers,
+  attendance,
+  initLoading, startLoading,
   onInitialize: handleInitializeGame,
   onStartGame: handleStartGame,
+  onReplace: handleReplace,
   gamesBySkill: training?.games_by_skill,
 }
 

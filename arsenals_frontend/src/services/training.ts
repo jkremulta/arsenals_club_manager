@@ -41,11 +41,22 @@ const startGame = async (currentGameSkillGroup, token) => {
   return data
 }
 
+const replacePlayer = async (outPlayerId, inPlayerId, token) => {
+  const { data } = await axios.patch(
+    `${baseUrl}/replacePlayer`,
+    { outPlayerId, inPlayerId },
+    authHeaders(token)
+  )
+
+  return data
+}
+
 
 export default {
   get: getTraining,
   post: createTraining,
   delete: deleteTraining,
   initializeGame,
-  startGame
+  startGame,
+  replacePlayer,
 }

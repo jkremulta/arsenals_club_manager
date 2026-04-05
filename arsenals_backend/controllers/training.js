@@ -90,5 +90,29 @@ trainingRouter.post('/startGame', userExtractor, async (request, response) => {
   return response.json(players)
 })
 
+trainingRouter.patch('/replacePlayer', userExtractor, async (request, response) => {
+  const { outPlayerId, inPlayerId } = request.body
+  if (!outPlayerId || !inPlayerId) {
+    return response.status(400).json({ error: 'outPlayerId and inPlayerId are required' })
+  }
+  const activeTraining = await Training.findOne({ isActive: true })
+  if (!activeTraining) return response.status(404).json({ error: 'No active training' })
+
+  const index = activeTraining.initialized_players.findIndex(
+    (playerId) => playerId.toString() === outPlayerId
+  )
+  if (index === -1) return response.status(404).json({ error: 'Player not in initialized list' })
+
+  activeTraining.initialized_players[index] = inPlayerId
+  await activeTraining.save()
+
+  const updatedPlayers = await Player.find({ _id: { $in: activeTraining.initialized_players } })
+  const playersById = new Map(updatedPlayers.map((player) => [player.id, player]))
+  const orderedPlayers = activeTraining.initialized_players
+    .map((playerId) => playersById.get(playerId.toString()))
+    .filter(Boolean)
+
+  return response.json(orderedPlayers)
+})
 
 module.exports = trainingRouter
