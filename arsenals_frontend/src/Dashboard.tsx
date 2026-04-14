@@ -3,13 +3,13 @@ import trainingApi from './services/training'
 import attendanceApi from './services/attendance'
 import playersApi from './services/players'
 import HamburgerDrawer from './components/HamburgerDrawer'
-import StatCard from './components/StatCard'
+import StatCard from './components/dashboard/StatCard'
 
 import Header from './components/Header'
-import AttendancePanel from './components/AttendancePanel'
-import GamePanel from './components/GamePanel'
-import BottomNav from './components/BottomNav'
-import ControlsPanel from './components/ControlsPanel'
+import AttendancePanel from './components/dashboard/AttendancePanel'
+import GamePanel from './components/dashboard/GamePanel'
+import BottomNav from './components/dashboard/BottomNav'
+import ControlsPanel from './components/dashboard/ControlsPanel'
 
 import helper from './utils/helper'
 

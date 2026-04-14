@@ -1,4 +1,4 @@
-import helper from '@/utils/helper'
+import helper from '../../utils/helper'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Play } from 'lucide-react'
 
