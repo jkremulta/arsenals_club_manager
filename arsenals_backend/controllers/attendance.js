@@ -8,7 +8,7 @@ attendanceRouter.get('/', userExtractor, async (request, response) => {
 
   const activeTraining = await Training
     .findOne({ isActive: true })
-    .populate('attendance', { name: 1, games_played: 1, paid: 1, skill: 1 })
+    .populate('attendance', { name: 1, games_played: 1, paid: 1, skill: 1, late: 1 })
 
   // to stop error on log in
   if (!activeTraining) {
@@ -36,9 +36,14 @@ attendanceRouter.post('/', async (request, response) => {
   if (!activeTraining.attendance.includes(id)) {
     activeTraining.attendance.push(id)
     await activeTraining.save()
+
+    // tag as late if more than an 1 hour since training started
+    const msElapsed = Date.now() - new Date(activeTraining.startTime).getTime()
+    const isLate = msElapsed > 45 * 60 * 1000
+    await Player.findByIdAndUpdate(id, { late: isLate }) 
+
   }
 
-  await activeTraining.save()
   const populated = await Training.findOne({ isActive: true })
     .populate('attendance')
 
