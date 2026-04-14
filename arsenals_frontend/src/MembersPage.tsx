@@ -59,6 +59,7 @@ function PlayersPage({ user }) {
   const [teamPopoverOpen, setTeamPopoverOpen] = useState(null)
   const [renamingTeamId, setRenamingTeamId] = useState(null)
   const [renameValue, setRenameValue]       = useState('')
+  const [renamingLoading, setRenamingLoading] = useState(null)
 
   const derivedSkill = helper.skillFromRank(form.rank)
   const isFormComplete = Boolean(form.name.trim() && form.gender && form.rank && derivedSkill)
@@ -182,7 +183,9 @@ function PlayersPage({ user }) {
   }
 
   const handleRenameTeam = async (id) => {
-    if (!renameValue.trim()) return
+  if (!renameValue.trim()) return
+
+    setRenamingLoading(id)
     try {
       const updated = await teamsApi.rename(id, renameValue.trim(), user.token)
       setTeams(prev => prev.map(t => t.id === id ? updated : t))
@@ -191,6 +194,8 @@ function PlayersPage({ user }) {
       toast.success('Team renamed.', { duration: 2000 })
     } catch (error) {
       toast.error(error?.response?.data?.error, { duration: 2000 })
+    } finally {
+      setRenamingLoading(null)
     }
   }
 
@@ -221,7 +226,7 @@ function PlayersPage({ user }) {
 
       {/* ── Header ──────────────────────────────────────────────────── */}
       <header className="flex-shrink-0 border-b border-border px-4 py-3 md:px-8 md:py-4">
-        <div className="mx-auto flex max-w-4xl items-center justify-between">
+        <div className="relative mx-auto flex max-w-4xl items-center justify-between">
           <button
             onClick={() => navigate('/')}
             className="flex items-center gap-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
@@ -229,18 +234,9 @@ function PlayersPage({ user }) {
             <ArrowLeft size={15} />
             Dashboard
           </button>
-          <div className="flex items-center gap-2">
-            <h1 className="text-[14px] font-semibold tracking-tight">Players</h1>
+          <div className="absolute left-1/2 -translate-x-1/2">
+            <h1 className="text-[14px] font-semibold tracking-tight">Members</h1>
           </div>
-          {activeTab === 'players' && (
-            <Button size="sm" onClick={openNew} className="bg-emerald-600 text-white hover:bg-emerald-500">
-              <Plus size={13} className="mr-1.5" />
-              New Player
-            </Button>
-          )}
-          {activeTab === 'teams' && (
-            <div className="w-24" /> // spacer to keep header balanced
-          )}
         </div>
       </header>
 
@@ -342,7 +338,7 @@ function PlayersPage({ user }) {
               )}
 
               {/* Search */}
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 flex gap-2">
                 <Input
                   type="text"
                   value={search}
@@ -350,6 +346,10 @@ function PlayersPage({ user }) {
                   placeholder="Search players..."
                   className="w-full border-input bg-background placeholder:text-muted-foreground/50 focus-visible:ring-0"
                 />
+                <Button size='sm' onClick={openNew} className="bg-emerald-600 text-white hover:bg-emerald-500">
+                  <Plus size={13} className="mr-1.5" />
+                  New Player
+                </Button>
               </div>
 
               {/* Player list */}
@@ -476,7 +476,7 @@ function PlayersPage({ user }) {
                   placeholder="New team name..."
                   className="flex-1 border-input bg-background placeholder:text-muted-foreground/50 focus-visible:ring-0"
                 />
-                <Button
+                <Button size='sm'
                   onClick={handleCreateTeam}
                   disabled={creatingTeam || !newTeamName.trim()}
                   className="bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-40"
@@ -520,7 +520,17 @@ function PlayersPage({ user }) {
                                   autoFocus
                                   className="h-7 border-input bg-background text-sm focus-visible:ring-0"
                                 />
-                                <Button size="sm" onClick={() => handleRenameTeam(team.id)} className="h-7 bg-emerald-600 text-white hover:bg-emerald-500">Save</Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleRenameTeam(team.id)}
+                                  disabled={renamingLoading === team.id}
+                                  className="h-7 bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-40"
+                                >
+                                  {renamingLoading === team.id && (
+                                    <Loader2 size={12} className="mr-1 animate-spin" />
+                                  )}
+                                  Save
+                                </Button>
                                 <button onClick={() => { setRenamingTeamId(null); setRenameValue('') }} className="text-muted-foreground hover:text-foreground"><X size={14} /></button>
                               </div>
                             ) : (
