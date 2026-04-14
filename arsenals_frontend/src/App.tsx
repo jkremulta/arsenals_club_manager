@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
-import PlayersPage from './PlayersPage'
+import MembersPage from './MembersPage'
 import Dashboard from './Dashboard'
 import useAuth from './hooks/useAuth'
 import { LoginForm } from '@/LoginForm'
@@ -18,7 +18,7 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Dashboard onLogout={logout} user={user} />} />
-      <Route path="/members" element={<PlayersPage user={user} />} />
+      <Route path="/members" element={<MembersPage user={user} />} />
     </Routes>
   )
 }
