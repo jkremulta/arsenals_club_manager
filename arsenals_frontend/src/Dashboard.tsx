@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import trainingApi from './services/training'
 import attendanceApi from './services/attendance'
 import playersApi from './services/players'
+import teamsApi from './services/team'
 import HamburgerDrawer from './components/HamburgerDrawer'
 import StatCard from './components/dashboard/StatCard'
 
@@ -34,6 +35,7 @@ const Dashboard = ({ onLogout, user }) => {
   const [paidIds, setPaidIds] = useState(new Set())
   const [currentGame, setCurrentGame] = useState([])
   const [removingId, setRemovingId] = useState(null)
+  const [teams, setTeams] = useState(null)
 
   const [skillGroup, setSkillGroup]         = useState('')
   const [initializedSkillGroup, setInitializedSkillGroup] = useState('')
@@ -57,10 +59,12 @@ const Dashboard = ({ onLogout, user }) => {
 
     try {
       const token = user.token
-      const [trainingRes, attendanceRes, playersRes] = await Promise.all([
+      const [trainingRes, attendanceRes, playersRes, teamsRes] = await Promise.all([
         trainingApi.get(token),
         attendanceApi.get(token),
         playersApi.get(token),
+        teamsApi.getAll(token)
+
       ])
 
       setTraining(trainingRes)
@@ -71,6 +75,8 @@ const Dashboard = ({ onLogout, user }) => {
       setPlayers(playersRes)
       setInitializedSkillGroup(trainingRes?.initializedSkillGroup || '')
       setCurrentGameSkillGroup(trainingRes?.currentGameSkillGroup || '')
+      setTeams(teamsRes)
+      console.log('this one', teamsRes)
 
     } catch (error) {
       // 401s are handled by the axios interceptor which calls logout
@@ -281,6 +287,7 @@ const Dashboard = ({ onLogout, user }) => {
   onStartGame: handleStartGame,
   onReplace: handleReplace,
   gamesBySkill: training?.games_by_skill,
+  teams
 }
 
   return (

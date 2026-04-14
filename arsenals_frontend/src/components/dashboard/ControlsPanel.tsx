@@ -28,7 +28,8 @@ function ControlsPanel({
   const canStart = nextGamePlayers.length > 0 && !startLoading
   const [swapOpenId, setSwapOpenId] = useState(null)
   const [gameMode, setGameMode] = useState('skill') // 'skill' | 'team'
-  const [selectedTeamId, setSelectedTeamId] = useState('')
+  const [teamA, setTeamA] = useState('')
+  const [teamB, setTeamB] = useState('')
 
   const queuedIds = new Set(nextGamePlayers.map(p => p.id ?? p._id))
   const availableToSwap = attendance.filter(p => !queuedIds.has(p.id))
@@ -37,13 +38,13 @@ function ControlsPanel({
     if (gameMode === 'skill') {
       onInitialize({ skillGroup })
     } else {
-      onInitialize({ teamId: selectedTeamId })
+      onInitialize({ teamA, teamB })
     }
   }
 
   const canInitialize = gameMode === 'skill'
     ? (!initLoading && !!skillGroup)
-    : (!initLoading && !!selectedTeamId)
+    : (!initLoading && !!teamA && !!teamB && teamA !== teamB)
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
@@ -101,30 +102,42 @@ function ControlsPanel({
               </SelectContent>
             </Select>
           ) : (
-            <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-              <div className='flex gap-3'>
-                <SelectTrigger className="w-full border-white/10 bg-white/5 text-sm text-white/70 focus:ring-0 focus:ring-offset-0">
-                  <SelectValue placeholder="Select Team" />
-                </SelectTrigger>
-                <SelectTrigger className="w-full border-white/10 bg-white/5 text-sm text-white/70 focus:ring-0 focus:ring-offset-0">
-                  <SelectValue placeholder="Select Team" />
-                </SelectTrigger>
-              </div>
-              <SelectContent className="border-white/10 bg-[#141414] text-white">
-                {teams?.length === 0 && (
-                  <div className="px-3 py-2 text-xs text-white/30">No teams found</div>
-                )}
-                {teams?.map(t => (
-                  <SelectItem key={t.id} value={t.id} className="hover:bg-white/10 focus:bg-white/10">
-                    <div className="flex items-center gap-2">
-                      <Shield size={11} className="text-white/40" />
-                      {t.name}
-                      <span className="text-[10px] text-white/30">{t.players?.length ?? 0}p</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+  
+          {/* Team A */}
+          <Select value={teamA} onValueChange={setTeamA}>
+            <SelectTrigger className="w-full border-white/10 bg-white/5 text-sm text-white/70 focus:ring-0">
+              <SelectValue placeholder="Team A" />
+            </SelectTrigger>
+            <SelectContent className="border-white/10 bg-[#141414] text-white">
+              {teams?.map(t => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Divider */}
+          <span className="flex items-center justify-center px-2 text-white/40">
+            &
+          </span>
+
+          {/* Team B */}
+          <Select value={teamB} onValueChange={setTeamB}>
+            <SelectTrigger className="w-full border-white/10 bg-white/5 text-sm text-white/70 focus:ring-0">
+              <SelectValue placeholder="Team B" />
+            </SelectTrigger>
+            <SelectContent className="border-white/10 bg-[#141414] text-white">
+              {teams?.map(t => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+        </div>
           )}
 
           <Button

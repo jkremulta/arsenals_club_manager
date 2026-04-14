@@ -622,7 +622,7 @@ function PlayersPage({ user }) {
                                     <button
                                       onClick={() => handleRemoveFromTeam(team.id, player.id)}
                                       disabled={removingFromTeam === `${team.id}-${player.id}`}
-                                      className="ml-2 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-muted-foreground/30 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400 md:opacity-0 opacity-100"
+                                      className="ml-2 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-muted-foreground/30 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400 opacity-100"
                                     >
                                       {removingFromTeam === `${team.id}-${player.id}`
                                         ? <Loader2 size={10} className="animate-spin" />
