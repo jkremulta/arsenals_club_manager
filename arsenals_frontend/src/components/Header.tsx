@@ -119,11 +119,11 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => navigate('/players')}
+            onClick={() => navigate('/members')}
             className="text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             <Users size={13} className="mr-1.5" />
-            Players
+            Members
           </Button>
           <Button
             size="sm"

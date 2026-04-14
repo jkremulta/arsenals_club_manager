@@ -11,10 +11,20 @@ const trainingSchema = new mongoose.Schema({
     default: 0
   },
   games_by_skill: {
-    beginner: { type: Number, default: 0 },
+    beginner:     { type: Number, default: 0 },
     intermediate: { type: Number, default: 0 },
-    advanced: { type: Number, default: 0 }
+    advanced:     { type: Number, default: 0 }
   },
+  // ── game type tracking ──────────────────────────────────────────────
+  game_type: {
+    type: String,
+    enum: ['skill', 'team'],
+    default: 'skill'
+  },
+  // for team vs team games
+  team_a: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
+  team_b: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
+  // ───────────────────────────────────────────────────────────────────
   attendance: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Player'
@@ -25,6 +35,8 @@ const trainingSchema = new mongoose.Schema({
   }],
   initializedSkillGroup: String,
   currentGameSkillGroup: String,
+  initializedTeam: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
+  currentGameTeam:  { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
   initialized_players: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Player'
@@ -40,5 +52,4 @@ trainingSchema.set('toJSON', {
 })
 
 const Training = mongoose.model('Training', trainingSchema)
-
 module.exports = Training

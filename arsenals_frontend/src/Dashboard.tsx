@@ -2,18 +2,18 @@ import { useState, useEffect } from 'react'
 import trainingApi from './services/training'
 import attendanceApi from './services/attendance'
 import playersApi from './services/players'
+import teamsApi from './services/team'
 import HamburgerDrawer from './components/HamburgerDrawer'
-import StatCard from './components/StatCard'
+import StatCard from './components/dashboard/StatCard'
 
 import Header from './components/Header'
-import AttendancePanel from './components/AttendancePanel'
-import GamePanel from './components/GamePanel'
-import BottomNav from './components/BottomNav'
-import ControlsPanel from './components/ControlsPanel'
+import AttendancePanel from './components/dashboard/AttendancePanel'
+import GamePanel from './components/dashboard/GamePanel'
+import BottomNav from './components/dashboard/BottomNav'
+import ControlsPanel from './components/dashboard/ControlsPanel'
 
 import helper from './utils/helper'
 
-import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
 
 import {
@@ -34,6 +34,7 @@ const Dashboard = ({ onLogout, user }) => {
   const [paidIds, setPaidIds] = useState(new Set())
   const [currentGame, setCurrentGame] = useState([])
   const [removingId, setRemovingId] = useState(null)
+  const [teams, setTeams] = useState(null)
 
   const [skillGroup, setSkillGroup]         = useState('')
   const [initializedSkillGroup, setInitializedSkillGroup] = useState('')
@@ -57,10 +58,12 @@ const Dashboard = ({ onLogout, user }) => {
 
     try {
       const token = user.token
-      const [trainingRes, attendanceRes, playersRes] = await Promise.all([
+      const [trainingRes, attendanceRes, playersRes, teamsRes] = await Promise.all([
         trainingApi.get(token),
         attendanceApi.get(token),
         playersApi.get(token),
+        teamsApi.getAll(token)
+
       ])
 
       setTraining(trainingRes)
@@ -71,6 +74,7 @@ const Dashboard = ({ onLogout, user }) => {
       setPlayers(playersRes)
       setInitializedSkillGroup(trainingRes?.initializedSkillGroup || '')
       setCurrentGameSkillGroup(trainingRes?.currentGameSkillGroup || '')
+      setTeams(teamsRes)
 
     } catch (error) {
       // 401s are handled by the axios interceptor which calls logout
@@ -199,11 +203,17 @@ const Dashboard = ({ onLogout, user }) => {
   }
 
   // ── Game ────────────────────────────────────────────────────────────────
-  const handleInitializeGame = async () => {
+  const handleInitializeGame = async (payload) => {
     const token = user.token
-
-    if (!skillGroup) {
+ 
+    if (payload?.skillGroup && !payload.skillGroup) {
       return toast.warning('Select a skill group first.', {
+        duration: 2000
+      })
+    }
+
+    if (payload?.teamA && payload?.teamB && payload.teamA === payload.teamB) {
+      return toast.warning('Select two different teams.', {
         duration: 2000
       })
     }
@@ -211,10 +221,10 @@ const Dashboard = ({ onLogout, user }) => {
     setInitLoading(true)
 
     try {
-      const response = await trainingApi.initializeGame(skillGroup, token)
+      const response = await trainingApi.initializeGame(payload, token)
 
       setNextGamePlayers(response)
-      setInitializedSkillGroup(skillGroup)
+      setInitializedSkillGroup(payload?.skillGroup || '')
       toast.success(`Game initialized — ${response.length} players queued.`, {
         duration: 2000
       })
@@ -234,7 +244,7 @@ const Dashboard = ({ onLogout, user }) => {
     setStartLoading(true)
 
     try {
-      await trainingApi.startGame(initializedSkillGroup, token)
+      await trainingApi.startGame(token)
 
       setCurrentGame(nextGamePlayers)
       setNextGamePlayers([])
@@ -272,21 +282,24 @@ const Dashboard = ({ onLogout, user }) => {
     }
   }
 
-  const sharedControlsProps = {
-  skillGroup, setSkillGroup, initializedSkillGroup,
+const sharedControlsProps = {
+  skillGroup,
+  setSkillGroup,
+  initializedSkillGroup,
   nextGamePlayers,
+  currentGame,
   attendance,
-  initLoading, startLoading,
+  initLoading,
+  startLoading,
   onInitialize: handleInitializeGame,
   onStartGame: handleStartGame,
   onReplace: handleReplace,
   gamesBySkill: training?.games_by_skill,
+  teams,
 }
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground">
-      <Toaster theme="dark" position="top-right" richColors />
-
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <Header
         user={user}
@@ -350,7 +363,13 @@ const Dashboard = ({ onLogout, user }) => {
             {/* ── Desktop: 3-col layout ────────────────────────────────── */}
             <div className="mx-auto hidden w-full max-w-7xl flex-1 gap-4 overflow-hidden px-8 py-4 md:grid md:grid-cols-3">
               <AttendancePanel {...sharedAttendanceProps} />
-              <GamePanel currentGame={currentGame} currentGameSkillGroup={currentGameSkillGroup} />
+              <GamePanel
+                currentGame={currentGame}
+                currentGameSkillGroup={currentGameSkillGroup}
+                currentGameTeam={training?.currentGameTeam}
+                teamA={training?.team_a}
+                teamB={training?.team_b}
+              />
               <ControlsPanel {...sharedControlsProps} />
             </div>
 
@@ -359,7 +378,15 @@ const Dashboard = ({ onLogout, user }) => {
               {activeTab === 'attendance' && (
                 <AttendancePanel {...sharedAttendanceProps} />
               )}
-              {activeTab === 'game' && <GamePanel currentGame={currentGame} currentGameSkillGroup={currentGameSkillGroup} />}
+              {activeTab === 'game' && (
+                <GamePanel
+                  currentGame={currentGame}
+                  currentGameSkillGroup={currentGameSkillGroup}
+                  currentGameTeam={training?.currentGameTeam}
+                  teamA={training?.team_a}
+                  teamB={training?.team_b}
+                />
+              )}
               {activeTab === 'controls' && <ControlsPanel {...sharedControlsProps} />}
             </div>
           </div>
