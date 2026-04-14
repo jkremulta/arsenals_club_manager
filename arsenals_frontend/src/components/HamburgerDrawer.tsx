@@ -47,11 +47,11 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
 
         <div className="flex flex-col py-2">
           <button
-            onClick={() => { navigate('/players'); onClose() }}
+            onClick={() => { navigate('/members'); onClose() }}
             className="flex items-center gap-3 px-4 py-3 text-[13px] text-muted-foreground hover:bg-accent"
           >
             <Users size={15} />
-            Players
+            Members
           </button>
         </div>
 

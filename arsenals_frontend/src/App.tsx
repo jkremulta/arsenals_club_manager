@@ -18,7 +18,7 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Dashboard onLogout={logout} user={user} />} />
-      <Route path="/players" element={<PlayersPage user={user} />} />
+      <Route path="/members" element={<PlayersPage user={user} />} />
     </Routes>
   )
 }
