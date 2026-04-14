@@ -511,7 +511,9 @@ function PlayersPage({ user }) {
                   <div className="flex flex-col gap-3">
                     {teams.map(team => {
                       const allTeamPlayerIds = new Set(teams.flatMap(currentTeam => currentTeam.players.map(player => player.id)))
-                      const availableForTeam = attendance.filter(player => !allTeamPlayerIds.has(player.id))
+                      const availableForTeam = attendance
+                        .filter(player => !allTeamPlayerIds.has(player.id))
+                        .sort((a, b) => a.name.localeCompare(b.name))
                       const teamIsFull = team.players.length >= 7
 
                       return (
