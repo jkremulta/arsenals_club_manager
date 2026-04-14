@@ -34,8 +34,8 @@ function ControlsPanel({
 
   const queuedIds = new Set(nextGamePlayers.map(p => p.id ?? p._id))
   const availableToSwap = attendance.filter(p => !queuedIds.has(p.id))
-  const availableTeamsForA = teams?.filter(t => t.id !== teamB)
-  const availableTeamsForB = teams?.filter(t => t.id !== teamA)
+  const availableTeamsForA = teams?.filter((team) => team.id !== teamB)
+  const availableTeamsForB = teams?.filter((team) => team.id !== teamA)
 
   const handleInitialize = () => {
     if (gameMode === 'skill') {
@@ -113,9 +113,9 @@ function ControlsPanel({
               <SelectValue placeholder="Team A" />
             </SelectTrigger>
             <SelectContent className="border-white/10 bg-[#141414] text-white">
-              {availableTeamsForA?.map(t => (
-                <SelectItem key={t.id} value={t.id}>
-                  {t.name}
+              {availableTeamsForA?.map((team) => (
+                <SelectItem key={team.id} value={team.id}>
+                  {team.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -132,9 +132,9 @@ function ControlsPanel({
               <SelectValue placeholder="Team B" />
             </SelectTrigger>
             <SelectContent className="border-white/10 bg-[#141414] text-white">
-              {availableTeamsForB?.map(t => (
-                <SelectItem key={t.id} value={t.id}>
-                  {t.name}
+              {availableTeamsForB?.map((team) => (
+                <SelectItem key={team.id} value={team.id}>
+                  {team.name}
                 </SelectItem>
               ))}
             </SelectContent>

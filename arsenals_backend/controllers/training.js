@@ -1,6 +1,7 @@
 const trainingRouter = require('express').Router()
 const Training = require('../models/training')
 const Player = require('../models/players')
+const Team = require('../models/team')
 const trainingService = require('../services/training.service')
 const { userExtractor } = require('../utils/middleware')
 
@@ -48,25 +49,21 @@ trainingRouter.delete('/', userExtractor, async (request, response) => {
       }
     }
   )
+  await Team.deleteMany({})
   await Training.findByIdAndDelete(activeTraining.id)
   return response.status(200).json({ isActive: false })
 })
 
 // initialize game — skill or team
 trainingRouter.post('/initializeGame', userExtractor, async (request, response) => {
-  const { skillGroup, teamId, teamA, teamB } = request.body || {}
+  const { skillGroup, teamA, teamB } = request.body || {}
 
-  if (!skillGroup && !teamId && !(teamA && teamB)) {
+  if (!skillGroup && !(teamA && teamB)) {
     return response.status(400).json({ error: 'skillGroup or team selection is required' })
   }
 
   if (teamA && teamB) {
     const players = await trainingService.getPlayersByTeams(teamA, teamB)
-    return response.json(players)
-  }
-
-  if (teamId) {
-    const players = await trainingService.getPlayersByTeam(teamId)
     return response.json(players)
   }
 

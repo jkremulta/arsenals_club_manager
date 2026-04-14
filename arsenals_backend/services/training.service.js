@@ -73,73 +73,24 @@ const getPlayersBySkillGroup = async (skillGroup) => {
 }
 
 // ── Team-based game init ──────────────────────────────────────────────────────
-const getPlayersByTeam = async (teamId) => {
-  const activeTraining = await Training
-    .findOne({ isActive: true })
-    .populate('attendance')
-
-  if (!activeTraining) throw new Error('No active training')
-
-  const team = await Team.findById(teamId).populate('players')
-  if (!team) throw new Error('Team not found')
-
-  // only include team members who are in attendance
-  const attendanceIds = new Set(activeTraining.attendance.map(p => p._id.toString()))
-  const teamInAttendance = team.players.filter(p => attendanceIds.has(p._id.toString()))
-
-  if (teamInAttendance.length === 0) {
-    throw new Error(`No ${team.name} players are in attendance`)
-  }
-
-  // fill to 14 if needed using skill-based logic
-  let finalGroup = teamInAttendance
-  if (finalGroup.length < 14) {
-    const groupIds = new Set(finalGroup.map(p => p._id.toString()))
-    const amountToFill = 14 - finalGroup.length
-    const others = activeTraining.attendance
-      .filter(p => !groupIds.has(p._id.toString()))
-      .sort((a, b) => a.games_played - b.games_played)
-    finalGroup = [...finalGroup, ...others.slice(0, amountToFill)]
-  }
-
-  finalGroup = finalGroup.slice(0, 14)
-  const playerIds = finalGroup.map(p => p._id)
-
-  await Training.findOneAndUpdate(
-    { isActive: true },
-    {
-      initialized_players: playerIds,
-      initializedTeam: teamId,
-      initializedSkillGroup: '',
-      game_type: 'team',
-      team_a: null,
-      team_b: null,
-    }
-  )
-
-  const freshPlayers = await Player.find({ _id: { $in: playerIds } })
-  return freshPlayers
-}
-
 const getPlayersByTeams = async (teamAId, teamBId) => {
   if (teamAId === teamBId) {
     throw new Error('Please select two different teams')
   }
-
   const activeTraining = await Training
     .findOne({ isActive: true })
     .populate('attendance')
 
   if (!activeTraining) throw new Error('No active training')
+  const attendanceIds = new Set(activeTraining.attendance.map(player => player._id.toString()))
 
   const [teamA, teamB] = await Promise.all([
     Team.findById(teamAId).populate('players'),
-    Team.findById(teamBId).populate('players')
+    Team.findById(teamBId).populate('players'),
   ])
 
   if (!teamA || !teamB) throw new Error('Team not found')
 
-  const attendanceIds = new Set(activeTraining.attendance.map(player => player._id.toString()))
   const teamAPlayers = teamA.players.filter(player => attendanceIds.has(player._id.toString()))
   const teamBPlayers = teamB.players.filter(player => attendanceIds.has(player._id.toString()))
 
@@ -151,7 +102,14 @@ const getPlayersByTeams = async (teamAId, teamBId) => {
     throw new Error(`No ${teamB.name} players are in attendance`)
   }
 
-  const playerIds = [...teamAPlayers, ...teamBPlayers].map(player => player._id)
+  const teamAIds = new Set(teamAPlayers.map(player => player._id.toString()))
+  const uniqueTeamBPlayers = teamBPlayers.filter(player => !teamAIds.has(player._id.toString()))
+
+  if (uniqueTeamBPlayers.length === 0) {
+    throw new Error('No eligible Team B players after removing duplicates')
+  }
+
+  const playerIds = [...teamAPlayers, ...uniqueTeamBPlayers].map(player => player._id)
 
   await Training.findOneAndUpdate(
     { isActive: true },
@@ -217,7 +175,6 @@ const startGame = async () => {
 
 module.exports = {
   getPlayersBySkillGroup,
-  getPlayersByTeam,
   getPlayersByTeams,
   startGame,
 }
