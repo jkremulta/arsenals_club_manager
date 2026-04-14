@@ -102,9 +102,14 @@ function ControlsPanel({
             </Select>
           ) : (
             <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-              <SelectTrigger className="w-full border-white/10 bg-white/5 text-sm text-white/70 focus:ring-0 focus:ring-offset-0">
-                <SelectValue placeholder="Select team" />
-              </SelectTrigger>
+              <div className='flex gap-3'>
+                <SelectTrigger className="w-full border-white/10 bg-white/5 text-sm text-white/70 focus:ring-0 focus:ring-offset-0">
+                  <SelectValue placeholder="Select Team" />
+                </SelectTrigger>
+                <SelectTrigger className="w-full border-white/10 bg-white/5 text-sm text-white/70 focus:ring-0 focus:ring-offset-0">
+                  <SelectValue placeholder="Select Team" />
+                </SelectTrigger>
+              </div>
               <SelectContent className="border-white/10 bg-[#141414] text-white">
                 {teams?.length === 0 && (
                   <div className="px-3 py-2 text-xs text-white/30">No teams found</div>
