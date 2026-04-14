@@ -8,6 +8,15 @@ const sortAndSlice = (players, desc = true, amount = 0) => {
     .slice(0, amount)
 }
 
+const sortByGamesPlayed = (players) => {
+  return [...players].sort((a, b) => {
+    const gamesA = a.games_played ?? 0
+    const gamesB = b.games_played ?? 0
+    if (gamesA !== gamesB) return gamesA - gamesB
+    return (a.name || '').localeCompare(b.name || '')
+  })
+}
+
 const sortPlayersBasedOnSkillGroup = async (skillGroup, group) => {
   const activeTraining = await Training.findOne({ isActive: true }).populate('attendance')
   if (!activeTraining) throw new Error('No active training')
@@ -54,7 +63,8 @@ const getPlayersBySkillGroup = async (skillGroup) => {
     .sort((a, b) => a.games_played - b.games_played)
 
   const finalGroup = await ensureGroupSize(filteredPlayers, skillGroup)
-  const playerIds = finalGroup.map(p => p._id)
+  const sortedPlayers = sortByGamesPlayed(finalGroup)
+  const playerIds = sortedPlayers.map(p => p._id)
 
   await Training.findOneAndUpdate(
     { isActive: true },
@@ -69,7 +79,10 @@ const getPlayersBySkillGroup = async (skillGroup) => {
   )
 
   const freshPlayers = await Player.find({ _id: { $in: playerIds } })
-  return freshPlayers
+  const byId = new Map(freshPlayers.map(player => [player.id, player]))
+  return playerIds
+    .map(id => byId.get(id.toString()))
+    .filter(Boolean)
 }
 
 // ── Team-based game init ──────────────────────────────────────────────────────
@@ -109,7 +122,8 @@ const getPlayersByTeams = async (teamAId, teamBId) => {
     throw new Error('No eligible Team B players after removing duplicates')
   }
 
-  const playerIds = [...teamAPlayers, ...uniqueTeamBPlayers].map(player => player._id)
+  const sortedPlayers = sortByGamesPlayed([...teamAPlayers, ...uniqueTeamBPlayers])
+  const playerIds = sortedPlayers.map(player => player._id)
 
   await Training.findOneAndUpdate(
     { isActive: true },

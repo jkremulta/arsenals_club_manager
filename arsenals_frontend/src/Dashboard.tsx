@@ -36,8 +36,6 @@ const Dashboard = ({ onLogout, user }) => {
   const [currentGame, setCurrentGame] = useState([])
   const [removingId, setRemovingId] = useState(null)
   const [teams, setTeams] = useState(null)
-  const [teamA, setTeamA] = useState('')
-  const [teamB, setTeamB] = useState('')
 
   const [skillGroup, setSkillGroup]         = useState('')
   const [initializedSkillGroup, setInitializedSkillGroup] = useState('')
@@ -253,9 +251,6 @@ const Dashboard = ({ onLogout, user }) => {
       setNextGamePlayers([])
       setCurrentGameSkillGroup(initializedSkillGroup)
 
-      setTeamA('')
-      setTeamB('')
-
       toast.success('Game started!', {
         duration: 2000
       })
@@ -302,10 +297,6 @@ const sharedControlsProps = {
   onReplace: handleReplace,
   gamesBySkill: training?.games_by_skill,
   teams,
-  teamA,
-  setTeamA,
-  teamB,
-  setTeamB,
 }
 
   return (

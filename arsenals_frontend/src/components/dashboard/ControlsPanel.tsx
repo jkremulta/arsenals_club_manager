@@ -19,8 +19,6 @@ function ControlsPanel({
   skillGroup, setSkillGroup, initializedSkillGroup,
   nextGamePlayers, setNextGamePlayers,
   currentGame,
-  teamA, setTeamA,
-  teamB, setTeamB,
   attendance,
   initLoading, startLoading,
   onInitialize, onStartGame,
@@ -30,10 +28,19 @@ function ControlsPanel({
 }) {
   const canStart = nextGamePlayers.length > 0 && !startLoading
   const [swapOpenId, setSwapOpenId] = useState(null)
-  const [gameMode, setGameMode] = useState('skill') // 'skill' | 'team'
+  const [gameMode, setGameMode] = useState('skill')
+  const [teamA, setTeamA] = useState('')
+  const [teamB, setTeamB] = useState('')
 
   const queuedIds = new Set(nextGamePlayers.map(p => p.id ?? p._id))
-  const availableToSwap = attendance.filter(p => !queuedIds.has(p.id))
+  const availableToSwap = attendance
+    .filter(p => !queuedIds.has(p.id))
+    .sort((a, b) => {
+      const gamesA = a.games_played ?? 0
+      const gamesB = b.games_played ?? 0
+      if (gamesA !== gamesB) return gamesA - gamesB
+      return a.name.localeCompare(b.name)
+    })
   const availableTeamsForA = teams?.filter((team) => team.id !== teamB)
   const availableTeamsForB = teams?.filter((team) => team.id !== teamA)
 
@@ -235,29 +242,36 @@ function ControlsPanel({
                             <CommandList>
                               <CommandEmpty className="py-3 text-center text-xs text-white/30">No players available</CommandEmpty>
                               <CommandGroup>
-                                {availableToSwap.map(p => (
-                                  <CommandItem
-                                    key={p.id}
-                                    value={p.name}
-                                    onSelect={() => {
-                                      onReplace(playerId, p.id)
-                                      setSwapOpenId(null)
-                                    }}
-                                    className="cursor-pointer text-white/70 aria-selected:bg-white/10 aria-selected:text-white"
-                                  >
-                                    <div className="flex w-full items-center justify-between gap-2">
-  <span className="truncate text-[12px]">{p.name}</span>
-  <div className="flex flex-shrink-0 items-center gap-1">
-    <span className="rounded border border-white/10 px-1 py-0.5 text-[9px] text-white/40">
-      {p.games_played ?? 0}G
-    </span>
-    <span className={`rounded px-1 py-0.5 text-[9px] font-semibold ${helper.skillPill(p.skill).className}`}>
-      {helper.skillPill(p.skill).label}
-    </span>
-  </div>
-</div>
-                                  </CommandItem>
-                                ))}
+                                {availableToSwap.map((p) => {
+                                  const isPlaying = currentGame?.some((cg) => (cg.id ?? cg._id) === p.id)
+                                  return (
+                                    <CommandItem
+                                      key={p.id}
+                                      value={p.name}
+                                      onSelect={() => {
+                                        onReplace(playerId, p.id)
+                                        setSwapOpenId(null)
+                                      }}
+                                      className="cursor-pointer text-white/70 aria-selected:bg-white/10 aria-selected:text-white"
+                                    >
+                                      <div className="flex w-full items-center justify-between gap-2">
+                                        <span className="truncate text-[12px]">{p.name}</span>
+                                        <div className="flex flex-shrink-0 items-center gap-1">
+                                          <span className={`rounded border px-1 py-0.5 text-[9px] ${
+                                            isPlaying
+                                              ? 'border-emerald-500/25 text-emerald-400'
+                                              : 'border-border text-muted-foreground/50'
+                                          }`}>
+                                            {p.games_played ?? 0}G
+                                          </span>
+                                          <span className={`rounded px-1 py-0.5 text-[9px] font-semibold ${helper.skillPill(p.skill).className}`}>
+                                            {helper.skillPill(p.skill).label}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </CommandItem>
+                                  )
+                                })}
                               </CommandGroup>
                             </CommandList>
                           </Command>
