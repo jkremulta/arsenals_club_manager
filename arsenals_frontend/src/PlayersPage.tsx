@@ -44,10 +44,14 @@ function PlayersPage({ user }) {
   const fetchPlayers = async () => {
     try {
       const data = await playersApi.get(user.token)
-      if (data?.error) return toast.error(data.error)
+      if (data?.error) return toast.error(data.error, {
+        duration: 2000
+      })
       setPlayers(data)
     } catch (error) {
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error, {
+        duration: 2000
+      })
     } finally {
       setLoading(false)
     }
@@ -71,15 +75,21 @@ function PlayersPage({ user }) {
   }
 
   const handleSubmit = async () => {
-    if (!isFormComplete) return toast.warning('Name, gender, and rank are required.')
+    if (!isFormComplete) return toast.warning('Name, gender, and rank are required.', {
+        duration: 2000
+      })
     const payload = { ...form, name: form.name.trim(), skill: derivedSkill }
     setSubmitting(true)
     try {
-      if (editingId) { await playersApi.put(editingId, payload, user.token); toast.success('Player updated.') }
+      if (editingId) { await playersApi.put(editingId, payload, user.token); toast.success('Player updated.', {
+        duration: 2000
+      }) }
       else { await playersApi.post(payload, user.token); toast.success('Player registered.') }
       closeForm(); fetchPlayers()
     } catch (error) {
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error, {
+        duration: 2000
+      })
     } finally { setSubmitting(false) }
   }
 
@@ -88,9 +98,13 @@ function PlayersPage({ user }) {
     try {
       await playersApi.delete(id, user.token)
       setPlayers(prev => prev.filter(p => p.id !== id))
-      toast.success('Player deleted.')
+      toast.success('Player deleted.', {
+        duration: 2000
+      })
     } catch (error) {
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error, {
+        duration: 2000
+      })
     } finally { setDeletingId(null) }
   }
 

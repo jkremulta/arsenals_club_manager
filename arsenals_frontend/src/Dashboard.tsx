@@ -179,7 +179,9 @@ const Dashboard = ({ onLogout, user }) => {
       )
     setPaidIds(newPaidIds)
     } catch(error) {
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error, {
+        duration: 2000
+      })
     }
     
   }
@@ -201,7 +203,9 @@ const Dashboard = ({ onLogout, user }) => {
     const token = user.token
 
     if (!skillGroup) {
-      return toast.warning('Select a skill group first.')
+      return toast.warning('Select a skill group first.', {
+        duration: 2000
+      })
     }
 
     setInitLoading(true)
@@ -211,7 +215,9 @@ const Dashboard = ({ onLogout, user }) => {
 
       setNextGamePlayers(response)
       setInitializedSkillGroup(skillGroup)
-      toast.success(`Game initialized — ${response.length} players queued.`)
+      toast.success(`Game initialized — ${response.length} players queued.`, {
+        duration: 2000
+      })
 
     } catch (error) {
         toast.error(error?.response?.data?.error, {
@@ -234,12 +240,16 @@ const Dashboard = ({ onLogout, user }) => {
       setNextGamePlayers([])
       setCurrentGameSkillGroup(initializedSkillGroup)
 
-      toast.success('Game started!')
+      toast.success('Game started!', {
+        duration: 2000
+      })
       setActiveTab('game')
       fetchAll({ showLoader: false })
   
     } catch (error) {
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error, {
+        duration: 2000
+      })
     } 
     
     finally {
@@ -252,9 +262,13 @@ const Dashboard = ({ onLogout, user }) => {
     try {
       const updatedPlayers = await trainingApi.replacePlayer(outPlayerId, inPlayerId, token)
       setNextGamePlayers(updatedPlayers)
-      toast.success('Player replaced.')
+      toast.success('Player replaced.', {
+        duration: 2000
+      })
     } catch (error) {
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error, {
+        duration: 2000
+      })
     }
   }
 
