@@ -28,7 +28,9 @@ function ControlsPanel({
 
   // Players in attendance but not already in the queue
   const queuedIds = new Set(nextGamePlayers.map(p => p.id ?? p._id))
-  const availableToSwap = attendance.filter(p => !queuedIds.has(p.id))
+  const availableToSwap = attendance
+    .filter(p => !queuedIds.has(p.id))
+    .sort((a, b) => (a.games_played ?? 0) - (b.games_played ?? 0))
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
@@ -177,12 +179,17 @@ function ControlsPanel({
                                   }}
                                   className="cursor-pointer text-white/70 aria-selected:bg-white/10 aria-selected:text-white"
                                 >
-                                  <div className="flex w-full items-center justify-between">
-                                    <span className="text-sm">{p.name}</span>
-                                    <span className={`rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(p.skill).className}`}>
-                                      {helper.skillPill(p.skill).label}
-                                    </span>
-                                  </div>
+                               <div className="flex w-full items-center justify-between gap-2">
+                                <span className="truncate text-[12px]">{p.name}</span>
+                                <div className="flex flex-shrink-0 items-center gap-1">
+                                  <span className="rounded border border-white/10 px-1 py-0.5 text-[9px] text-white/40">
+                                    {p.games_played ?? 0}G
+                                  </span>
+                                  <span className={`rounded px-1 py-0.5 text-[9px] font-semibold ${helper.skillPill(p.skill).className}`}>
+                                    {helper.skillPill(p.skill).label}
+                                  </span>
+                                </div>
+                              </div>
                                 </CommandItem>
                               ))}
                             </CommandGroup>
