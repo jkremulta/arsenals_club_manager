@@ -1,5 +1,6 @@
 const teamsRouter = require('express').Router()
 const Team = require('../models/team')
+const Training = require('../models/training')
 const { userExtractor } = require('../utils/middleware')
 
 // get all teams with populated players
@@ -55,8 +56,30 @@ teamsRouter.post('/:id/players', userExtractor, async (request, response) => {
   const team = await Team.findById(id)
   if (!team) return response.status(404).json({ error: 'Team not found' })
 
+  const activeTraining = await Training.findOne({ isActive: true })
+  if (!activeTraining) {
+    return response.status(400).json({ error: 'No active training' })
+  }
+
+  const inAttendance = activeTraining.attendance.some(player => player.toString() === playerId)
+  if (!inAttendance) {
+    return response.status(400).json({ error: 'Player must be in attendance' })
+  }
+
   if (team.players.map(p => p.toString()).includes(playerId)) {
     return response.status(400).json({ error: 'Player already in team' })
+  }
+
+  const existingTeam = await Team.findOne({
+    _id: { $ne: id },
+    players: playerId
+  })
+  if (existingTeam) {
+    return response.status(400).json({ error: 'Player already belongs to a team' })
+  }
+
+  if (team.players.length >= 7) {
+    return response.status(400).json({ error: 'Team already has 7 players' })
   }
 
   team.players.push(playerId)

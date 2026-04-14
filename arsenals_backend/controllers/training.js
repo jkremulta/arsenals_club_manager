@@ -13,6 +13,8 @@ trainingRouter.get('/', userExtractor, async (request, response) => {
     .populate('initialized_players')
     .populate('initializedTeam', { name: 1 })
     .populate('currentGameTeam', { name: 1 })
+    .populate('team_a', { name: 1 })
+    .populate('team_b', { name: 1 })
 
   if (!activeTraining) return response.status(200).json(null)
   response.json(activeTraining)
@@ -52,10 +54,15 @@ trainingRouter.delete('/', userExtractor, async (request, response) => {
 
 // initialize game — skill or team
 trainingRouter.post('/initializeGame', userExtractor, async (request, response) => {
-  const { skillGroup, teamId } = request.body || {}
+  const { skillGroup, teamId, teamA, teamB } = request.body || {}
 
-  if (!skillGroup && !teamId) {
-    return response.status(400).json({ error: 'skillGroup or teamId is required' })
+  if (!skillGroup && !teamId && !(teamA && teamB)) {
+    return response.status(400).json({ error: 'skillGroup or team selection is required' })
+  }
+
+  if (teamA && teamB) {
+    const players = await trainingService.getPlayersByTeams(teamA, teamB)
+    return response.json(players)
   }
 
   if (teamId) {

@@ -36,6 +36,8 @@ const Dashboard = ({ onLogout, user }) => {
   const [currentGame, setCurrentGame] = useState([])
   const [removingId, setRemovingId] = useState(null)
   const [teams, setTeams] = useState(null)
+  const [teamA, setTeamA] = useState('')
+  const [teamB, setTeamB] = useState('')
 
   const [skillGroup, setSkillGroup]         = useState('')
   const [initializedSkillGroup, setInitializedSkillGroup] = useState('')
@@ -76,7 +78,6 @@ const Dashboard = ({ onLogout, user }) => {
       setInitializedSkillGroup(trainingRes?.initializedSkillGroup || '')
       setCurrentGameSkillGroup(trainingRes?.currentGameSkillGroup || '')
       setTeams(teamsRes)
-      console.log('this one', teamsRes)
 
     } catch (error) {
       // 401s are handled by the axios interceptor which calls logout
@@ -205,11 +206,17 @@ const Dashboard = ({ onLogout, user }) => {
   }
 
   // ── Game ────────────────────────────────────────────────────────────────
-  const handleInitializeGame = async () => {
+  const handleInitializeGame = async (payload) => {
     const token = user.token
-
-    if (!skillGroup) {
+ 
+    if (payload?.skillGroup && !payload.skillGroup) {
       return toast.warning('Select a skill group first.', {
+        duration: 2000
+      })
+    }
+
+    if (payload?.teamA && payload?.teamB && payload.teamA === payload.teamB) {
+      return toast.warning('Select two different teams.', {
         duration: 2000
       })
     }
@@ -217,10 +224,10 @@ const Dashboard = ({ onLogout, user }) => {
     setInitLoading(true)
 
     try {
-      const response = await trainingApi.initializeGame(skillGroup, token)
+      const response = await trainingApi.initializeGame(payload, token)
 
       setNextGamePlayers(response)
-      setInitializedSkillGroup(skillGroup)
+      setInitializedSkillGroup(payload?.skillGroup || '')
       toast.success(`Game initialized — ${response.length} players queued.`, {
         duration: 2000
       })
@@ -240,11 +247,14 @@ const Dashboard = ({ onLogout, user }) => {
     setStartLoading(true)
 
     try {
-      await trainingApi.startGame(initializedSkillGroup, token)
+      await trainingApi.startGame(token)
 
       setCurrentGame(nextGamePlayers)
       setNextGamePlayers([])
       setCurrentGameSkillGroup(initializedSkillGroup)
+
+      setTeamA('')
+      setTeamB('')
 
       toast.success('Game started!', {
         duration: 2000
@@ -278,16 +288,24 @@ const Dashboard = ({ onLogout, user }) => {
     }
   }
 
-  const sharedControlsProps = {
-  skillGroup, setSkillGroup, initializedSkillGroup,
+const sharedControlsProps = {
+  skillGroup,
+  setSkillGroup,
+  initializedSkillGroup,
   nextGamePlayers,
+  currentGame,
   attendance,
-  initLoading, startLoading,
+  initLoading,
+  startLoading,
   onInitialize: handleInitializeGame,
   onStartGame: handleStartGame,
   onReplace: handleReplace,
   gamesBySkill: training?.games_by_skill,
-  teams
+  teams,
+  teamA,
+  setTeamA,
+  teamB,
+  setTeamB,
 }
 
   return (
@@ -357,7 +375,13 @@ const Dashboard = ({ onLogout, user }) => {
             {/* ── Desktop: 3-col layout ────────────────────────────────── */}
             <div className="mx-auto hidden w-full max-w-7xl flex-1 gap-4 overflow-hidden px-8 py-4 md:grid md:grid-cols-3">
               <AttendancePanel {...sharedAttendanceProps} />
-              <GamePanel currentGame={currentGame} currentGameSkillGroup={currentGameSkillGroup} />
+              <GamePanel
+                currentGame={currentGame}
+                currentGameSkillGroup={currentGameSkillGroup}
+                currentGameTeam={training?.currentGameTeam}
+                teamA={training?.team_a}
+                teamB={training?.team_b}
+              />
               <ControlsPanel {...sharedControlsProps} />
             </div>
 
@@ -366,7 +390,15 @@ const Dashboard = ({ onLogout, user }) => {
               {activeTab === 'attendance' && (
                 <AttendancePanel {...sharedAttendanceProps} />
               )}
-              {activeTab === 'game' && <GamePanel currentGame={currentGame} currentGameSkillGroup={currentGameSkillGroup} />}
+              {activeTab === 'game' && (
+                <GamePanel
+                  currentGame={currentGame}
+                  currentGameSkillGroup={currentGameSkillGroup}
+                  currentGameTeam={training?.currentGameTeam}
+                  teamA={training?.team_a}
+                  teamB={training?.team_b}
+                />
+              )}
               {activeTab === 'controls' && <ControlsPanel {...sharedControlsProps} />}
             </div>
           </div>

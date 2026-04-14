@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import attendanceApi from './services/attendance'
 import playersApi from './services/players'
 import teamsApi from './services/team'
 import helper from './utils/helper'
@@ -51,6 +52,7 @@ function PlayersPage({ user }) {
   // ── Teams state ───────────────────────────────────────────────────
   const [teams, setTeams]                   = useState([])
   const [teamsLoading, setTeamsLoading]     = useState(true)
+  const [attendance, setAttendance]         = useState([])
   const [newTeamName, setNewTeamName]       = useState('')
   const [creatingTeam, setCreatingTeam]     = useState(false)
   const [deletingTeamId, setDeletingTeamId] = useState(null)
@@ -89,9 +91,19 @@ function PlayersPage({ user }) {
     }
   }
 
+  const fetchAttendance = async () => {
+    try {
+      const data = await attendanceApi.get(user.token)
+      setAttendance(data)
+    } catch (error) {
+      toast.error(error?.response?.data?.error, { duration: 2000 })
+    }
+  }
+
   useEffect(() => {
     fetchPlayers()
     fetchTeams()
+    fetchAttendance()
   }, [])
 
   // ── Player handlers ───────────────────────────────────────────────
@@ -501,8 +513,9 @@ function PlayersPage({ user }) {
                 ) : (
                   <div className="flex flex-col gap-3">
                     {teams.map(team => {
-                      const teamPlayerIds = new Set(team.players.map(p => p.id))
-                      const availableForTeam = players.filter(p => !teamPlayerIds.has(p.id))
+                      const allTeamPlayerIds = new Set(teams.flatMap(currentTeam => currentTeam.players.map(player => player.id)))
+                      const availableForTeam = attendance.filter(player => !allTeamPlayerIds.has(player.id))
+                      const teamIsFull = team.players.length >= 7
 
                       return (
                         <div key={team.id} className="rounded-xl border border-border bg-card overflow-hidden">
@@ -550,7 +563,7 @@ function PlayersPage({ user }) {
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    disabled={addingToTeam === team.id}
+                                    disabled={addingToTeam === team.id || teamIsFull}
                                     className="h-7 text-xs"
                                   >
                                     {addingToTeam === team.id
@@ -566,7 +579,7 @@ function PlayersPage({ user }) {
                                     <CommandList>
                                       <CommandEmpty className="py-3 text-center text-xs text-muted-foreground">No players available</CommandEmpty>
                                       <CommandGroup>
-                                        {availableForTeam.map(p => (
+                                        {!teamIsFull && availableForTeam.map(p => (
                                           <CommandItem
                                             key={p.id}
                                             value={p.name}

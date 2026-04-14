@@ -18,6 +18,9 @@ const SKILL_GROUPS = ['beginner', 'intermediate', 'advanced']
 function ControlsPanel({
   skillGroup, setSkillGroup, initializedSkillGroup,
   nextGamePlayers, setNextGamePlayers,
+  currentGame,
+  teamA, setTeamA,
+  teamB, setTeamB,
   attendance,
   initLoading, startLoading,
   onInitialize, onStartGame,
@@ -28,11 +31,11 @@ function ControlsPanel({
   const canStart = nextGamePlayers.length > 0 && !startLoading
   const [swapOpenId, setSwapOpenId] = useState(null)
   const [gameMode, setGameMode] = useState('skill') // 'skill' | 'team'
-  const [teamA, setTeamA] = useState('')
-  const [teamB, setTeamB] = useState('')
 
   const queuedIds = new Set(nextGamePlayers.map(p => p.id ?? p._id))
   const availableToSwap = attendance.filter(p => !queuedIds.has(p.id))
+  const availableTeamsForA = teams?.filter(t => t.id !== teamB)
+  const availableTeamsForB = teams?.filter(t => t.id !== teamA)
 
   const handleInitialize = () => {
     if (gameMode === 'skill') {
@@ -44,7 +47,7 @@ function ControlsPanel({
 
   const canInitialize = gameMode === 'skill'
     ? (!initLoading && !!skillGroup)
-    : (!initLoading && !!teamA && !!teamB && teamA !== teamB)
+    : (!initLoading && !!teamA && !!teamB)
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
@@ -110,7 +113,7 @@ function ControlsPanel({
               <SelectValue placeholder="Team A" />
             </SelectTrigger>
             <SelectContent className="border-white/10 bg-[#141414] text-white">
-              {teams?.map(t => (
+              {availableTeamsForA?.map(t => (
                 <SelectItem key={t.id} value={t.id}>
                   {t.name}
                 </SelectItem>
@@ -129,7 +132,7 @@ function ControlsPanel({
               <SelectValue placeholder="Team B" />
             </SelectTrigger>
             <SelectContent className="border-white/10 bg-[#141414] text-white">
-              {teams?.map(t => (
+              {availableTeamsForB?.map(t => (
                 <SelectItem key={t.id} value={t.id}>
                   {t.name}
                 </SelectItem>
@@ -189,6 +192,7 @@ function ControlsPanel({
             <div className="space-y-0.5 p-2">
               {nextGamePlayers.map((player, i) => {
                 const playerId = player.id ?? player._id
+                const isPlaying = currentGame?.some((p) => (p.id ?? p._id) === playerId)
                 return (
                   <div key={playerId} className="group flex items-center justify-between rounded-md px-3 py-2 hover:bg-white/[0.03]">
                     <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -203,49 +207,58 @@ function ControlsPanel({
                       </div>
                     </div>
 
-                    <Popover
-                      open={swapOpenId === playerId}
-                      onOpenChange={open => setSwapOpenId(open ? playerId : null)}
-                    >
-                      <PopoverTrigger asChild>
-                        <button className="ml-2 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-white/20 opacity-0 transition-all group-hover:opacity-100 hover:bg-violet-500/20 hover:text-violet-400 md:opacity-0 opacity-100">
-                          <ArrowLeftRight size={11} />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-56 border-white/10 bg-[#141414] p-0" align="end">
-                        <div className="border-b border-white/[0.07] px-3 py-2">
-                          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40">
-                            Replace {player.name}
-                          </p>
-                        </div>
-                        <Command className="bg-transparent">
-                          <CommandInput placeholder="Search player..." className="border-b border-white/10 text-white placeholder:text-white/30" />
-                          <CommandList>
-                            <CommandEmpty className="py-3 text-center text-xs text-white/30">No players available</CommandEmpty>
-                            <CommandGroup>
-                              {availableToSwap.map(p => (
-                                <CommandItem
-                                  key={p.id}
-                                  value={p.name}
-                                  onSelect={() => {
-                                    onReplace(playerId, p.id)
-                                    setSwapOpenId(null)
-                                  }}
-                                  className="cursor-pointer text-white/70 aria-selected:bg-white/10 aria-selected:text-white"
-                                >
-                                  <div className="flex w-full items-center justify-between">
-                                    <span className="text-sm">{p.name}</span>
-                                    <span className={`rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(p.skill).className}`}>
-                                      {helper.skillPill(p.skill).label}
-                                    </span>
-                                  </div>
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <div className="ml-2 flex flex-shrink-0 items-center gap-2">
+                      <span className={`rounded border px-1.5 py-0.5 text-[10px] ${
+                        isPlaying
+                          ? 'border-emerald-500/25 text-emerald-400'
+                          : 'border-border text-muted-foreground/50'
+                      }`}>
+                        {player.games_played ?? 0}G
+                      </span>
+                      <Popover
+                        open={swapOpenId === playerId}
+                        onOpenChange={open => setSwapOpenId(open ? playerId : null)}
+                      >
+                        <PopoverTrigger asChild>
+                          <button className="flex h-6 w-6 items-center justify-center rounded text-white/20 opacity-0 transition-all group-hover:opacity-100 hover:bg-violet-500/20 hover:text-violet-400 opacity-100">
+                            <ArrowLeftRight size={11} />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-56 border-white/10 bg-[#141414] p-0" align="end">
+                          <div className="border-b border-white/[0.07] px-3 py-2">
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40">
+                              Replace {player.name}
+                            </p>
+                          </div>
+                          <Command className="bg-transparent">
+                            <CommandInput placeholder="Search player..." className="border-b border-white/10 text-white placeholder:text-white/30" />
+                            <CommandList>
+                              <CommandEmpty className="py-3 text-center text-xs text-white/30">No players available</CommandEmpty>
+                              <CommandGroup>
+                                {availableToSwap.map(p => (
+                                  <CommandItem
+                                    key={p.id}
+                                    value={p.name}
+                                    onSelect={() => {
+                                      onReplace(playerId, p.id)
+                                      setSwapOpenId(null)
+                                    }}
+                                    className="cursor-pointer text-white/70 aria-selected:bg-white/10 aria-selected:text-white"
+                                  >
+                                    <div className="flex w-full items-center justify-between">
+                                      <span className="text-sm">{p.name}</span>
+                                      <span className={`rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(p.skill).className}`}>
+                                        {helper.skillPill(p.skill).label}
+                                      </span>
+                                    </div>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   </div>
                 )
               })}

@@ -63,6 +63,8 @@ const getPlayersBySkillGroup = async (skillGroup) => {
       initializedSkillGroup: skillGroup,
       initializedTeam: null,
       game_type: 'skill',
+      team_a: null,
+      team_b: null,
     }
   )
 
@@ -110,11 +112,67 @@ const getPlayersByTeam = async (teamId) => {
       initializedTeam: teamId,
       initializedSkillGroup: '',
       game_type: 'team',
+      team_a: null,
+      team_b: null,
     }
   )
 
   const freshPlayers = await Player.find({ _id: { $in: playerIds } })
   return freshPlayers
+}
+
+const getPlayersByTeams = async (teamAId, teamBId) => {
+  if (teamAId === teamBId) {
+    throw new Error('Please select two different teams')
+  }
+
+  const activeTraining = await Training
+    .findOne({ isActive: true })
+    .populate('attendance')
+
+  if (!activeTraining) throw new Error('No active training')
+
+  const [teamA, teamB] = await Promise.all([
+    Team.findById(teamAId).populate('players'),
+    Team.findById(teamBId).populate('players')
+  ])
+
+  if (!teamA || !teamB) throw new Error('Team not found')
+
+  const attendanceIds = new Set(activeTraining.attendance.map(player => player._id.toString()))
+  const teamAPlayers = teamA.players.filter(player => attendanceIds.has(player._id.toString()))
+  const teamBPlayers = teamB.players.filter(player => attendanceIds.has(player._id.toString()))
+
+  if (teamAPlayers.length === 0) {
+    throw new Error(`No ${teamA.name} players are in attendance`)
+  }
+
+  if (teamBPlayers.length === 0) {
+    throw new Error(`No ${teamB.name} players are in attendance`)
+  }
+
+  const playerIds = [...teamAPlayers, ...teamBPlayers].map(player => player._id)
+
+  await Training.findOneAndUpdate(
+    { isActive: true },
+    {
+      initialized_players: playerIds,
+      initializedTeam: null,
+      initializedSkillGroup: '',
+      currentGameSkillGroup: '',
+      currentGameTeam: null,
+      game_type: 'team',
+      team_a: teamAId,
+      team_b: teamBId,
+    }
+  )
+
+  const freshPlayers = await Player.find({ _id: { $in: playerIds } })
+  const byId = new Map(freshPlayers.map(player => [player.id, player]))
+
+  return playerIds
+    .map(id => byId.get(id.toString()))
+    .filter(Boolean)
 }
 
 // ── Start game ────────────────────────────────────────────────────────────────
@@ -132,6 +190,11 @@ const startGame = async () => {
   activeTraining.initializedSkillGroup = ''
   activeTraining.initializedTeam = null
   activeTraining.games_today += 1
+
+  if (activeTraining.game_type === 'skill') {
+    activeTraining.team_a = null
+    activeTraining.team_b = null
+  }
 
   // update games_by_skill if skill game
   if (activeTraining.game_type === 'skill' && activeTraining.currentGameSkillGroup) {
@@ -155,5 +218,6 @@ const startGame = async () => {
 module.exports = {
   getPlayersBySkillGroup,
   getPlayersByTeam,
+  getPlayersByTeams,
   startGame,
 }
