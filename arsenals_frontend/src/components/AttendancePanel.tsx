@@ -33,6 +33,14 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
     finally { setAddLoading(false) }
   }
 
+  const [togglingId, setTogglingId] = useState(null)
+
+  const handleTogglePaid = async (id) => {
+    setTogglingId(id)
+    try { await onTogglePaid(id) }
+    finally { setTogglingId(null) }
+  }
+
   return (
     <div className="flex h-full min-h-0 flex-col rounded-xl border border-border bg-card">
       <div className="flex flex-shrink-0 items-center justify-between px-4 py-3">
@@ -103,7 +111,13 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                   className="group flex items-center justify-between rounded-md px-3 py-2.5 transition-colors hover:bg-accent"
                 >
                   <div className="flex min-w-0 items-center gap-2.5">
-                    <span className="truncate text-[13px] font-medium text-foreground/75">{player.name}</span>
+                     <span
+                      className={`truncate text-[13px] font-medium ${
+                        player.late ? 'text-yellow-400' : 'text-foreground/75'
+                      }`}
+                    >
+                      {player.name}
+                    </span>
                     <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
                       {helper.skillPill(player.skill).label}
                     </span>
@@ -117,14 +131,16 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                       {player.games_played ?? 0}G
                     </span>
                     <button
-                      onClick={() => onTogglePaid(player.id)}
+                      onClick={() => handleTogglePaid(player.id)}
                       className={`rounded-full px-2.5 py-1 text-[10px] font-semibold transition-all ${
                         isPaid
                           ? 'bg-emerald-500/15 text-emerald-400 hover:bg-red-500/[0.12] hover:text-red-400'
                           : 'bg-muted text-muted-foreground hover:bg-emerald-500/15 hover:text-emerald-400'
                       }`}
                     >
-                      {isPaid ? 'Paid' : 'Unpaid'}
+                      {togglingId === player.id
+                    ? <Loader2 size={10} className="animate-spin" />
+                    : isPaid ? 'Paid' : 'Unpaid'}
                     </button>
                     <button
                       onClick={() => onRemove(player.id)}

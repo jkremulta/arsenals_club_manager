@@ -22,7 +22,7 @@ const formatBirthday = (value) => value ? new Date(value).toISOString().slice(0,
 const EMPTY_FORM = { name: '', birthday: '', gender: '', rank: '' }
 const SKILL_SORT_ORDER = { beginner: 0, intermediate: 1, advanced: 2 }
 const GENDER_SORT_ORDER = { Male: 0, M: 0, Female: 1, F: 1 }
-const STATIC_SORT_OPTIONS = new Set(['skill_lowest', 'skill_highest', 'birthday_youngest', 'birthday_oldest'])
+const STATIC_SORT_OPTIONS = new Set(['skill_lowest', 'skill_highest', 'birthday_youngest', 'birthday_oldest', 'rank_lowest', 'rank_highest'])
 const OWNER_USERNAME = 'joshiee02'
 
 function PlayersPage({ user }) {
@@ -105,7 +105,9 @@ function PlayersPage({ user }) {
         case 'skill':
         case 'skill_lowest': result = (SKILL_SORT_ORDER[a.skill] ?? 99) - (SKILL_SORT_ORDER[b.skill] ?? 99); break
         case 'skill_highest': result = (SKILL_SORT_ORDER[b.skill] ?? 99) - (SKILL_SORT_ORDER[a.skill] ?? 99); break
-        case 'rank': result = (Number(a.rank) || 0) - (Number(b.rank) || 0); break
+        case 'rank':
+        case 'rank_lowest': result = (Number(a.rank) || 0) - (Number(b.rank) || 0); break
+        case 'rank_highest': result = (Number(b.rank) || 0) - (Number(a.rank) || 0); break
         case 'gender': result = (GENDER_SORT_ORDER[a.gender] ?? 99) - (GENDER_SORT_ORDER[b.gender] ?? 99); break
         case 'name': default: result = a.name.localeCompare(b.name); break
       }
@@ -230,10 +232,11 @@ function PlayersPage({ user }) {
             {/* Table head — desktop */}
             <div className="hidden flex-shrink-0 grid-cols-14 gap-3 border-b border-border px-4 py-2.5 md:grid">
               {[
-                { key: 'name',     label: 'Name',     span: 'col-span-4' },
-                { key: 'skill',    label: 'Skill',    span: 'col-span-2' },
-                { key: 'birthday', label: 'Birthday', span: 'col-span-3' },
-                { key: 'gender',   label: 'Gender',   span: 'col-span-4' },
+                 { key: 'name',     label: 'Name',     span: 'col-span-4' },
+                  { key: 'skill',    label: 'Skill',    span: 'col-span-2' },
+                  { key: 'birthday', label: 'Birthday', span: 'col-span-3' },
+                  ...(canManagePlayers ? [{ key: 'rank', label: 'Rank', span: 'col-span-1 flex justify-center' }] : []),
+                  { key: 'gender',   label: 'Gender',   span: canManagePlayers ? 'col-span-3 pl-8' : 'col-span-4' },
               ].map(({ key, label, span }) => (
                 <div key={key} className={`${span} flex items-center`}>
                   <button
@@ -263,6 +266,12 @@ function PlayersPage({ user }) {
                   <SelectItem value="gender">Gender</SelectItem>
                   <SelectItem value="skill_lowest">Skill: Lowest</SelectItem>
                   <SelectItem value="skill_highest">Skill: Highest</SelectItem>
+                  {canManagePlayers && (
+                    <>
+                    <SelectItem value="rank_lowest">Rank: Lowest</SelectItem>
+                    <SelectItem value="rank_highest">Rank: Highest</SelectItem>
+                    </>
+                  )}
                   <SelectItem value="birthday_youngest">Age: Youngest</SelectItem>
                   <SelectItem value="birthday_oldest">Age: Oldest</SelectItem>
                 </SelectContent>
@@ -285,10 +294,15 @@ function PlayersPage({ user }) {
                     <div key={player.id}>
                       {/* Desktop row */}
                       <div className="group hidden items-center rounded-md px-3 py-2.5 transition-colors hover:bg-accent md:grid md:grid-cols-14 md:gap-3">
-                       <span className="col-span-4 truncate text-[13px] font-medium text-foreground/75">{player.name}</span>
+                      <span className="col-span-4 truncate text-[13px] font-medium text-foreground/75">{player.name}</span>
                       <span className="col-span-2 text-[12px] text-muted-foreground">{helper.capitalize(player.skill)}</span>
                       <span className="col-span-3 text-[12px] text-muted-foreground">{formatBirthday(player.birthday) || '—'}</span>
-                      <span className="col-span-4 pl-2 text-[12px] text-muted-foreground">{player.gender ?? '—'}</span>
+                      {canManagePlayers && (
+                        <span className="col-span-1 flex justify-center text-[12px] text-muted-foreground ">{player.rank ?? '—'}</span>
+                      )}
+                      <span className={`text-[12px] text-muted-foreground ${canManagePlayers ? 'col-span-3 pl-10' : 'col-span-4 pl-2'}`}>
+                        {player.gender ?? '—'}
+                      </span>
                         <div className="col-span-1 flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openEdit(player)}
@@ -311,7 +325,7 @@ function PlayersPage({ user }) {
                         <div className="flex min-w-0 flex-col gap-1">
                           <span className="truncate text-[13px] font-medium text-foreground/75">{player.name}</span>
                           <span className="text-[11px] text-muted-foreground">
-                            {helper.capitalize(player.skill) ?? '—'} · {formatBirthday(player.birthday) || '—'} · {player.gender}
+                            {helper.capitalize(player.skill) ?? '—'} {canManagePlayers && `${player.rank}`} · {formatBirthday(player.birthday) || '—'} · {player.gender}
                           </span>
                         </div>
                         <div className="flex flex-shrink-0 items-center gap-1.5 ml-3">

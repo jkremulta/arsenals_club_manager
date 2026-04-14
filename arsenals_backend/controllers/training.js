@@ -58,6 +58,7 @@ trainingRouter.delete('/', userExtractor, async (request, response) => {
     { $set: { 
       games_played: 0,
       paid: false,
+      late: false,
       games_by_skill: {
         beginner: 0,
         intermediate: 0,

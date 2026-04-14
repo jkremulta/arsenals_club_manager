@@ -235,6 +235,7 @@ const Dashboard = ({ onLogout, user }) => {
       setCurrentGameSkillGroup(initializedSkillGroup)
 
       toast.success('Game started!')
+      setActiveTab('game')
       fetchAll({ showLoader: false })
   
     } catch (error) {

@@ -28,6 +28,10 @@ const playerSchema = new mongoose.Schema({
   paid: {
     type: Boolean,
     default: false
+  },
+  late: {
+    type: Boolean,
+    default: false
   }
 })
 
