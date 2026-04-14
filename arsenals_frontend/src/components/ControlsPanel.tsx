@@ -135,6 +135,10 @@ function ControlsPanel({
                     </div>
 
                     {/* Swap button */}
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                    <span className="flex-shrink-0 rounded border border-white/10 px-1.5 py-0.5 text-[9px] text-white/40">
+    {player.games_played ?? 0}G
+  </span>
                     <Popover
                       open={swapOpenId === playerId}
                       onOpenChange={(open) => setSwapOpenId(open ? playerId : null)}
@@ -186,6 +190,7 @@ function ControlsPanel({
                         </Command>
                       </PopoverContent>
                     </Popover>
+                    </div>
                   </div>
                 )
               })}
