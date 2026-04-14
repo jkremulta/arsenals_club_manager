@@ -14,7 +14,6 @@ import ControlsPanel from './components/dashboard/ControlsPanel'
 
 import helper from './utils/helper'
 
-import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
 
 import {
@@ -301,8 +300,6 @@ const sharedControlsProps = {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground">
-      <Toaster theme="dark" position="top-right" richColors />
-
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <Header
         user={user}

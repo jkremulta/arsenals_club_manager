@@ -11,7 +11,7 @@ import {
   Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
 } from '@/components/ui/command'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Play, Zap, Loader2, ArrowLeftRight, Shield } from 'lucide-react'
+import { Play, Zap, Loader2, ArrowLeftRight } from 'lucide-react'
 
 const SKILL_GROUPS = ['beginner', 'intermediate', 'advanced']
 
@@ -28,6 +28,7 @@ function ControlsPanel({
 }) {
   const canStart = nextGamePlayers.length > 0 && !startLoading
   const [swapOpenId, setSwapOpenId] = useState(null)
+  const [swappingPlayerId, setSwappingPlayerId] = useState(null)
   const [gameMode, setGameMode] = useState('skill')
   const [teamA, setTeamA] = useState('')
   const [teamB, setTeamB] = useState('')
@@ -60,9 +61,9 @@ function ControlsPanel({
     <div className="flex h-full min-h-0 flex-col gap-3">
 
       {/* ── Game controls card ─────────────────────────────────────── */}
-      <div className="flex-shrink-0 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <div className="flex-shrink-0 rounded-xl border border-border bg-card p-4">
         <div className="flex justify-between">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-white/55">Game Controls</p>
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-foreground/70">Game Controls</p>
           <div className="flex gap-2">
             {SKILL_GROUPS.map((skill) => {
               const count = gamesBySkill?.[skill] ?? 0
@@ -75,10 +76,10 @@ function ControlsPanel({
             })}
           </div>
         </div>
-        <p className="mb-3 mt-0.5 text-[11px] text-white/30">Initialize then start</p>
+        <p className="mb-3 mt-0.5 text-[11px] text-muted-foreground">Initialize then start</p>
 
         {/* Mode toggle */}
-        <div className="mb-3 flex rounded-lg border border-white/10 bg-white/[0.03] p-0.5">
+        <div className="mb-3 flex rounded-lg border border-border bg-muted/40 p-0.5">
           {[
             { id: 'skill', label: 'By Skill' },
             { id: 'team',  label: 'By Team' },
@@ -88,8 +89,8 @@ function ControlsPanel({
               onClick={() => setGameMode(id)}
               className={`flex-1 rounded-md py-1.5 text-[11px] font-medium transition-all ${
                 gameMode === id
-                  ? 'bg-white/[0.08] text-white/80'
-                  : 'text-white/30 hover:text-white/50'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground/80'
               }`}
             >
               {label}
@@ -100,12 +101,12 @@ function ControlsPanel({
         <div className="flex flex-col gap-2">
           {gameMode === 'skill' ? (
             <Select value={skillGroup} onValueChange={setSkillGroup}>
-              <SelectTrigger className="w-full border-white/10 bg-white/5 text-sm text-white/70 focus:ring-0 focus:ring-offset-0">
+              <SelectTrigger className="w-full border-border bg-background text-sm text-foreground focus:ring-0 focus:ring-offset-0">
                 <SelectValue placeholder="Select skill group" />
               </SelectTrigger>
-              <SelectContent className="border-white/10 bg-[#141414] text-white">
+              <SelectContent className="border-border bg-popover text-popover-foreground">
                 {SKILL_GROUPS.map(g => (
-                  <SelectItem key={g} value={g} className="capitalize hover:bg-white/10 focus:bg-white/10">
+                  <SelectItem key={g} value={g} className="capitalize">
                     {helper.capitalize(g)}
                   </SelectItem>
                 ))}
@@ -116,10 +117,10 @@ function ControlsPanel({
   
           {/* Team A */}
           <Select value={teamA} onValueChange={setTeamA}>
-            <SelectTrigger className="w-full border-white/10 bg-white/5 text-sm text-white/70 focus:ring-0">
+            <SelectTrigger className="w-full border-border bg-background text-sm text-foreground focus:ring-0">
               <SelectValue placeholder="Team A" />
             </SelectTrigger>
-            <SelectContent className="border-white/10 bg-[#141414] text-white">
+            <SelectContent className="border-border bg-popover text-popover-foreground">
               {availableTeamsForA?.map((team) => (
                 <SelectItem key={team.id} value={team.id}>
                   {team.name}
@@ -129,16 +130,16 @@ function ControlsPanel({
           </Select>
 
           {/* Divider */}
-          <span className="flex items-center justify-center px-2 text-white/40">
+          <span className="flex items-center justify-center px-2 text-muted-foreground">
             &
           </span>
 
           {/* Team B */}
           <Select value={teamB} onValueChange={setTeamB}>
-            <SelectTrigger className="w-full border-white/10 bg-white/5 text-sm text-white/70 focus:ring-0">
+            <SelectTrigger className="w-full border-border bg-background text-sm text-foreground focus:ring-0">
               <SelectValue placeholder="Team B" />
             </SelectTrigger>
-            <SelectContent className="border-white/10 bg-[#141414] text-white">
+            <SelectContent className="border-border bg-popover text-popover-foreground">
               {availableTeamsForB?.map((team) => (
                 <SelectItem key={team.id} value={team.id}>
                   {team.name}
@@ -192,22 +193,23 @@ function ControlsPanel({
           {nextGamePlayers.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <Zap size={20} className="mb-2 text-violet-500/20" />
-              <p className="text-xs text-white/25">No players queued</p>
-              <p className="mt-0.5 text-[11px] text-white/15">Select a skill group or team and initialize</p>
+              <p className="text-xs text-muted-foreground">No players queued</p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground/80">Select a skill group or team and initialize</p>
             </div>
           ) : (
             <div className="space-y-0.5 p-2">
               {nextGamePlayers.map((player, i) => {
                 const playerId = player.id ?? player._id
                 const isPlaying = currentGame?.some((p) => (p.id ?? p._id) === playerId)
+                const isSwapping = swappingPlayerId === playerId
                 return (
-                  <div key={playerId} className="group flex items-center justify-between rounded-md px-3 py-2 hover:bg-white/[0.03]">
+                  <div key={playerId} className="group flex items-center justify-between rounded-md px-3 py-2 hover:bg-accent/40">
                     <div className="flex min-w-0 flex-1 items-center gap-3">
                       <span className="w-5 text-[10px] font-bold text-violet-500/50">
                         {String(i + 1).padStart(2, '0')}
                       </span>
                       <div className="flex min-w-0 flex-1 items-center gap-2">
-                        <span className="truncate text-[12px] font-medium text-white/75">{player.name}</span>
+                        <span className="truncate text-[12px] font-medium text-foreground/80">{player.name}</span>
                         <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
                           {helper.skillPill(player.skill).label}
                         </span>
@@ -224,23 +226,31 @@ function ControlsPanel({
                       </span>
                       <Popover
                         open={swapOpenId === playerId}
-                        onOpenChange={open => setSwapOpenId(open ? playerId : null)}
+                        onOpenChange={open => {
+                          if (isSwapping) return
+                          setSwapOpenId(open ? playerId : null)
+                        }}
                       >
                         <PopoverTrigger asChild>
-                          <button className="flex h-6 w-6 items-center justify-center rounded text-white/20 opacity-0 transition-all group-hover:opacity-100 hover:bg-violet-500/20 hover:text-violet-400 opacity-100">
-                            <ArrowLeftRight size={11} />
+                          <button
+                            disabled={isSwapping}
+                            className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground/60 opacity-0 transition-all group-hover:opacity-100 hover:bg-violet-500/20 hover:text-violet-400 opacity-100 disabled:opacity-50"
+                          >
+                            {isSwapping
+                              ? <Loader2 size={11} className="animate-spin" />
+                              : <ArrowLeftRight size={11} />}
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-56 border-white/10 bg-[#141414] p-0" align="end">
-                          <div className="border-b border-white/[0.07] px-3 py-2">
-                            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40">
+                        <PopoverContent className="w-56 border-border bg-popover p-0 text-popover-foreground" align="end">
+                          <div className="border-b border-border px-3 py-2">
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                               Replace {player.name}
                             </p>
                           </div>
-                          <Command className="bg-transparent">
-                            <CommandInput placeholder="Search player..." className="border-b border-white/10 text-white placeholder:text-white/30" />
+                          <Command className="bg-popover text-popover-foreground">
+                            <CommandInput placeholder="Search player..." className="border-b border-border bg-popover text-popover-foreground placeholder:text-muted-foreground" />
                             <CommandList>
-                              <CommandEmpty className="py-3 text-center text-xs text-white/30">No players available</CommandEmpty>
+                              <CommandEmpty className="py-3 text-center text-xs text-muted-foreground">No players available</CommandEmpty>
                               <CommandGroup>
                                 {availableToSwap.map((p) => {
                                   const isPlaying = currentGame?.some((cg) => (cg.id ?? cg._id) === p.id)
@@ -248,11 +258,18 @@ function ControlsPanel({
                                     <CommandItem
                                       key={p.id}
                                       value={p.name}
-                                      onSelect={() => {
-                                        onReplace(playerId, p.id)
-                                        setSwapOpenId(null)
+                                      onSelect={async () => {
+                                        if (isSwapping) return
+                                        setSwappingPlayerId(playerId)
+                                        try {
+                                          await onReplace(playerId, p.id)
+                                          setSwapOpenId(null)
+                                        } finally {
+                                          setSwappingPlayerId(null)
+                                        }
                                       }}
-                                      className="cursor-pointer text-white/70 aria-selected:bg-white/10 aria-selected:text-white"
+                                      className="cursor-pointer text-popover-foreground aria-selected:bg-accent aria-selected:text-accent-foreground disabled:opacity-50"
+                                      disabled={isSwapping}
                                     >
                                       <div className="flex w-full items-center justify-between gap-2">
                                         <span className="truncate text-[12px]">{p.name}</span>

@@ -5,7 +5,6 @@ import playersApi from './services/players'
 import teamsApi from './services/team'
 import helper from './utils/helper'
 import { toast } from 'sonner'
-import { Toaster } from '@/components/ui/sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -234,8 +233,6 @@ function PlayersPage({ user }) {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground">
-      <Toaster position="top-right" richColors />
-
       {/* ── Header ──────────────────────────────────────────────────── */}
       <header className="flex-shrink-0 border-b border-border px-4 py-3 md:px-8 md:py-4">
         <div className="relative mx-auto flex max-w-4xl items-center justify-between">
