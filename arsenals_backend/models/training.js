@@ -15,16 +15,21 @@ const trainingSchema = new mongoose.Schema({
     intermediate: { type: Number, default: 0 },
     advanced:     { type: Number, default: 0 }
   },
-  // ── game type tracking ──────────────────────────────────────────────
   game_type: {
     type: String,
     enum: ['skill', 'team'],
     default: 'skill'
   },
   // for team vs team games
-  team_a: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
-  team_b: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
-  // ───────────────────────────────────────────────────────────────────
+  team_a: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Team', 
+    default: null },
+  team_b: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Team', 
+    default: null 
+  },
   attendance: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Player'
@@ -35,8 +40,16 @@ const trainingSchema = new mongoose.Schema({
   }],
   initializedSkillGroup: String,
   currentGameSkillGroup: String,
-  initializedTeam: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
-  currentGameTeam:  { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
+  initializedTeam: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Team', 
+    default: null 
+  },
+  currentGameTeam:  { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Team', 
+    default: null 
+  },
   initialized_players: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Player'

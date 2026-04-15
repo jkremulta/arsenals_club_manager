@@ -42,11 +42,16 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
             <img src={arsenalsLogo} alt="Arsenals logo" className="h-full w-full object-contain" />
           </div>
           <div>
-            <h1 className="text-[14px] font-semibold tracking-tight text-foreground md:text-[15px]">Arsenal Tchoukball Club</h1>
-            {training?.startTime && (
-              <p className="text-[10px] text-muted-foreground/60 md:text-[11px]">Session · {helper.formatTime(training.startTime)}</p>
-            )}
-          </div>
+    <h1 className="text-[14px] font-semibold tracking-tight text-foreground md:text-[15px]">
+      Arsenal Tchoukball Club
+    </h1>
+
+    <p className="text-[10px] text-muted-foreground/60 md:text-[11px]">
+      Session · {training?.startTime 
+        ? helper.formatTime(training.startTime) 
+        : 'N/A'}
+    </p>
+  </div>
         </div>
 
         {/* Desktop controls */}

@@ -2,11 +2,8 @@ const playersRouter = require('express').Router()
 const Player = require('../models/players')
 const { userExtractor } = require('../utils/middleware')
 
-
-// get all players in db
 playersRouter.get('/', userExtractor, async (request, response) => {
-  const players = await Player
-    .find({})
+  const players = await Player.find({})
   
   response.json(players)
 })
