@@ -95,7 +95,7 @@ function TeamsTab({
                             if (e.key === 'Escape') { setRenamingTeamId(null); setRenameValue('') }
                           }}
                           autoFocus
-                          className="h-7 border-input bg-background text-sm focus-visible:ring-0"
+                          className="h-7 border-input bg-card text-sm focus-visible:ring-0"
                         />
                         <Button
                           size="sm"

@@ -98,14 +98,14 @@ function PlayersTab({
                   min={key === 'rank' ? '0.5' : undefined}
                   max={key === 'rank' ? '10' : undefined}
                   step={key === 'rank' ? '0.5' : undefined}
-                  className="w-full border-input bg-background placeholder:text-muted-foreground/50 focus-visible:border-emerald-500/40 focus-visible:ring-0"
+                  className="w-full border-input bg-card placeholder:text-muted-foreground/50 focus-visible:border-emerald-500/40 focus-visible:ring-0"
                 />
               </div>
             ))}
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-medium text-muted-foreground">Gender</label>
               <Select value={form.gender} onValueChange={v => handleField('gender', v)}>
-                <SelectTrigger className="w-full border-input bg-background">
+                <SelectTrigger className="w-full border-input bg-card">
                   <SelectValue placeholder="Select gender" />
                 </SelectTrigger>
                 <SelectContent>
