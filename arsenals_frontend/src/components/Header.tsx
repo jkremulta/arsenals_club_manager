@@ -17,7 +17,8 @@ import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
 
 function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
-  createOpen, setCreateOpen, startTime, setStartTime, onHamburgerClick }) {
+  createOpen, setCreateOpen, startTime, setStartTime, onHamburgerClick,
+  dashboardLoading = false }) {
 
   const [sessionLoading, setSessionLoading] = useState(false)
   const navigate = useNavigate()
@@ -47,9 +48,17 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
     </h1>
 
     <p className="text-[10px] text-muted-foreground/60 md:text-[11px]">
-      Session · {training?.startTime 
-        ? helper.formatTime(training.startTime) 
-        : 'N/A'}
+      Session ·{' '}
+      {dashboardLoading ? (
+        <span className="inline-flex items-center gap-1">
+          <Loader2 size={10} className="animate-spin text-muted-foreground/50" />
+          Checking…
+        </span>
+      ) : training?.startTime ? (
+        helper.formatTime(training.startTime)
+      ) : (
+        'N/A'
+      )}
     </p>
   </div>
         </div>
@@ -58,7 +67,17 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
         <div className="hidden items-center gap-3 md:flex">
           <span className="text-xs text-muted-foreground">{helper.capitalize(user?.username)}</span>
           <Separator orientation="vertical" className="bg-border" />
-          {!training ? (
+          {dashboardLoading ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled
+              className="pointer-events-none border-border bg-card text-muted-foreground shadow-none disabled:opacity-100"
+            >
+              <Loader2 size={13} className="mr-1.5 animate-spin" />
+              Checking session…
+            </Button>
+          ) : !training ? (
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-500">
@@ -95,7 +114,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
           ) : (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button size="sm" variant="outline" className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                <Button size="sm" className="border border-border bg-card text-red-400 hover:bg-red-500/10 hover:text-red-300">
                   <Trash2 size={13} className="mr-1.5" />
                   End Session
                 </Button>
@@ -142,7 +161,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
 
         {/* Mobile hamburger */}
         <button
-          className="flex flex-col gap-1 rounded p-2 hover:bg-accent md:hidden"
+          className="flex flex-col gap-1 rounded p-2 hover:bg-card md:hidden"
           onClick={onHamburgerClick}
         >
           <span className="block h-[1.5px] w-[18px] rounded bg-foreground/60" />

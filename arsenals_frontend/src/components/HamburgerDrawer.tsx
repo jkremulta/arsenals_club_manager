@@ -18,7 +18,8 @@ import helper from '../utils/helper'
 import { Loader2, Play, Trash2, LogOut, Users } from 'lucide-react'
 
 function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTraining,
-  onEndTraining, createOpen, setCreateOpen, startTime, setStartTime }) {
+  onEndTraining, createOpen, setCreateOpen, startTime, setStartTime,
+  dashboardLoading = false }) {
 
   const [sessionLoading, setSessionLoading] = useState(false)
   const navigate = useNavigate()
@@ -37,7 +38,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="flex w-56 flex-col p-0">
+      <SheetContent side="right" className="flex w-56 flex-col p-0 bg-background">
         <SheetHeader className="border-b border-border px-4 py-4">
           <SheetTitle className="text-left text-[13px] font-semibold">
             {helper.capitalize(user?.username)}
@@ -48,7 +49,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
         <div className="flex flex-col py-2">
           <button
             onClick={() => { navigate('/members'); onClose() }}
-            className="flex items-center gap-3 px-4 py-3 text-[13px] text-muted-foreground hover:bg-accent"
+            className="flex items-center gap-3 px-4 py-3 text-[13px] text-muted-foreground hover:bg-card"
           >
             <Users size={15} />
             Members
@@ -60,7 +61,17 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
         {/* Session control */}
         <div className="px-4 py-3">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Session</p>
-          {!training ? (
+          {dashboardLoading ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled
+              className="pointer-events-none w-full border-border bg-card text-muted-foreground shadow-none disabled:opacity-100"
+            >
+              <Loader2 size={12} className="mr-1.5 animate-spin" />
+              Checking session…
+            </Button>
+          ) : !training ? (
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="w-full bg-emerald-600 text-white hover:bg-emerald-500">
@@ -97,7 +108,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
           ) : (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button size="sm" variant="outline" className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                <Button size="sm" className="border border-border bg-card w-full text-red-400 hover:bg-red-500/10 hover:text-red-300">
                   <Trash2 size={12} className="mr-1.5" />
                   End Session
                 </Button>

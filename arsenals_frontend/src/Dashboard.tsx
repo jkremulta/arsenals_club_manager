@@ -62,7 +62,7 @@ const Dashboard = ({ onLogout, user }) => {
         trainingApi.get(token),
         attendanceApi.get(token),
         playersApi.get(token),
-        teamsApi.getAll(token)
+        teamsApi.getAll(token),
       ])
 
       setTraining(trainingRes)
@@ -303,6 +303,7 @@ const sharedControlsProps = {
       <Header
         user={user}
         training={training}
+        dashboardLoading={dashboardLoading}
         onLogout={onLogout}
         onCreateTraining={handleCreateTraining}
         onEndTraining={handleEndTraining}
@@ -319,6 +320,7 @@ const sharedControlsProps = {
         onClose={() => setDrawerOpen(false)}
         user={user}
         training={training}
+        dashboardLoading={dashboardLoading}
         onLogout={onLogout}
         onCreateTraining={handleCreateTraining}
         onEndTraining={handleEndTraining}

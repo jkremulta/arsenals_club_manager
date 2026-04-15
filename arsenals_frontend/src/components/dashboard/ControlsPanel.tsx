@@ -90,7 +90,7 @@ function ControlsPanel({
               className={`flex-1 rounded-md py-1.5 text-[11px] font-medium transition-all ${
                 gameMode === id
                   ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground/80'
+                  : 'text-muted-foreground bg-card hover:text-foreground/80'
               }`}
             >
               {label}
@@ -101,7 +101,7 @@ function ControlsPanel({
         <div className="flex flex-col gap-2">
           {gameMode === 'skill' ? (
             <Select value={skillGroup} onValueChange={setSkillGroup}>
-              <SelectTrigger className="w-full border-border bg-background text-sm text-foreground focus:ring-0 focus:ring-offset-0">
+              <SelectTrigger className="w-full border-border bg-card text-sm text-foreground focus:ring-0 focus:ring-offset-0">
                 <SelectValue placeholder="Select skill group" />
               </SelectTrigger>
               <SelectContent className="border-border bg-popover text-popover-foreground">
@@ -117,7 +117,7 @@ function ControlsPanel({
   
           {/* Team A */}
           <Select value={teamA} onValueChange={setTeamA}>
-            <SelectTrigger className="w-full border-border bg-background text-sm text-foreground focus:ring-0">
+            <SelectTrigger className="w-full border-border bg-card text-sm text-foreground focus:ring-0">
               <SelectValue placeholder="Team A" />
             </SelectTrigger>
             <SelectContent className="border-border bg-popover text-popover-foreground">
@@ -136,7 +136,7 @@ function ControlsPanel({
 
           {/* Team B */}
           <Select value={teamB} onValueChange={setTeamB}>
-            <SelectTrigger className="w-full border-border bg-background text-sm text-foreground focus:ring-0">
+            <SelectTrigger className="w-full border-border bg-card text-sm text-foreground focus:ring-0">
               <SelectValue placeholder="Team B" />
             </SelectTrigger>
             <SelectContent className="border-border bg-popover text-popover-foreground">

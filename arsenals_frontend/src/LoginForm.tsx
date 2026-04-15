@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import arsenalsLogo from './components/icons/arsenals logo transparent.png'
 
@@ -13,23 +13,75 @@ export function LoginForm({
 }) {
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [revealedPasswordIndex, setRevealedPasswordIndex] = useState<number | null>(null)
+  const revealTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const clearRevealTimeout = () => {
+    if (!revealTimeoutRef.current) return
+    clearTimeout(revealTimeoutRef.current)
+    revealTimeoutRef.current = null
+  }
+
+  const scheduleMaskPassword = () => {
+    clearRevealTimeout()
+    revealTimeoutRef.current = setTimeout(() => {
+      setRevealedPasswordIndex(null)
+      revealTimeoutRef.current = null
+    }, 800)
+  }
+
+  useEffect(() => {
+    return () => clearRevealTimeout()
+  }, [])
 
   const handleSubmit = async (e: React.BaseSyntheticEvent) => {
     e.preventDefault()
     if (isSubmitting) return
-    const form = e.currentTarget
-    const username = (form.elements.namedItem('username') as HTMLInputElement).value.trim()
-    const password = (form.elements.namedItem('password') as HTMLInputElement).value.trim()
+    const trimmedUsername = username.trim()
+    const trimmedPassword = password.trim()
 
     try {
       setIsSubmitting(true)
       setError('')
-      await onSubmit({ username, password })
+      await onSubmit({ username: trimmedUsername, password: trimmedPassword })
     } catch (error) {
       setError(error.message)
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const displayPassword = password
+    .split('')
+    .map((char, index) => (index === revealedPasswordIndex ? char : '•'))
+    .join('')
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextDisplayValue = e.target.value
+    const nextPasswordLength = nextDisplayValue.length
+    const previousPasswordLength = password.length
+
+    if (!nextDisplayValue.includes('•')) {
+      setPassword(nextDisplayValue)
+      setRevealedPasswordIndex(nextDisplayValue.length - 1)
+      scheduleMaskPassword()
+      return
+    }
+
+    if (nextPasswordLength >= previousPasswordLength) {
+      const appendedChar = nextDisplayValue[nextDisplayValue.length - 1] ?? ''
+      const nextPassword = password.slice(0, nextPasswordLength - 1) + appendedChar
+      setPassword(nextPassword)
+      setRevealedPasswordIndex(nextPassword.length - 1)
+      scheduleMaskPassword()
+      return
+    }
+
+    setPassword(password.slice(0, nextPasswordLength))
+    setRevealedPasswordIndex(null)
+    clearRevealTimeout()
   }
 
   return (
@@ -59,6 +111,8 @@ export function LoginForm({
             id="username"
             name="username"
             type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
             autoComplete="username"
             autoFocus
@@ -74,7 +128,15 @@ export function LoginForm({
           <input
             id="password"
             name="password"
-            type="password"
+            type="text"
+            inputMode="text"
+            spellCheck={false}
+            value={displayPassword}
+            onChange={handlePasswordChange}
+            onBlur={() => {
+              setRevealedPasswordIndex(null)
+              clearRevealTimeout()
+            }}
             required
             autoComplete="current-password"
             disabled={isSubmitting}
