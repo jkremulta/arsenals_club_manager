@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+
 import attendanceApi from './services/attendance'
 import playersApi from './services/players'
 import teamsApi from './services/team'
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
@@ -23,7 +24,10 @@ import {
 import {
   Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
 } from '@/components/ui/command'
-import { ArrowLeft, Users, Plus, Pencil, Trash2, Loader2, X, Shield, UserPlus, ChevronDown } from 'lucide-react'
+import { Users, Plus, Pencil, Trash2, Loader2, X, Shield, UserPlus, ChevronDown } from 'lucide-react'
+
+import Header from './components/membersPage/Header'
+import Tabs from './components/membersPage/Tabs'
 
 const formatBirthday = (value) => value ? new Date(value).toISOString().slice(0, 10) : ''
 const EMPTY_FORM = { name: '', birthday: '', gender: '', rank: '' }
@@ -33,7 +37,7 @@ const STATIC_SORT_OPTIONS = new Set(['skill_lowest', 'skill_highest', 'birthday_
 const OWNER_USERNAME = 'joshiee02'
 
 function PlayersPage({ user }) {
-  const navigate = useNavigate()
+
   const [activeTab, setActiveTab] = useState('players')
 
   // ── Players state ─────────────────────────────────────────────────
@@ -243,43 +247,10 @@ function PlayersPage({ user }) {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground">
       {/* ── Header ──────────────────────────────────────────────────── */}
-      <header className="flex-shrink-0 border-b border-border px-4 py-3 md:px-8 md:py-4">
-        <div className="relative mx-auto flex max-w-4xl items-center justify-between">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft size={15} />
-            Dashboard
-          </button>
-          <div className="absolute left-1/2 -translate-x-1/2">
-            <h1 className="text-[14px] font-semibold tracking-tight">Members</h1>
-          </div>
-        </div>
-      </header>
+      <Header/>
 
       {/* ── Tabs ────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 border-b border-border">
-        <div className="mx-auto flex max-w-4xl px-4 md:px-8">
-          {[
-            { id: 'players', label: 'Players', icon: Users },
-            { id: 'teams',   label: 'Teams',   icon: Shield },
-          ].map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => setActiveTab(id)}
-              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-[13px] font-medium transition-colors ${
-                activeTab === id
-                  ? 'border-emerald-500 text-emerald-400'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Icon size={14} />
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <Tabs setActiveTab={setActiveTab} activeTab={activeTab}/>
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <div className="mx-auto w-full max-w-4xl flex-1 overflow-hidden px-4 py-4 md:px-8 md:py-6 flex flex-col gap-4">
