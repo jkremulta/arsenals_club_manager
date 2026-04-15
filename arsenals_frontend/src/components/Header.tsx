@@ -17,7 +17,8 @@ import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
 
 function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
-  createOpen, setCreateOpen, startTime, setStartTime, onHamburgerClick }) {
+  createOpen, setCreateOpen, startTime, setStartTime, onHamburgerClick,
+  dashboardLoading = false }) {
 
   const [sessionLoading, setSessionLoading] = useState(false)
   const navigate = useNavigate()
@@ -47,9 +48,17 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
     </h1>
 
     <p className="text-[10px] text-muted-foreground/60 md:text-[11px]">
-      Session · {training?.startTime 
-        ? helper.formatTime(training.startTime) 
-        : 'N/A'}
+      Session ·{' '}
+      {dashboardLoading ? (
+        <span className="inline-flex items-center gap-1">
+          <Loader2 size={10} className="animate-spin text-muted-foreground/50" />
+          Checking…
+        </span>
+      ) : training?.startTime ? (
+        helper.formatTime(training.startTime)
+      ) : (
+        'N/A'
+      )}
     </p>
   </div>
         </div>
@@ -58,7 +67,17 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
         <div className="hidden items-center gap-3 md:flex">
           <span className="text-xs text-muted-foreground">{helper.capitalize(user?.username)}</span>
           <Separator orientation="vertical" className="bg-border" />
-          {!training ? (
+          {dashboardLoading ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled
+              className="pointer-events-none opacity-80"
+            >
+              <Loader2 size={13} className="mr-1.5 animate-spin" />
+              Checking session…
+            </Button>
+          ) : !training ? (
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-500">

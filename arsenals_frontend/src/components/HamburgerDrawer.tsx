@@ -18,7 +18,8 @@ import helper from '../utils/helper'
 import { Loader2, Play, Trash2, LogOut, Users } from 'lucide-react'
 
 function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTraining,
-  onEndTraining, createOpen, setCreateOpen, startTime, setStartTime }) {
+  onEndTraining, createOpen, setCreateOpen, startTime, setStartTime,
+  dashboardLoading = false }) {
 
   const [sessionLoading, setSessionLoading] = useState(false)
   const navigate = useNavigate()
@@ -60,7 +61,17 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
         {/* Session control */}
         <div className="px-4 py-3">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Session</p>
-          {!training ? (
+          {dashboardLoading ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled
+              className="pointer-events-none w-full opacity-80"
+            >
+              <Loader2 size={12} className="mr-1.5 animate-spin" />
+              Checking session…
+            </Button>
+          ) : !training ? (
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="w-full bg-emerald-600 text-white hover:bg-emerald-500">
