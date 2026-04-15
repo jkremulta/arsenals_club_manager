@@ -61,10 +61,19 @@ function PlayersPage({ user }) {
   const [renamingTeamId, setRenamingTeamId] = useState(null)
   const [renameValue, setRenameValue]       = useState('')
   const [renamingLoading, setRenamingLoading] = useState(null)
+  const [collapsedTeams, setCollapsedTeams] = useState(new Set())
 
   const derivedSkill = helper.skillFromRank(form.rank)
   const isFormComplete = Boolean(form.name.trim() && form.gender && form.rank && derivedSkill)
   const canManagePlayers = user?.username === OWNER_USERNAME
+
+  const toggleTeamCollapse = (id) => {
+    setCollapsedTeams(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
 
   // ── Fetch ─────────────────────────────────────────────────────────
   const fetchPlayers = async () => {
@@ -83,6 +92,7 @@ function PlayersPage({ user }) {
     try {
       const data = await teamsApi.getAll(user.token)
       setTeams(data)
+      setCollapsedTeams(new Set(data.map(team => team.id)))
     } catch (error) {
       toast.error(error?.response?.data?.error, { duration: 2000 })
     } finally {
@@ -194,8 +204,7 @@ function PlayersPage({ user }) {
   }
 
   const handleRenameTeam = async (id) => {
-  if (!renameValue.trim()) return
-
+    if (!renameValue.trim()) return
     setRenamingLoading(id)
     try {
       const updated = await teamsApi.rename(id, renameValue.trim(), user.token)
@@ -510,6 +519,7 @@ function PlayersPage({ user }) {
                 ) : (
                   <div className="flex flex-col gap-3">
                     {teams.map(team => {
+                      const isCollapsed = collapsedTeams.has(team.id)
                       const allTeamPlayerIds = new Set(teams.flatMap(currentTeam => currentTeam.players.map(player => player.id)))
                       const availableForTeam = attendance
                         .filter(player => !allTeamPlayerIds.has(player.id))
@@ -519,9 +529,12 @@ function PlayersPage({ user }) {
                       return (
                         <div key={team.id} className="rounded-xl border border-border bg-card overflow-hidden">
                           {/* Team header */}
-                          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                          <div
+                            className="flex items-center justify-between px-4 py-3 cursor-pointer select-none transition-colors hover:bg-accent/50"
+                            onClick={() => toggleTeamCollapse(team.id)}
+                          >
                             {renamingTeamId === team.id ? (
-                              <div className="flex flex-1 items-center gap-2 mr-2">
+                              <div className="flex flex-1 items-center gap-2 mr-2" onClick={e => e.stopPropagation()}>
                                 <Input
                                   value={renameValue}
                                   onChange={e => setRenameValue(e.target.value)}
@@ -547,12 +560,16 @@ function PlayersPage({ user }) {
                               </div>
                             ) : (
                               <div className="flex items-center gap-3 min-w-0">
+                                <ChevronDown
+                                  size={14}
+                                  className={`flex-shrink-0 text-muted-foreground/40 transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}`}
+                                />
                                 <Shield size={14} className="flex-shrink-0 text-muted-foreground/60" />
                                 <span className="font-semibold text-[14px] text-foreground/85 truncate">{team.name}</span>
                                 <span className="text-[11px] text-muted-foreground/50 flex-shrink-0">{team.players.length} players</span>
                               </div>
                             )}
-                            <div className="flex flex-shrink-0 items-center gap-1.5">
+                            <div className="flex flex-shrink-0 items-center gap-1.5" onClick={e => e.stopPropagation()}>
                               {/* Add player to team */}
                               <Popover
                                 open={teamPopoverOpen === team.id}
@@ -615,36 +632,40 @@ function PlayersPage({ user }) {
                             </div>
                           </div>
 
-                          {/* Team players */}
-                          {team.players.length === 0 ? (
-                            <div className="px-4 py-6 text-center text-xs text-muted-foreground/50">
-                              No players in this team yet
-                            </div>
-                          ) : (
-                            <div className="p-2">
-                              {team.players.map((player, i) => (
-                                <div key={player.id}>
-                                  <div className="group flex items-center justify-between rounded-md px-3 py-2 hover:bg-accent">
-                                    <div className="flex min-w-0 flex-1 items-center gap-2.5">
-                                      <span className="truncate text-[13px] font-medium text-foreground/75">{player.name}</span>
-                                      <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
-                                        {helper.skillPill(player.skill).label}
-                                      </span>
-                                    </div>
-                                    <button
-                                      onClick={() => handleRemoveFromTeam(team.id, player.id)}
-                                      disabled={removingFromTeam === `${team.id}-${player.id}`}
-                                      className="ml-2 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-muted-foreground/30 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400 opacity-100"
-                                    >
-                                      {removingFromTeam === `${team.id}-${player.id}`
-                                        ? <Loader2 size={10} className="animate-spin" />
-                                        : <X size={11} />}
-                                    </button>
-                                  </div>
-                                  {i < team.players.length - 1 && <Separator className="bg-border/40" />}
+                          {/* Team players — hidden when collapsed */}
+                          {!isCollapsed && (
+                            <>
+                              {team.players.length === 0 ? (
+                                <div className="border-t border-border px-4 py-6 text-center text-xs text-muted-foreground/50">
+                                  No players in this team yet
                                 </div>
-                              ))}
-                            </div>
+                              ) : (
+                                <div className="border-t border-border p-2">
+                                  {team.players.map((player, i) => (
+                                    <div key={player.id}>
+                                      <div className="group flex items-center justify-between rounded-md px-3 py-2 hover:bg-accent">
+                                        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                                          <span className="truncate text-[13px] font-medium text-foreground/75">{player.name}</span>
+                                          <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
+                                            {helper.skillPill(player.skill).label}
+                                          </span>
+                                        </div>
+                                        <button
+                                          onClick={() => handleRemoveFromTeam(team.id, player.id)}
+                                          disabled={removingFromTeam === `${team.id}-${player.id}`}
+                                          className="ml-2 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-muted-foreground/30 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400 opacity-100"
+                                        >
+                                          {removingFromTeam === `${team.id}-${player.id}`
+                                            ? <Loader2 size={10} className="animate-spin" />
+                                            : <X size={11} />}
+                                        </button>
+                                      </div>
+                                      {i < team.players.length - 1 && <Separator className="bg-border/40" />}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       )
