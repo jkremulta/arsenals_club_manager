@@ -38,7 +38,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="flex w-56 flex-col p-0">
+      <SheetContent side="right" className="flex w-56 flex-col p-0 bg-background">
         <SheetHeader className="border-b border-border px-4 py-4">
           <SheetTitle className="text-left text-[13px] font-semibold">
             {helper.capitalize(user?.username)}
@@ -66,7 +66,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
               size="sm"
               variant="secondary"
               disabled
-              className="pointer-events-none w-full opacity-80"
+              className="pointer-events-none w-full border-border bg-card text-muted-foreground shadow-none disabled:opacity-100"
             >
               <Loader2 size={12} className="mr-1.5 animate-spin" />
               Checking session…
@@ -108,7 +108,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
           ) : (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button size="sm" variant="outline" className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                <Button size="sm" variant="outline" className="bg-card w-full text-red-400 hover:bg-red-500/10 hover:text-red-300">
                   <Trash2 size={12} className="mr-1.5" />
                   End Session
                 </Button>

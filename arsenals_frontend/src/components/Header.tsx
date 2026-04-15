@@ -72,7 +72,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
               size="sm"
               variant="secondary"
               disabled
-              className="pointer-events-none opacity-80"
+              className="pointer-events-none border-border bg-card text-muted-foreground shadow-none disabled:opacity-100"
             >
               <Loader2 size={13} className="mr-1.5 animate-spin" />
               Checking session…
@@ -114,7 +114,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
           ) : (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button size="sm" variant="outline" className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                <Button size="sm" variant="outline" className="bg-card text-red-400 hover:bg-red-500/10 hover:text-red-300">
                   <Trash2 size={13} className="mr-1.5" />
                   End Session
                 </Button>

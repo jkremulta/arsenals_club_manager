@@ -58,7 +58,7 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
               size="sm"
               variant="outline"
               disabled={addLoading}
-              className="h-8 text-xs disabled:opacity-50"
+              className="h-8 text-xs disabled:opacity-50 bg-card"
             >
               {addLoading
                 ? <Loader2 size={12} className="mr-1.5 animate-spin" />
