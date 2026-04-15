@@ -49,7 +49,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
         <div className="flex flex-col py-2">
           <button
             onClick={() => { navigate('/members'); onClose() }}
-            className="flex items-center gap-3 px-4 py-3 text-[13px] text-muted-foreground hover:bg-accent"
+            className="flex items-center gap-3 px-4 py-3 text-[13px] text-muted-foreground hover:bg-card"
           >
             <Users size={15} />
             Members
@@ -108,7 +108,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
           ) : (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button size="sm" variant="outline" className="bg-card w-full text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                <Button size="sm" className="border border-border bg-card w-full text-red-400 hover:bg-red-500/10 hover:text-red-300">
                   <Trash2 size={12} className="mr-1.5" />
                   End Session
                 </Button>

@@ -114,7 +114,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
           ) : (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button size="sm" variant="outline" className="bg-card text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                <Button size="sm" className="border border-border bg-card text-red-400 hover:bg-red-500/10 hover:text-red-300">
                   <Trash2 size={13} className="mr-1.5" />
                   End Session
                 </Button>
@@ -161,7 +161,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
 
         {/* Mobile hamburger */}
         <button
-          className="flex flex-col gap-1 rounded p-2 hover:bg-accent md:hidden"
+          className="flex flex-col gap-1 rounded p-2 hover:bg-card md:hidden"
           onClick={onHamburgerClick}
         >
           <span className="block h-[1.5px] w-[18px] rounded bg-foreground/60" />
