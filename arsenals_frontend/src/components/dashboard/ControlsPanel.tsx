@@ -17,7 +17,7 @@ const SKILL_GROUPS = ['beginner', 'intermediate', 'advanced']
 
 function ControlsPanel({
   skillGroup, setSkillGroup, initializedSkillGroup,
-  nextGamePlayers, setNextGamePlayers,
+  nextGamePlayers,
   currentGame,
   attendance,
   initLoading, startLoading,

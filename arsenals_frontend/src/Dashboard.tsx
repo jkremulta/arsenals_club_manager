@@ -29,28 +29,33 @@ const Dashboard = ({ onLogout, user }) => {
   const [training, setTraining] = useState(null)
   const [attendance, setAttendance] = useState([])
   const [players, setPlayers] = useState([])
-  const [createOpen, setCreateOpen] = useState(false)
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [paidIds, setPaidIds] = useState(new Set())
-  const [currentGame, setCurrentGame] = useState([])
-  const [removingId, setRemovingId] = useState(null)
-  const [teams, setTeams] = useState(null)
 
-  const [skillGroup, setSkillGroup]         = useState('')
+  const [teams, setTeams] = useState(null)
+  const [skillGroup, setSkillGroup] = useState('')
   const [initializedSkillGroup, setInitializedSkillGroup] = useState('')
   const [currentGameSkillGroup, setCurrentGameSkillGroup] = useState('')
-
   const [nextGamePlayers, setNextGamePlayers] = useState([])
+  const [currentGame, setCurrentGame] = useState([])
+
+  const [paidIds, setPaidIds] = useState(new Set())
+  const [removingId, setRemovingId] = useState(null)
+
   const [initLoading, setInitLoading]       = useState(false)
   const [startLoading, setStartLoading]     = useState(false)
   const [dashboardLoading, setDashboardLoading] = useState(true)
+
   const [activeTab, setActiveTab] = useState('attendance')
+  const [createOpen, setCreateOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
   const [startTime, setStartTime] = useState(() => {
     const now = new Date()
     now.setSeconds(0, 0)
     return now.toTimeString().slice(0, 5)
   })
-  
+
+
+  // fetch to get all data needed at start
   const fetchAll = async ({ showLoader = true } = {}) => {
     if (showLoader) {
       setDashboardLoading(true)
@@ -62,7 +67,7 @@ const Dashboard = ({ onLogout, user }) => {
         trainingApi.get(token),
         attendanceApi.get(token),
         playersApi.get(token),
-        teamsApi.getAll(token),
+        teamsApi.get(token),
       ])
 
       setTraining(trainingRes)
@@ -76,11 +81,11 @@ const Dashboard = ({ onLogout, user }) => {
       setTeams(teamsRes)
 
     } catch (error) {
-      // 401s are handled by the axios interceptor which calls logout
+      toast.error('Could not connect to database.')
     } finally {
       setDashboardLoading(false)
     }
-}
+  }
 
   useEffect(() => {
     fetchAll()
@@ -102,9 +107,7 @@ const Dashboard = ({ onLogout, user }) => {
       setCreateOpen(false)
 
     } catch(error) {
-        toast.error(error?.response?.data?.error)
-
-        fetchAll()
+      toast.error(error?.response?.data?.error)
     }
   }
 
@@ -137,7 +140,7 @@ const Dashboard = ({ onLogout, user }) => {
         setNextGamePlayers([])
         setPaidIds(new Set())
     }
-}
+  }
 
   const handleAddPlayer = async (playerId) => {
     try {
@@ -158,6 +161,7 @@ const Dashboard = ({ onLogout, user }) => {
 
   const handleRemovePlayer = async (id) => {
     const token = user.token
+
     try {
       setRemovingId(id)
       await attendanceApi.delete(id, token)
@@ -167,6 +171,7 @@ const Dashboard = ({ onLogout, user }) => {
       toast.success('Player removed.', {
         duration: 2000
       })
+
     } catch(error) {
       toast.error(error?.response?.data?.error)
     }
@@ -174,34 +179,22 @@ const Dashboard = ({ onLogout, user }) => {
 
   const togglePaid = async (id) => {
     const token = user.token
+
     try {
       const isCurrentlyPaid = paidIds.has(id)
       const updatedTraining = await attendanceApi.put(id, token, { paid: !isCurrentlyPaid })
       const newPaidIds = new Set(
         updatedTraining.attendance.filter(p => p.paid).map(p => p.id)
       )
-    setPaidIds(newPaidIds)
+      setPaidIds(newPaidIds)
+
     } catch(error) {
       toast.error(error?.response?.data?.error, {
         duration: 2000
       })
     }
-    
   }
 
-  const attendanceIds = new Set(attendance.map(p => p.id))
-  const sharedAttendanceProps = {
-    attendance,
-    availablePlayers: players.filter(p => !attendanceIds.has(p.id)),
-    paidIds,
-    currentGame,
-    removingId,
-    onAdd: handleAddPlayer,
-    onRemove: handleRemovePlayer,
-    onTogglePaid: togglePaid,
-  }
-
-  // ── Game ────────────────────────────────────────────────────────────────
   const handleInitializeGame = async (payload) => {
     const token = user.token
  
@@ -268,12 +261,14 @@ const Dashboard = ({ onLogout, user }) => {
 
   const handleReplace = async (outPlayerId, inPlayerId) => {
     const token = user.token
+
     try {
       const updatedPlayers = await trainingApi.replacePlayer(outPlayerId, inPlayerId, token)
       setNextGamePlayers(updatedPlayers)
       toast.success('Player replaced.', {
         duration: 2000
       })
+
     } catch (error) {
       toast.error(error?.response?.data?.error, {
         duration: 2000
@@ -281,25 +276,36 @@ const Dashboard = ({ onLogout, user }) => {
     }
   }
 
-const sharedControlsProps = {
-  skillGroup,
-  setSkillGroup,
-  initializedSkillGroup,
-  nextGamePlayers,
-  currentGame,
-  attendance,
-  initLoading,
-  startLoading,
-  onInitialize: handleInitializeGame,
-  onStartGame: handleStartGame,
-  onReplace: handleReplace,
-  gamesBySkill: training?.games_by_skill,
-  teams,
-}
+  const attendanceIds = new Set(attendance.map(p => p.id))
+  const sharedAttendanceProps = {
+    attendance,
+    availablePlayers: players.filter(p => !attendanceIds.has(p.id)),
+    paidIds,
+    currentGame,
+    removingId,
+    onAdd: handleAddPlayer,
+    onRemove: handleRemovePlayer,
+    onTogglePaid: togglePaid,
+  }
+
+  const sharedControlsProps = {
+    skillGroup,
+    setSkillGroup,
+    initializedSkillGroup,
+    nextGamePlayers,
+    currentGame,
+    attendance,
+    initLoading,
+    startLoading,
+    onInitialize: handleInitializeGame,
+    onStartGame: handleStartGame,
+    onReplace: handleReplace,
+    gamesBySkill: training?.games_by_skill,
+    teams,
+  }
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground">
-      {/* ── Header ──────────────────────────────────────────────────────── */}
       <Header
         user={user}
         training={training}
@@ -335,35 +341,71 @@ const sharedControlsProps = {
         {dashboardLoading ? (
           <div className="flex flex-1 items-center justify-center p-8">
             <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-border bg-card py-16 text-center">
-  <Loader2 size={30} className="mb-3 animate-spin text-muted-foreground/40" />
-  <p className="text-sm font-medium text-muted-foreground">Loading dashboard</p>
-  <p className="mt-1 text-xs text-muted-foreground/60">Checking training session state...</p>
-</div>
+              <Loader2
+                size={30}
+                className="mb-3 animate-spin text-muted-foreground/40"
+              />
+              <p className="text-sm font-medium text-muted-foreground">
+                Loading dashboard
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground/60">
+                Checking training session state...
+              </p>
+            </div>
           </div>
         ) : !training ? (
           /* No session state */
           <div className="flex flex-1 items-center justify-center p-8">
             <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-dashed border-border py-16 text-center">
-  <AlertCircle size={30} className="mb-3 text-muted-foreground/40" />
-  <p className="text-sm font-medium text-muted-foreground">No active training session</p>
-  <p className="mt-1 text-xs text-muted-foreground/60">Open the menu to start a session</p>
-</div>
+              <AlertCircle
+                size={30}
+                className="mb-3 text-muted-foreground/40"
+              />
+              <p className="text-sm font-medium text-muted-foreground">
+                No active training session
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground/60">
+                Open the menu to start a session
+              </p>
+            </div>
           </div>
         ) : (
           <div className="flex flex-1 flex-col overflow-hidden">
             {/* Stats */}
             <div className="flex-shrink-0 px-4 pt-4 md:px-8 md:pt-5">
               <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
-                <StatCard icon={Users}       label="Attendance"    value={attendance.length}                          accent="#34d399" />
-                <StatCard icon={ShieldCheck} label="Paid"          value={`${paidIds.size} / ${attendance.length}`}   accent="#34d399" valueStyle={{ color: '#34d399' }} />
-                <StatCard icon={Trophy}      label="Games Today"   value={training.games_today || '—'}                accent="#a78bfa" />
-                <StatCard icon={Clock}       label="Session Start" value={helper.formatTime(training.startTime) ?? '—'} accent="#60a5fa" />
+                <StatCard
+                  icon={Users}
+                  label="Attendance"
+                  value={attendance.length}
+                  accent="#34d399"
+                />
+                <StatCard
+                  icon={ShieldCheck}
+                  label="Paid"
+                  value={`${paidIds.size} / ${attendance.length}`}
+                  accent="#34d399"
+                  valueStyle={{ color: '#34d399' }}
+                />
+                <StatCard
+                  icon={Trophy}
+                  label="Games Today"
+                  value={training.games_today || '—'}
+                  accent="#a78bfa"
+                />
+                <StatCard
+                  icon={Clock}
+                  label="Session Start"
+                  value={helper.formatTime(training.startTime) ?? '—'}
+                  accent="#60a5fa"
+                />
               </div>
             </div>
 
             {/* ── Desktop: 3-col layout ────────────────────────────────── */}
             <div className="mx-auto hidden w-full max-w-7xl flex-1 gap-4 overflow-hidden px-8 py-4 md:grid md:grid-cols-3">
               <AttendancePanel {...sharedAttendanceProps} />
+
               <GamePanel
                 currentGame={currentGame}
                 currentGameSkillGroup={currentGameSkillGroup}
@@ -371,6 +413,7 @@ const sharedControlsProps = {
                 teamA={training?.team_a}
                 teamB={training?.team_b}
               />
+
               <ControlsPanel {...sharedControlsProps} />
             </div>
 
@@ -379,6 +422,7 @@ const sharedControlsProps = {
               {activeTab === 'attendance' && (
                 <AttendancePanel {...sharedAttendanceProps} />
               )}
+
               {activeTab === 'game' && (
                 <GamePanel
                   currentGame={currentGame}
@@ -388,13 +432,15 @@ const sharedControlsProps = {
                   teamB={training?.team_b}
                 />
               )}
-              {activeTab === 'controls' && <ControlsPanel {...sharedControlsProps} />}
+
+              {activeTab === 'controls' && (
+                <ControlsPanel {...sharedControlsProps} />
+              )}
             </div>
           </div>
         )}
       </div>
 
-      {/* ── Bottom nav — always pinned, mobile only ──────────────────────── */}
       <BottomNav active={activeTab} onChange={setActiveTab} />
     </div>
   )
