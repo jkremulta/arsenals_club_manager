@@ -2,6 +2,7 @@ const Training = require('../models/training')
 const Player = require('../models/players')
 const Team = require('../models/team')
 
+// helper
 const sortAndSlice = (players, desc = true, amount = 0) => {
   return players
     .sort((a, b) => (desc ? b.rank - a.rank : a.rank - b.rank))
@@ -10,10 +11,8 @@ const sortAndSlice = (players, desc = true, amount = 0) => {
 
 const sortByGamesPlayed = (players) => {
   return [...players].sort((a, b) => {
-    const gamesA = a.games_played ?? 0
-    const gamesB = b.games_played ?? 0
-    if (gamesA !== gamesB) return gamesA - gamesB
-    return (a.name || '').localeCompare(b.name || '')
+    const byGames = (a.games_played ?? 0) - (b.games_played ?? 0)
+    return byGames !== 0 ? byGames : (a.name ?? '').localeCompare(b.name ?? '')
   })
 }
 
@@ -28,6 +27,7 @@ const sortPlayersBasedOnSkillGroup = async (skillGroup, group) => {
   )
 
   let playersToAdd = []
+  
   if (skillGroup === 'advanced') {
     playersToAdd = sortAndSlice(otherPlayers, true, amountToFill)
   } else if (skillGroup === 'beginner') {
@@ -47,13 +47,14 @@ const ensureGroupSize = async (group, skillGroup) => {
   return await sortPlayersBasedOnSkillGroup(skillGroup, group)
 }
 
-// ── Skill-based game init ─────────────────────────────────────────────────────
+// skill based logic
 const getPlayersBySkillGroup = async (skillGroup) => {
   const activeTraining = await Training
     .findOne({ isActive: true })
     .populate('attendance')
 
   if (!activeTraining) throw new Error('No active training')
+
   if (activeTraining.attendance.length < 14) {
     throw new Error('You need at least 14 players in attendance to play.')
   }
@@ -85,11 +86,12 @@ const getPlayersBySkillGroup = async (skillGroup) => {
     .filter(Boolean)
 }
 
-// ── Team-based game init ──────────────────────────────────────────────────────
+// team based logic
 const getPlayersByTeams = async (teamAId, teamBId) => {
   if (teamAId === teamBId) {
     throw new Error('Please select two different teams')
   }
+
   const activeTraining = await Training
     .findOne({ isActive: true })
     .populate('attendance')
@@ -141,13 +143,12 @@ const getPlayersByTeams = async (teamAId, teamBId) => {
 
   const freshPlayers = await Player.find({ _id: { $in: playerIds } })
   const byId = new Map(freshPlayers.map(player => [player.id, player]))
-
   return playerIds
     .map(id => byId.get(id.toString()))
     .filter(Boolean)
 }
 
-// ── Start game ────────────────────────────────────────────────────────────────
+// start game logic
 const startGame = async () => {
   const activeTraining = await Training.findOne({ isActive: true })
   if (!activeTraining) throw new Error('No active training')
@@ -182,7 +183,6 @@ const startGame = async () => {
   )
 
   await activeTraining.save()
-
   const updatedPlayers = await Player.find({ _id: { $in: playerIds } })
   return updatedPlayers
 }

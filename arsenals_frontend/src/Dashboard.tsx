@@ -63,7 +63,6 @@ const Dashboard = ({ onLogout, user }) => {
         attendanceApi.get(token),
         playersApi.get(token),
         teamsApi.getAll(token)
-
       ])
 
       setTraining(trainingRes)

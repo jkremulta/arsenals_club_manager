@@ -5,7 +5,6 @@ const Team = require('../models/team')
 const trainingService = require('../services/training.service')
 const { userExtractor } = require('../utils/middleware')
 
-// get active training
 trainingRouter.get('/', userExtractor, async (request, response) => {
   const activeTraining = await Training
     .findOne({ isActive: true })
@@ -24,12 +23,13 @@ trainingRouter.get('/', userExtractor, async (request, response) => {
 // create training
 trainingRouter.post('/', userExtractor, async (request, response) => {
   const activeTraining = await Training.findOne({ isActive: true })
-  if (activeTraining) return response.status(400).json({ error: 'training already exists' })
+  if (activeTraining) return response.status(400).json({ error: 'Training already exists.' })
 
   const { startTime } = request.body || {}
-  if (!startTime) return response.status(400).json({ error: 'startTime is required' })
+  if (!startTime) return response.status(400).json({ error: 'Start time is required.' })
 
   const newTraining = new Training({ startTime: new Date(startTime), isActive: true })
+
   const saved = await newTraining.save()
   response.status(201).json(saved)
 })
@@ -51,6 +51,7 @@ trainingRouter.delete('/', userExtractor, async (request, response) => {
   )
   await Team.deleteMany({})
   await Training.findByIdAndDelete(activeTraining.id)
+
   return response.status(200).json({ isActive: false })
 })
 
@@ -59,7 +60,7 @@ trainingRouter.post('/initializeGame', userExtractor, async (request, response) 
   const { skillGroup, teamA, teamB } = request.body || {}
 
   if (!skillGroup && !(teamA && teamB)) {
-    return response.status(400).json({ error: 'skillGroup or team selection is required' })
+    return response.status(400).json({ error: 'Skill Group or Team Selection is required.' })
   }
 
   if (teamA && teamB) {
@@ -68,33 +69,37 @@ trainingRouter.post('/initializeGame', userExtractor, async (request, response) 
   }
 
   const players = await trainingService.getPlayersBySkillGroup(skillGroup)
+
   return response.json(players)
 })
 
 // start game
 trainingRouter.post('/startGame', userExtractor, async (request, response) => {
   const players = await trainingService.startGame()
+
   return response.json(players)
 })
 
 // replace player
 trainingRouter.patch('/replacePlayer', userExtractor, async (request, response) => {
   const { outPlayerId, inPlayerId } = request.body
+
   if (!outPlayerId || !inPlayerId) {
     return response.status(400).json({ error: 'outPlayerId and inPlayerId are required' })
   }
 
   const activeTraining = await Training.findOne({ isActive: true })
-  if (!activeTraining) return response.status(404).json({ error: 'No active training' })
+  if (!activeTraining) return response.status(404).json({ error: 'No active training.' })
 
   const index = activeTraining.initialized_players.findIndex(
     id => id.toString() === outPlayerId
   )
-  if (index === -1) return response.status(404).json({ error: 'Player not in initialized list' })
+  if (index === -1) return response.status(404).json({ error: 'Player not in initialized list.' })
 
   activeTraining.initialized_players[index] = inPlayerId
   await activeTraining.save()
 
+  // this code makes it so the list doesn't reshuffle after being replace
   const updatedPlayers = await Player.find({ _id: { $in: activeTraining.initialized_players } })
   const byId = new Map(updatedPlayers.map(p => [p.id, p]))
   const ordered = activeTraining.initialized_players

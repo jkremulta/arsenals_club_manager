@@ -3,26 +3,20 @@ const Training = require('../models/training')
 const Player = require('../models/players')
 const { userExtractor } = require('../utils/middleware')
 
-// gets all players in attendance
 attendanceRouter.get('/', userExtractor, async (request, response) => {
 
   const activeTraining = await Training
     .findOne({ isActive: true })
     .populate('attendance', { name: 1, games_played: 1, paid: 1, skill: 1, late: 1 })
 
-  // to stop error on log in
-  if (!activeTraining) {
-    return response.status(200).json([])
-  }
-
-  // if (!activeTraining) {
-  //   return response.status(404).json({ error: "No active training found" })
-  // }
+    // to stop error on log in
+    if (!activeTraining) {
+      return response.status(200).json([])
+    }
   
-  response.json(activeTraining.attendance)
-})
+    response.json(activeTraining.attendance)
+  })
 
-// add player in attendance
 attendanceRouter.post('/', async (request, response) => {
   const { id } = request.body || {}
   if (!id) return response.status(400).json({ error: "id is required" })
@@ -41,16 +35,14 @@ attendanceRouter.post('/', async (request, response) => {
     const msElapsed = Date.now() - new Date(activeTraining.startTime).getTime()
     const isLate = msElapsed > 45 * 60 * 1000
     await Player.findByIdAndUpdate(id, { late: isLate }) 
-
   }
 
-  const populated = await Training.findOne({ isActive: true })
-    .populate('attendance')
+  const populated = await Training.findOne({ isActive: true }).populate('attendance')
 
   return response.status(201).json(populated)
 })
 
-// removes player from attendance
+
 attendanceRouter.delete('/:id', userExtractor, async (request, response) => {
   const { id } = request.params
 
@@ -65,7 +57,6 @@ attendanceRouter.delete('/:id', userExtractor, async (request, response) => {
   )
 
   await activeTraining.save()
-
   return response.status(204).end()
 })
 
@@ -74,6 +65,7 @@ attendanceRouter.put('/:id', userExtractor, async (request, response) => {
   const body = request.body
   
   const activeTraining = await Training.findOne({ isActive: true })
+
   if(!activeTraining) {
     return response.status(404).json({ error: 'No active training' })
   }
@@ -81,6 +73,7 @@ attendanceRouter.put('/:id', userExtractor, async (request, response) => {
   const inAttendance = activeTraining.attendance.some(
     p => p.toString() === id
   )
+
   if (!inAttendance) {
     return response.status(404).json({ error: 'Player is not in attendance' })
   }
@@ -97,6 +90,7 @@ attendanceRouter.put('/:id', userExtractor, async (request, response) => {
 
   const updatedTraining = await Training.findOne({ isActive: true })
     .populate('attendance')
+  
   return response.json(updatedTraining)
 })
 

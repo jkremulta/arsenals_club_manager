@@ -6,14 +6,4 @@ const login = async (credentials) => {
   return response.data
 }
 
-const verifyPassword = async (password, token) => {
-  const response = await axios.post(
-    `${baseUrl}/verify-password`,
-    { password },
-    { headers: { Authorization: `Bearer ${token}` } }
-  )
-
-  return response.data
-}
-
-export default { login, verifyPassword }
+export default { login}
