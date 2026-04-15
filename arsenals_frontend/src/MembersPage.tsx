@@ -90,7 +90,7 @@ function PlayersPage({ user }) {
 
   const fetchTeams = async () => {
     try {
-      const data = await teamsApi.getAll(user.token)
+      const data = await teamsApi.get(user.token)
       setTeams(data)
       setCollapsedTeams(new Set(data.map(team => team.id)))
     } catch (error) {

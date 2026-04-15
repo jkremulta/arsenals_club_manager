@@ -29,22 +29,25 @@ const Dashboard = ({ onLogout, user }) => {
   const [training, setTraining] = useState(null)
   const [attendance, setAttendance] = useState([])
   const [players, setPlayers] = useState([])
-  const [createOpen, setCreateOpen] = useState(false)
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [paidIds, setPaidIds] = useState(new Set())
-  const [currentGame, setCurrentGame] = useState([])
-  const [removingId, setRemovingId] = useState(null)
-  const [teams, setTeams] = useState(null)
 
-  const [skillGroup, setSkillGroup]         = useState('')
+  const [teams, setTeams] = useState(null)
+  const [skillGroup, setSkillGroup] = useState('')
   const [initializedSkillGroup, setInitializedSkillGroup] = useState('')
   const [currentGameSkillGroup, setCurrentGameSkillGroup] = useState('')
-
   const [nextGamePlayers, setNextGamePlayers] = useState([])
+  const [currentGame, setCurrentGame] = useState([])
+
+  const [paidIds, setPaidIds] = useState(new Set())
+  const [removingId, setRemovingId] = useState(null)
+
   const [initLoading, setInitLoading]       = useState(false)
   const [startLoading, setStartLoading]     = useState(false)
   const [dashboardLoading, setDashboardLoading] = useState(true)
+
   const [activeTab, setActiveTab] = useState('attendance')
+  const [createOpen, setCreateOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
   const [startTime, setStartTime] = useState(() => {
     const now = new Date()
     now.setSeconds(0, 0)
@@ -62,7 +65,7 @@ const Dashboard = ({ onLogout, user }) => {
         trainingApi.get(token),
         attendanceApi.get(token),
         playersApi.get(token),
-        teamsApi.getAll(token),
+        teamsApi.get(token),
       ])
 
       setTraining(trainingRes)
@@ -76,7 +79,8 @@ const Dashboard = ({ onLogout, user }) => {
       setTeams(teamsRes)
 
     } catch (error) {
-      // 401s are handled by the axios interceptor which calls logout
+
+      toast.error('Could not connect to database.')
     } finally {
       setDashboardLoading(false)
     }
@@ -102,7 +106,7 @@ const Dashboard = ({ onLogout, user }) => {
       setCreateOpen(false)
 
     } catch(error) {
-        toast.error(error?.response?.data?.error)
+        
 
         fetchAll()
     }
