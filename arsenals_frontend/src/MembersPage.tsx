@@ -333,7 +333,7 @@ function PlayersPage({ user }) {
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search players..."
-                  className="w-full border-input bg-background text-sm placeholder:text-sm placeholder:text-muted-foreground/50 md:text-base md:placeholder:text-base focus-visible:ring-0"
+                  className="w-full border-input bg-background text-sm bg-card placeholder:text-sm placeholder:text-muted-foreground/50 md:text-base md:placeholder:text-base focus-visible:ring-0"
                 />
                 <Button size='sm' onClick={openNew} className="bg-emerald-600 text-white hover:bg-emerald-500">
                   <Plus size={13} className="mr-1.5" />
@@ -463,7 +463,7 @@ function PlayersPage({ user }) {
                   onChange={e => setNewTeamName(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleCreateTeam()}
                   placeholder="New team name..."
-                  className="flex-1 border-input bg-background text-sm placeholder:text-sm placeholder:text-muted-foreground/50 md:text-base md:placeholder:text-base focus-visible:ring-0"
+                  className="flex-1 border-input bg-card text-sm placeholder:text-sm placeholder:text-muted-foreground/50 md:text-base md:placeholder:text-base focus-visible:ring-0"
                 />
                 <Button size='sm'
                   onClick={handleCreateTeam}
