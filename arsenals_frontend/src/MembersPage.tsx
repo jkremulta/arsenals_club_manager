@@ -61,7 +61,6 @@ function MembersPage({ user }) {
       const data = await playersApi.get(user.token)
       if (data?.error) return toast.error(data.error, { duration: 2000 })
       setPlayers(data)
-      console.log(data)
     } catch (error) {
       toast.error(error?.response?.data?.error, { duration: 2000 })
     } finally {
