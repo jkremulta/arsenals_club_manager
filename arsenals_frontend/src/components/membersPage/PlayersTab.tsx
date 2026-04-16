@@ -10,7 +10,7 @@ import helper from '@/utils/helper'
 import DeleteButton from './DeleteButton'
 
 const formatBirthday = (value) => value ? new Date(value).toISOString().slice(0, 10) : ''
-const STATIC_SORT_OPTIONS = new Set(['skill_lowest', 'skill_highest', 'birthday_youngest', 'birthday_oldest', 'rank_lowest', 'rank_highest'])
+const STATIC_SORT_OPTIONS = new Set(['skill_lowest', 'skill_highest', 'birthday_youngest', 'birthday_oldest', 'rank_lowest', 'rank_highest',])
 const SKILL_SORT_ORDER = { beginner: 0, intermediate: 1, advanced: 2 }
 const GENDER_SORT_ORDER = { Male: 0, M: 0, Female: 1, F: 1 }
 
@@ -57,7 +57,8 @@ function PlayersTab({
         case 'rank_lowest':       result = (Number(a.rank) || 0) - (Number(b.rank) || 0); break
         case 'rank_highest':      result = (Number(b.rank) || 0) - (Number(a.rank) || 0); break
         case 'gender':            result = (GENDER_SORT_ORDER[a.gender] ?? 99) - (GENDER_SORT_ORDER[b.gender] ?? 99); break
-        case 'name': default:     result = a.name.localeCompare(b.name); break
+        case 'name':              result = a.name.localeCompare(b.name); break
+        case 'recent': default:   result = new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime(); break
       }
       return STATIC_SORT_OPTIONS.has(sortBy) ? result : (sortDirection === 'asc' ? result : -result)
     })
@@ -154,7 +155,7 @@ function PlayersTab({
             { key: 'skill',    label: 'Skill',    span: 'col-span-2' },
             { key: 'birthday', label: 'Birthday', span: 'col-span-3' },
             ...(canManagePlayers ? [{ key: 'rank', label: 'Rank', span: 'col-span-1 flex justify-center' }] : []),
-            { key: 'gender',   label: 'Gender',   span: canManagePlayers ? 'col-span-3 pl-8' : 'col-span-4' },
+            { key: 'gender',   label: 'Gender',   span: canManagePlayers ? 'col-span-3 pl-8' : 'col-span-4' }
           ].map(({ key, label, span }) => (
             <div key={key} className={`${span} flex items-center`}>
               <button

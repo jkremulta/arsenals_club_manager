@@ -23,8 +23,8 @@ function MembersPage({ user }) {
   const [players, setPlayers]           = useState([])
   const [loading, setLoading]           = useState(true)
   const [search, setSearch]             = useState('')
-  const [sortBy, setSortBy]             = useState('name')
-  const [sortDirection, setSortDirection] = useState('asc')
+  const [sortBy, setSortBy]             = useState('recent')
+  const [sortDirection, setSortDirection] = useState('desc')
   const [formOpen, setFormOpen]         = useState(false)
   const [editingId, setEditingId]       = useState(null)
   const [form, setForm]                 = useState(EMPTY_FORM)
@@ -61,6 +61,7 @@ function MembersPage({ user }) {
       const data = await playersApi.get(user.token)
       if (data?.error) return toast.error(data.error, { duration: 2000 })
       setPlayers(data)
+      console.log(data)
     } catch (error) {
       toast.error(error?.response?.data?.error, { duration: 2000 })
     } finally {

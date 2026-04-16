@@ -33,6 +33,8 @@ const playerSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   }
+}, {
+  timestamps: true
 })
 
 playerSchema.set('toJSON', {
