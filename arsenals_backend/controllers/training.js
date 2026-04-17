@@ -40,7 +40,7 @@ trainingRouter.delete('/', userExtractor, async (request, response) => {
   if (!activeTraining) return response.status(404).json({ error: 'No active training found.' })
 
   await Player.updateMany(
-    { _id: { $in: activeTraining.attendance } },
+    {},
     {
       $set: {
         games_played: 0,
