@@ -112,7 +112,7 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                 >
                   <div className="flex min-w-0 items-center gap-2.5">
                      <span
-                      className={`truncate text-[13px] font-medium ${
+                      className={`truncate max-w-[160px] text-[13px] font-medium ${
                         player.late ? 'text-yellow-400' : 'text-foreground/75'
                       }`}
                     >
