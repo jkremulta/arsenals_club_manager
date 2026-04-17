@@ -8,11 +8,14 @@ const useAuth = () => {
     return saved ? JSON.parse(saved) : null
   })
 
-  // re-register handler on page refresh if user is already logged in
+  const logout = () => {
+    setUser(null)
+    localStorage.removeItem('loggedUser')
+    setUnauthorizedHandler(null)
+  }
+
   useEffect(() => {
-    if (user) {
-      setUnauthorizedHandler(logout)
-    }
+    if (user) setUnauthorizedHandler(logout)
   }, [])
 
   const login = async (credentials) => {
@@ -21,16 +24,10 @@ const useAuth = () => {
       setUser(user)
       localStorage.setItem('loggedUser', JSON.stringify(user))
       setUnauthorizedHandler(logout)
-    } catch(error) {
-        const message = error.response?.data?.error
+    } catch (error) {
+        const message = error.response?.data?.error ?? 'Could not connect to server.'
         throw new Error(message)
     }
-  }
-
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem('loggedUser')
-    setUnauthorizedHandler(null)
   }
 
   return {

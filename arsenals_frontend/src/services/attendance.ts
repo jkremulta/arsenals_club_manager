@@ -24,11 +24,20 @@ const updateAttendance = async (id, token, data) => {
   return response.data
 }
 
-const addAttendance = async (id) => {
+const addAttendance = async (id, token) => {
 
   const response = await axios.post(
     baseUrl,
-    { id }
+    { id },
+    authHeaders(token))
+
+  return response.data
+}
+
+const addAttendanceManually = async (name) => {
+  const response = await axios.post(
+    `${baseUrl}/manual`,
+    { name }
   )
 
   return response.data
@@ -38,5 +47,6 @@ export default {
   get: getAttendance,
   delete: deleteAttendance,
   put: updateAttendance,
-  post: addAttendance
+  post: addAttendance,
+  addManually: addAttendanceManually
 }
