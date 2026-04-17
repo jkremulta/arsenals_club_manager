@@ -81,7 +81,8 @@ const Dashboard = ({ onLogout, user }) => {
       setTeams(teamsRes)
 
     } catch (error) {
-      toast.error('Could not connect to database.')
+      toast.error(error?.response?.data?.error)
+      console.log(error)
     } finally {
       setDashboardLoading(false)
     }
