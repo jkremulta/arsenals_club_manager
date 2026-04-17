@@ -17,7 +17,7 @@ attendanceRouter.get('/', userExtractor, async (request, response) => {
     response.json(activeTraining.attendance)
   })
 
-attendanceRouter.post('/', async (request, response) => {
+attendanceRouter.post('/', userExtractor, async (request, response) => {
   const { id } = request.body || {}
   if (!id) return response.status(400).json({ error: "id is required" })
 
@@ -101,15 +101,15 @@ attendanceRouter.post('/manual', async (req, res) => {
   const activeTraining = await Training.findOne({ isActive: true })
   if (!activeTraining) return res.status(400).json({ error: 'No active training session' })
 
-  // find matches
-  const matches = await Player.find({
-    name: { $regex: name.trim(), $options: 'i' }
-  }).select('_id name')
+  // Split input into words and require ALL of them to appear in the name
+  const words = name.trim().split(/\s+/)
+  const wordFilters = words.map(word => ({ name: { $regex: word, $options: 'i' } }))
+
+  const matches = await Player.find({ $and: wordFilters }).select('_id name')
 
   if (matches.length === 0) {
     return res.status(404).json({ error: 'Name not registered.' })
   }
-
   if (matches.length > 1) {
     return res.status(409).json({ error: 'Multiple players matched. Please type your full name.' })
   }
@@ -125,8 +125,6 @@ attendanceRouter.post('/manual', async (req, res) => {
 
   activeTraining.attendance.push(player._id)
   await activeTraining.save()
-
-
   return res.status(201).json({ ok: true })
 })
 

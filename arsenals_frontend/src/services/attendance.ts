@@ -24,12 +24,12 @@ const updateAttendance = async (id, token, data) => {
   return response.data
 }
 
-const addAttendance = async (id) => {
+const addAttendance = async (id, token) => {
 
   const response = await axios.post(
     baseUrl,
-    { id }
-  )
+    { id },
+    authHeaders(token))
 
   return response.data
 }

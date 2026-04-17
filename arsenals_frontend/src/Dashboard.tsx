@@ -143,8 +143,9 @@ const Dashboard = ({ onLogout, user }) => {
   }
 
   const handleAddPlayer = async (playerId) => {
+    const token = user.token
     try {
-      const response = await attendanceApi.post(playerId)
+      const response = await attendanceApi.post(playerId, token)
       setAttendance(response.attendance)
       setPaidIds(
       new Set(response.attendance.filter(p => p.paid).map(p => p.id))
