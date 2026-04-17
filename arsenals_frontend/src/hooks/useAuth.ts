@@ -25,8 +25,8 @@ const useAuth = () => {
       localStorage.setItem('loggedUser', JSON.stringify(user))
       setUnauthorizedHandler(logout)
     } catch (error) {
-      const message = error.response?.data?.error
-      throw new Error(message)
+        const message = error.response?.data?.error ?? 'Could not connect to server.'
+        throw new Error(message)
     }
   }
 
