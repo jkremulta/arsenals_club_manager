@@ -94,5 +94,41 @@ attendanceRouter.put('/:id', userExtractor, async (request, response) => {
   return response.json(updatedTraining)
 })
 
+attendanceRouter.post('/manual', async (req, res) => {
+  const { name } = req.body
+  if (!name) return res.status(400).json({ error: 'Name is required' })
+
+  const activeTraining = await Training.findOne({ isActive: true })
+  if (!activeTraining) return res.status(400).json({ error: 'No active training session' })
+
+  // find matches
+  const matches = await Player.find({
+    name: { $regex: name.trim(), $options: 'i' }
+  }).select('_id name')
+
+  if (matches.length === 0) {
+    return res.status(404).json({ error: 'Name not registered.' })
+  }
+
+  if (matches.length > 1) {
+    return res.status(409).json({ error: 'Multiple players matched. Please type your full name.' })
+  }
+
+  const player = matches[0]
+  const alreadyIn = activeTraining.attendance
+    .map(id => id.toString())
+    .includes(player._id.toString())
+
+  if (alreadyIn) {
+    return res.status(400).json({ error: 'You are already checked in.' })
+  }
+
+  activeTraining.attendance.push(player._id)
+  await activeTraining.save()
+
+
+  return res.status(201).json({ ok: true })
+})
+
 module.exports = attendanceRouter
 
