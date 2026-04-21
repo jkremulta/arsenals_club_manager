@@ -5,7 +5,8 @@ const User = require('../models/user')
 const { userExtractor } = require('../utils/middleware')
 
 loginRouter.post('/', async (request, response) => {
-  const { username, password } = request.body
+  const username = request.body.username.toLowerCase()
+  const password = request.body.password
   
   const user = await User.findOne({ username })
 
