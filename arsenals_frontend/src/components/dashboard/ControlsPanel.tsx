@@ -262,7 +262,7 @@ function ControlsPanel({
                                         if (isSwapping) return
                                         setSwappingPlayerId(playerId)
                                         try {
-                                          await onReplace(playerId, p.id)
+                                          await onReplace({ outPlayerId: playerId, inPlayerId: p.id })
                                           setSwapOpenId(null)
                                         } finally {
                                           setSwappingPlayerId(null)

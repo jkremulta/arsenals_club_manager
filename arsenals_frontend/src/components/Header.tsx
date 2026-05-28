@@ -18,21 +18,16 @@ import arsenalsLogo from './icons/arsenals logo transparent.png'
 
 function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
   createOpen, setCreateOpen, startTime, setStartTime, onHamburgerClick,
-  dashboardLoading = false }) {
+  dashboardLoading = false, sessionLoading = false }) {
 
-  const [sessionLoading, setSessionLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleCreate = async () => {
-    setSessionLoading(true)
-    try { await onCreateTraining() }
-    finally { setSessionLoading(false) }
+   const handleCreate = () => {
+    onCreateTraining()
   }
 
-  const handleEnd = async () => {
-    setSessionLoading(true)
-    try { await onEndTraining() }
-    finally { setSessionLoading(false) }
+  const handleEnd = () => {
+    onEndTraining()
   }
 
   return (

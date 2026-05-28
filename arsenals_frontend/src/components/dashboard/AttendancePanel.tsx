@@ -11,9 +11,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Users, UserPlus, Loader2, X, ChevronDown } from 'lucide-react'
 
-function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, removingId, onAdd, onRemove, onTogglePaid }) {
+function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, removingId, onAdd, onRemove, onTogglePaid, addLoading, togglingId }) {
   const [addOpen, setAddOpen] = useState(false)
-  const [addLoading, setAddLoading] = useState(false)
 
   const sortedAttendance = [...attendance].sort((a, b) => {
     const gamesA = a.games_played ?? 0
@@ -26,19 +25,13 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
     a.name.localeCompare(b.name)
   )
 
-  const handleAdd = async (id) => {
-    setAddLoading(true)
+  const handleAdd = (id) => {
     setAddOpen(false)
-    try { await onAdd(id) }
-    finally { setAddLoading(false) }
+    onAdd(id)
   }
 
-  const [togglingId, setTogglingId] = useState(null)
-
   const handleTogglePaid = async (id) => {
-    setTogglingId(id)
-    try { await onTogglePaid(id) }
-    finally { setTogglingId(null) }
+    onTogglePaid(id)
   }
 
   return (

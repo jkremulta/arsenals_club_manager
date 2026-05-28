@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+
 import trainingApi from './services/training'
 import attendanceApi from './services/attendance'
 import playersApi from './services/players'
@@ -26,23 +28,46 @@ import {
 } from 'lucide-react'
 
 const Dashboard = ({ onLogout, user }) => {
-  const [training, setTraining] = useState(null)
-  const [attendance, setAttendance] = useState([])
-  const [players, setPlayers] = useState([])
+  
+  const queryClient = useQueryClient()
+  const token = user.token
 
-  const [teams, setTeams] = useState(null)
+  // dashboard query using tanstack
+  const dashboardQuery = useQuery({
+    queryKey: ['dashboard'],
+    queryFn: async () => {
+      const [trainingRes, attendanceRes, playersRes, teamsRes] = await Promise.all([
+        trainingApi.get(token),
+        attendanceApi.get(token),
+        playersApi.get(token),
+        teamsApi.get(token)
+      ])
+
+      return {
+        training: trainingRes,
+        attendance: attendanceRes,
+        players: playersRes,
+        teams: teamsRes,
+      }
+    }
+  })
+
+  const training = dashboardQuery.data?.training
+  const attendance = dashboardQuery.data?.attendance || []
+  const players = dashboardQuery.data?.players || []
+  const teams = dashboardQuery.data?.teams
+
+  const currentGame = training?.current_players || []
+  const nextGamePlayers = training?.initialized_players || []
+  const initializedSkillGroup = training?.initializedSkillGroup || ''
+  const currentGameSkillGroup = training?.currentGameSkillGroup || ''
+
+  const paidIds = new Set(attendance
+    .filter(p => p.paid)
+    .map(p => p.id)
+  )
+
   const [skillGroup, setSkillGroup] = useState('')
-  const [initializedSkillGroup, setInitializedSkillGroup] = useState('')
-  const [currentGameSkillGroup, setCurrentGameSkillGroup] = useState('')
-  const [nextGamePlayers, setNextGamePlayers] = useState([])
-  const [currentGame, setCurrentGame] = useState([])
-
-  const [paidIds, setPaidIds] = useState(new Set())
-  const [removingId, setRemovingId] = useState(null)
-
-  const [initLoading, setInitLoading]       = useState(false)
-  const [startLoading, setStartLoading]     = useState(false)
-  const [dashboardLoading, setDashboardLoading] = useState(true)
 
   const [activeTab, setActiveTab] = useState('attendance')
   const [createOpen, setCreateOpen] = useState(false)
@@ -54,229 +79,202 @@ const Dashboard = ({ onLogout, user }) => {
     return now.toTimeString().slice(0, 5)
   })
 
+  // create training using tanstack
+  const createTrainingMutation = useMutation({
+    mutationFn: (startDateIso) => 
+      trainingApi.post(startDateIso, token),
 
-  // fetch to get all data needed at start
-  const fetchAll = async ({ showLoader = true } = {}) => {
-    if (showLoader) {
-      setDashboardLoading(true)
-    }
-
-    try {
-      const token = user.token
-      const [trainingRes, attendanceRes, playersRes, teamsRes] = await Promise.all([
-        trainingApi.get(token),
-        attendanceApi.get(token),
-        playersApi.get(token),
-        teamsApi.get(token),
-      ])
-
-      setTraining(trainingRes)
-      setAttendance(attendanceRes)
-      setCurrentGame(trainingRes?.current_players || [])
-      setNextGamePlayers(trainingRes?.initialized_players || [])
-      setPaidIds(new Set(attendanceRes?.filter(p => p.paid).map(p => p.id)))
-      setPlayers(playersRes)
-      setInitializedSkillGroup(trainingRes?.initializedSkillGroup || '')
-      setCurrentGameSkillGroup(trainingRes?.currentGameSkillGroup || '')
-      setTeams(teamsRes)
-
-    } catch (error) {
-      toast.error(error?.response?.data?.error)
-      console.log(error)
-    } finally {
-      setDashboardLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchAll()
-  }, [user.token])
-
-  const handleCreateTraining = async () => {
-    const token = user.token
-    const [hours = '0', minutes = '0'] = startTime.split(':')
-    const startDate = new Date()
-    startDate.setHours(Number(hours), Number(minutes), 0, 0)
-
-    try {
-      const response = await trainingApi.post(startDate.toISOString(), token)
+    onSuccess: () => {
       toast.success('Training session created.', {
         duration: 2000
       })
 
-      setTraining(response)
       setCreateOpen(false)
 
-    } catch(error) {
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard']
+      })
+    },
+
+    onError: (error) => {
       toast.error(error?.response?.data?.error)
     }
+  })
+
+  const handleCreateTraining = async () => {
+    const [hours = '0', minutes = '0'] = startTime.split(':')
+
+    const startDate = new Date()
+
+    startDate.setHours(Number(hours), Number(minutes), 0, 0)
+
+    createTrainingMutation.mutate(startDate.toISOString())
   }
 
-  const handleEndTraining = async () => {
-    const token = user.token
+  const endTrainingMutation = useMutation({
+    mutationFn: () => 
+      trainingApi.delete(token),
 
-    try {
-      await trainingApi.delete(token)
+    onSuccess: () => {
       toast.success('Training ended.', {
         duration: 2000
       })
 
-      setTraining(null)
-      setAttendance([])
-      setSkillGroup('')
-      setCurrentGame([])
-      setCurrentGameSkillGroup('')
-      setNextGamePlayers([])
-      setPaidIds(new Set())
-
-    } catch (error) {
-        toast.error(error?.response?.data?.error)
-        
-        // resets ui
-        setTraining(null)
-        setAttendance([])
-        setSkillGroup('')
-        setCurrentGame([])
-        setCurrentGameSkillGroup('')
-        setNextGamePlayers([])
-        setPaidIds(new Set())
-    }
-  }
-
-  const handleAddPlayer = async (playerId) => {
-    const token = user.token
-    try {
-      const response = await attendanceApi.post(playerId, token)
-      setAttendance(response.attendance)
-      setPaidIds(
-      new Set(response.attendance.filter(p => p.paid).map(p => p.id))
-      )
-
-      toast.success('Player added.', {
-        duration: 2000
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard']
       })
+    },
 
-    } catch(error) {
-        toast.error(error?.response?.data?.error)
+    onError: (error) => {
+      toast.error(error?.response?.data?.error)
     }
-  }
+  })
 
-  const handleRemovePlayer = async (id) => {
-    const token = user.token
 
-    try {
-      setRemovingId(id)
-      await attendanceApi.delete(id, token)
-      setAttendance((prev) => prev.filter((p) => p.id !== id))
-      setPaidIds((prev) => { const n = new Set(prev); n.delete(id); return n })
-      setRemovingId(null)
+  // tanstack add player 
+  const addPlayerMutation = useMutation({
+    mutationFn: (playerId) =>
+      attendanceApi.post(playerId, token),
+
+    onSuccess: () => {
+      toast.success('Player added.')
+
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard']
+      })
+    },
+
+    onError: (error) => {
+      toast.error(error?.response?.data?.error)
+    }
+  })
+
+  // tanstack remove player
+  const removePlayerMutation = useMutation({
+    mutationFn: (playerId) =>
+      attendanceApi.delete(playerId, token),
+
+    onSuccess: () => {
       toast.success('Player removed.', {
         duration: 2000
       })
 
-    } catch(error) {
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard']
+      })
+    },
+
+    onError: (error) => {
       toast.error(error?.response?.data?.error)
     }
-  }
+  })
 
-  const togglePaid = async (id) => {
-    const token = user.token
+  // togglepaid mutation
 
-    try {
-      const isCurrentlyPaid = paidIds.has(id)
-      const updatedTraining = await attendanceApi.put(id, token, { paid: !isCurrentlyPaid })
-      const newPaidIds = new Set(
-        updatedTraining.attendance.filter(p => p.paid).map(p => p.id)
-      )
-      setPaidIds(newPaidIds)
+  const togglePaidMutation = useMutation({
+    mutationFn: ({ id, paid }) =>
+      attendanceApi.put(
+        id,
+        token,
+        { paid }
+      ),
 
-    } catch(error) {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard']
+      })
+    },
+
+    onError: (error) => {
       toast.error(error?.response?.data?.error, {
         duration: 2000
       })
     }
+  })
+
+  const togglePaid = (id) => {
+    const isCurrentlyPaid =
+      paidIds.has(id)
+
+    togglePaidMutation.mutate({id,paid: !isCurrentlyPaid
+    })
   }
 
-  const handleInitializeGame = async (payload) => {
-    const token = user.token
- 
-    if (payload?.skillGroup && !payload.skillGroup) {
-      return toast.warning('Select a skill group first.', {
-        duration: 2000
-      })
-    }
+  // initialize game
+ const initializeGameMutation = useMutation({
+  mutationFn: (data) =>
+    trainingApi.initializeGame(data, user.token),
 
-    if (payload?.teamA && payload?.teamB && payload.teamA === payload.teamB) {
-      return toast.warning('Select two different teams.', {
-        duration: 2000
-      })
-    }
+  onSuccess: () => {
+    toast.success('Game initialized.', { duration: 2000 })
+    queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+  },
 
-    setInitLoading(true)
+  onError: (error) => {
+    toast.error(error?.response?.data?.error, {
+      duration: 2000
+    })
+  }
+})
 
-    try {
-      const response = await trainingApi.initializeGame(payload, token)
+const handleInitializeGame = (data) => {
+  if (
+    data?.teamA &&
+    data?.teamB &&
+    data.teamA === data.teamB
+  ) {
+    return toast.warning('Select two different teams.', {
+      duration: 2000
+    })
+  }
 
-      setNextGamePlayers(response)
-      setInitializedSkillGroup(payload?.skillGroup || '')
-      toast.success(`Game initialized — ${response.length} players queued.`, {
-        duration: 2000
-      })
-
-    } catch (error) {
-        toast.error(error?.response?.data?.error, {
-          duration: 2000
-        })
-    } finally {
-      setInitLoading(false)
-    }
+  initializeGameMutation.mutate(data)
 }
- 
-  const handleStartGame = async () => {
-    const token = user.token
 
-    setStartLoading(true)
+// mutate start game
 
-    try {
-      await trainingApi.startGame(token)
+const startGameMutation = useMutation({
+  mutationFn: () => 
+    trainingApi.startGame(token),
 
-      setCurrentGame(nextGamePlayers)
-      setNextGamePlayers([])
-      setCurrentGameSkillGroup(initializedSkillGroup)
-
-      toast.success('Game started!', {
+  onSuccess: () => {
+    toast.success('Game started!', {
         duration: 2000
-      })
-      setActiveTab('game')
-      fetchAll({ showLoader: false })
-  
-    } catch (error) {
-      toast.error(error?.response?.data?.error, {
+    })
+
+    queryClient.invalidateQueries({
+        queryKey: ['dashboard']
+    })
+  },
+
+  onError: (error) => {
+    toast.error(error?.response?.data?.error, {
         duration: 2000
-      })
-    } 
-    
-    finally {
-      setStartLoading(false)
-    }
+    })
   }
+  })
+ 
 
-  const handleReplace = async (outPlayerId, inPlayerId) => {
-    const token = user.token
+  const replacePlayerMutation = useMutation({
+    mutationFn: ({ outPlayerId, inPlayerId }) => 
+      trainingApi.replacePlayer(outPlayerId, inPlayerId, token),
 
-    try {
-      const updatedPlayers = await trainingApi.replacePlayer(outPlayerId, inPlayerId, token)
-      setNextGamePlayers(updatedPlayers)
+    onSuccess: () => {
       toast.success('Player replaced.', {
         duration: 2000
       })
 
-    } catch (error) {
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard']
+     })
+    },
+
+    onError: (error) => {
       toast.error(error?.response?.data?.error, {
         duration: 2000
       })
     }
-  }
+  })
 
   const attendanceIds = new Set(attendance.map(p => p.id))
   const sharedAttendanceProps = {
@@ -284,10 +282,12 @@ const Dashboard = ({ onLogout, user }) => {
     availablePlayers: players.filter(p => !attendanceIds.has(p.id)),
     paidIds,
     currentGame,
-    removingId,
-    onAdd: handleAddPlayer,
-    onRemove: handleRemovePlayer,
+    removingId: removePlayerMutation.isPending ? removePlayerMutation.variables : null,
+    onAdd: addPlayerMutation.mutate,
+    onRemove: removePlayerMutation.mutate,
     onTogglePaid: togglePaid,
+    addLoading: addPlayerMutation.isPending,
+    togglingId: togglePaidMutation.isPending ? togglePaidMutation.variables?.id : null,
   }
 
   const sharedControlsProps = {
@@ -297,11 +297,11 @@ const Dashboard = ({ onLogout, user }) => {
     nextGamePlayers,
     currentGame,
     attendance,
-    initLoading,
-    startLoading,
+    initLoading: initializeGameMutation.isPending,
+    startLoading: startGameMutation.isPending,
     onInitialize: handleInitializeGame,
-    onStartGame: handleStartGame,
-    onReplace: handleReplace,
+    onStartGame: startGameMutation.mutate,
+    onReplace: replacePlayerMutation.mutate,
     gamesBySkill: training?.games_by_skill,
     teams,
   }
@@ -311,15 +311,15 @@ const Dashboard = ({ onLogout, user }) => {
       <Header
         user={user}
         training={training}
-        dashboardLoading={dashboardLoading}
         onLogout={onLogout}
         onCreateTraining={handleCreateTraining}
-        onEndTraining={handleEndTraining}
+        onEndTraining={endTrainingMutation.mutate}
         createOpen={createOpen}
         setCreateOpen={setCreateOpen}
         startTime={startTime}
         setStartTime={setStartTime}
         onHamburgerClick={() => setDrawerOpen(true)}
+        sessionLoading={createTrainingMutation.isPending || endTrainingMutation.isPending}
       />
 
       {/* ── Mobile drawer ───────────────────────────────────────────────── */}
@@ -328,10 +328,9 @@ const Dashboard = ({ onLogout, user }) => {
         onClose={() => setDrawerOpen(false)}
         user={user}
         training={training}
-        dashboardLoading={dashboardLoading}
         onLogout={onLogout}
         onCreateTraining={handleCreateTraining}
-        onEndTraining={handleEndTraining}
+        onEndTraining={endTrainingMutation.mutate}
         createOpen={createOpen}
         setCreateOpen={setCreateOpen}
         startTime={startTime}
@@ -340,7 +339,7 @@ const Dashboard = ({ onLogout, user }) => {
 
       {/* ── Middle: flex-1 so it fills space between header and bottom nav ── */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {dashboardLoading ? (
+        {dashboardQuery.isLoading ? (
           <div className="flex flex-1 items-center justify-center p-8">
             <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-border bg-card py-16 text-center">
               <Loader2
