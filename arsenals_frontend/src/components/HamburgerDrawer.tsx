@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter,
@@ -16,28 +15,28 @@ import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import helper from '../utils/helper'
 import { Loader2, Play, Trash2, LogOut, Users } from 'lucide-react'
+import { useDashboard } from '@/hooks/useDashboard'
+import { useUIStore } from '@/stores/useUIStore'
 
-function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTraining,
-  onEndTraining, createOpen, setCreateOpen, startTime, setStartTime,
-  dashboardLoading = false }) {
+function HamburgerDrawer({user, onLogout }) {
 
-  const [sessionLoading, setSessionLoading] = useState(false)
+  const {
+    dashboardQuery,
+    handleCreateTraining,
+    createTrainingMutation,
+    endTrainingMutation,
+    training
+
+  } = useDashboard(user.token)
+
+  const { createOpen, setCreateOpen, drawerOpen, setDrawerOpen, startTime, setStartTime } = useUIStore()
+
+  const dashboardLoading = dashboardQuery.isLoading
+  const sessionLoading = createTrainingMutation.isPending || endTrainingMutation.isPending
   const navigate = useNavigate()
 
-  const handleCreate = async () => {
-    setSessionLoading(true)
-    try { await onCreateTraining(); onClose(false) }
-    finally { setSessionLoading(false) }
-  }
-
-  const handleEnd = async () => {
-    setSessionLoading(true)
-    try { await onEndTraining(); onClose(false) }
-    finally { setSessionLoading(false) }
-  }
-
   return (
-    <Sheet open={open} onOpenChange={onClose}>
+    <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
       <SheetContent side="right" className="flex w-56 flex-col p-0 bg-background">
         <SheetHeader className="border-b border-border px-4 py-4">
           <SheetTitle className="text-left text-[13px] font-semibold">
@@ -48,7 +47,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
 
         <div className="flex flex-col py-2">
           <button
-            onClick={() => { navigate('/members'); onClose() }}
+            onClick={() => { navigate('/members'); setDrawerOpen(false) }}
             className="flex items-center gap-3 px-4 py-3 text-[13px] text-muted-foreground hover:bg-card"
           >
             <Users size={15} />
@@ -95,7 +94,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
                 </div>
                 <DialogFooter>
                   <Button
-                    onClick={handleCreate}
+                    onClick={handleCreateTraining}
                     disabled={sessionLoading}
                     className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
                   >
@@ -123,7 +122,7 @@ function HamburgerDrawer({ open, onClose, user, training, onLogout, onCreateTrai
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={handleEnd}
+                    onClick={() => endTrainingMutation.mutate()}
                     disabled={sessionLoading}
                     className="bg-red-600 hover:bg-red-500 disabled:opacity-50"
                   >

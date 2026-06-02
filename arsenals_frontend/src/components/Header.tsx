@@ -1,8 +1,10 @@
+import { useUIStore } from '@/stores/useUIStore'
+import { useDashboard } from '@/hooks/useDashboard'
+
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Loader2, Users } from 'lucide-react'
+import { Loader2, Users, Play, Trash2 } from 'lucide-react'
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter,
   DialogHeader, DialogTitle, DialogTrigger,
@@ -12,23 +14,24 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
   AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Play, Trash2 } from 'lucide-react'
 import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
 
-function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
-  createOpen, setCreateOpen, startTime, setStartTime, onHamburgerClick,
-  dashboardLoading = false, sessionLoading = false }) {
+function Header({ user, onLogout }) {
+  const {
+    dashboardQuery,
+    training,
+    createTrainingMutation,
+    endTrainingMutation,
+    handleCreateTraining,
+  } = useDashboard(user.token)
+
+  const { createOpen, setCreateOpen, startTime, setStartTime, setDrawerOpen } = useUIStore()
 
   const navigate = useNavigate()
 
-   const handleCreate = () => {
-    onCreateTraining()
-  }
-
-  const handleEnd = () => {
-    onEndTraining()
-  }
+  const dashboardLoading = dashboardQuery.isLoading
+  const sessionLoading = createTrainingMutation.isPending || endTrainingMutation.isPending
 
   return (
     <header className="flex-shrink-0 border-b border-border px-4 py-3 md:px-8 md:py-4">
@@ -38,24 +41,23 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
             <img src={arsenalsLogo} alt="Arsenals logo" className="h-full w-full object-contain" />
           </div>
           <div>
-    <h1 className="text-[14px] font-semibold tracking-tight text-foreground md:text-[15px]">
-      Arsenal Tchoukball Club
-    </h1>
-
-    <p className="text-[10px] text-muted-foreground/60 md:text-[11px]">
-      Session ·{' '}
-      {dashboardLoading ? (
-        <span className="inline-flex items-center gap-1">
-          <Loader2 size={10} className="animate-spin text-muted-foreground/50" />
-          Checking…
-        </span>
-      ) : training?.startTime ? (
-        helper.formatTime(training.startTime)
-      ) : (
-        'N/A'
-      )}
-    </p>
-  </div>
+            <h1 className="text-[14px] font-semibold tracking-tight text-foreground md:text-[15px]">
+              Arsenal Tchoukball Club
+            </h1>
+            <p className="text-[10px] text-muted-foreground/60 md:text-[11px]">
+              Session ·{' '}
+              {dashboardLoading ? (
+                <span className="inline-flex items-center gap-1">
+                  <Loader2 size={10} className="animate-spin text-muted-foreground/50" />
+                  Checking…
+                </span>
+              ) : training?.startTime ? (
+                helper.formatTime(training.startTime)
+              ) : (
+                'N/A'
+              )}
+            </p>
+          </div>
         </div>
 
         {/* Desktop controls */}
@@ -96,7 +98,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
                 </div>
                 <DialogFooter>
                   <Button
-                    onClick={handleCreate}
+                    onClick={handleCreateTraining}
                     disabled={sessionLoading}
                     className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
                   >
@@ -124,7 +126,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={handleEnd}
+                    onClick={() => endTrainingMutation.mutate()}
                     disabled={sessionLoading}
                     className="bg-red-600 hover:bg-red-500 disabled:opacity-50"
                   >
@@ -157,7 +159,7 @@ function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
         {/* Mobile hamburger */}
         <button
           className="flex flex-col gap-1 rounded p-2 hover:bg-card md:hidden"
-          onClick={onHamburgerClick}
+          onClick={() => setDrawerOpen(true)}
         >
           <span className="block h-[1.5px] w-[18px] rounded bg-foreground/60" />
           <span className="block h-[1.5px] w-[18px] rounded bg-foreground/60" />
