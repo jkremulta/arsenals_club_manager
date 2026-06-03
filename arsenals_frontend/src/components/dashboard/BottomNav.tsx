@@ -4,21 +4,25 @@ import {
   Zap,
 } from 'lucide-react'
 
+import { useUIStore } from '@/stores/useUIStore'
+
 const NAV_TABS = [
   { id: 'attendance', label: 'Attendance', icon: Users },
   { id: 'game',       label: 'Game',       icon: Play },
   { id: 'controls',  label: 'Controls',   icon: Zap },
 ]
  
-function BottomNav({ active, onChange }) {
+const BottomNav = () => {
+  const { activeTab, setActiveTab } = useUIStore()
+
   return (
     <div className="flex flex-shrink-0 border-t border-border bg-background md:hidden">
       {NAV_TABS.map(({ id, label, icon: Icon }) => {
-        const isActive = active === id
+        const isActive = activeTab === id
         return (
           <button
             key={id}
-            onClick={() => onChange(id)}
+            onClick={() => setActiveTab(id)}
             className="flex flex-1 flex-col items-center gap-1 py-3"
           >
             <div className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${isActive ? 'bg-emerald-500/20' : 'bg-card'}`}>
