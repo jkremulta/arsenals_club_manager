@@ -10,18 +10,11 @@ import StatBar from './components/dashboard/StatBar'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 
 const Dashboard = ({ onLogout, user }) => {
-
-  const { 
-    skillGroup, setSkillGroup, 
-    createOpen, setCreateOpen, 
-    drawerOpen, setDrawerOpen,
-    activeTab, setActiveTab,
-    startTime, setStartTime
-  } = useUIStore()
   const {
     dashboardQuery, training, attendance, players, teams, paidIds,
     handleCreateTraining, handleInitializeGame, togglePaid,
     endTrainingMutation,
+    createTrainingMutation,
     addPlayerMutation, removePlayerMutation, togglePaidMutation,
     initializeGameMutation, startGameMutation, replacePlayerMutation,
   } = useDashboard(user.token)
@@ -62,9 +55,21 @@ const Dashboard = ({ onLogout, user }) => {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground">
-      <Header user={user} onLogout={onLogout}/>
+      <Header 
+        dashboardQuery={dashboardQuery} 
+        training={training} 
+        createTrainingMutation={createTrainingMutation}
+        endTrainingMutation={endTrainingMutation}
+        handleCreateTraining={handleCreateTraining}
+        onLogout={onLogout}/>
 
-      <HamburgerDrawer user={user} onLogout={onLogout}/>
+      <HamburgerDrawer
+        dashboardQuery={dashboardQuery}
+        handleCreateTraining={handleCreateTraining}
+        createTrainingMutation={createTrainingMutation}
+        endTrainingMutation={endTrainingMutation}
+        training={training}
+        onLogout={onLogout}/>
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {dashboardQuery.isLoading ? (

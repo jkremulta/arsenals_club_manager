@@ -15,19 +15,9 @@ import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import helper from '../utils/helper'
 import { Loader2, Play, Trash2, LogOut, Users } from 'lucide-react'
-import { useDashboard } from '@/hooks/useDashboard'
 import { useUIStore } from '@/stores/useUIStore'
 
-function HamburgerDrawer({user, onLogout }) {
-
-  const {
-    dashboardQuery,
-    handleCreateTraining,
-    createTrainingMutation,
-    endTrainingMutation,
-    training
-
-  } = useDashboard(user.token)
+function HamburgerDrawer({dashboardQuery, handleCreateTraining, createTrainingMutation, endTrainingMutation, training, onLogout }) {
 
   const { createOpen, setCreateOpen, drawerOpen, setDrawerOpen, startTime, setStartTime } = useUIStore()
 
