@@ -17,7 +17,7 @@ import helper from '../utils/helper'
 import { Loader2, Play, Trash2, LogOut, Users } from 'lucide-react'
 import { useUIStore } from '@/stores/useUIStore'
 
-function HamburgerDrawer({dashboardQuery, handleCreateTraining, createTrainingMutation, endTrainingMutation, training, onLogout }) {
+function HamburgerDrawer({dashboardQuery, handleCreateTraining, createTrainingMutation, endTrainingMutation, training, user, onLogout }) {
 
   const { createOpen, setCreateOpen, drawerOpen, setDrawerOpen, startTime, setStartTime } = useUIStore()
 

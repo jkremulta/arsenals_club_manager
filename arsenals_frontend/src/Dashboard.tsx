@@ -2,7 +2,6 @@ import HamburgerDrawer from './components/HamburgerDrawer'
 import Header from './components/Header'
 import BottomNav from './components/dashboard/BottomNav'
 import { useDashboard } from './hooks/useDashboard'
-import { useUIStore } from './stores/useUIStore'
 
 import DashboardLoading from './components/dashboard/DashboardLoading'
 import DashboardEmpty from './components/dashboard/DashboardEmpty'
@@ -61,6 +60,7 @@ const Dashboard = ({ onLogout, user }) => {
         createTrainingMutation={createTrainingMutation}
         endTrainingMutation={endTrainingMutation}
         handleCreateTraining={handleCreateTraining}
+        user={user}
         onLogout={onLogout}/>
 
       <HamburgerDrawer
@@ -69,6 +69,7 @@ const Dashboard = ({ onLogout, user }) => {
         createTrainingMutation={createTrainingMutation}
         endTrainingMutation={endTrainingMutation}
         training={training}
+        user={user}
         onLogout={onLogout}/>
 
       <div className="flex flex-1 flex-col overflow-hidden">

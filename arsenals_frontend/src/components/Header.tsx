@@ -1,4 +1,5 @@
 import { useUIStore } from '@/stores/useUIStore'
+import { useDashboard } from '@/hooks/useDashboard'
 
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -16,7 +17,8 @@ import {
 import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
 
-function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining onLogout }) {
+function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining, user, onLogout }) {
+
   const { createOpen, setCreateOpen, startTime, setStartTime, setDrawerOpen } = useUIStore()
 
   const navigate = useNavigate()
