@@ -3,13 +3,13 @@ import GamePanel from "./GamePanel"
 import ControlsPanel from "./ControlsPanel"
 import { useUIStore } from "@/stores/useUIStore"
 
-const DashboardLayout = ({ sharedAttendanceProps, sharedControlsProps, currentGame, currentGameSkillGroup, training }) => {
+const DashboardLayout = ({ attendancePanelProps, sharedControlsProps, currentGame, currentGameSkillGroup, training }) => {
   const { activeTab } = useUIStore()
 
   return (
     <>
      <div className="mx-auto hidden w-full max-w-7xl flex-1 gap-4 overflow-hidden px-8 py-4 md:grid md:grid-cols-3">
-        <AttendancePanel {...sharedAttendanceProps} />
+        <AttendancePanel {...attendancePanelProps} />
 
         <GamePanel
           currentGame={currentGame}
@@ -25,7 +25,7 @@ const DashboardLayout = ({ sharedAttendanceProps, sharedControlsProps, currentGa
       {/* ── Mobile: tab content ──────────────────────────────────── */}
       <div className="flex flex-1 flex-col overflow-hidden px-4 py-3 md:hidden">
         {activeTab === 'attendance' && (
-          <AttendancePanel {...sharedAttendanceProps} />
+          <AttendancePanel {...attendancePanelProps} />
         )}
 
         {activeTab === 'game' && (

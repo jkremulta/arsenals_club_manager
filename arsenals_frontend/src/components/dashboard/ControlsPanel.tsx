@@ -12,26 +12,36 @@ import {
 } from '@/components/ui/command'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Play, Zap, Loader2, ArrowLeftRight } from 'lucide-react'
+import { useUIStore } from '@/stores/useUIStore'
 
 const SKILL_GROUPS = ['beginner', 'intermediate', 'advanced']
 
 function ControlsPanel({
-  skillGroup, setSkillGroup, initializedSkillGroup,
-  nextGamePlayers,
-  currentGame,
   attendance,
-  initLoading, startLoading,
-  onInitialize, onStartGame,
-  onReplace,
-  gamesBySkill,
+  training,
   teams,
+  handleInitializeGame,
+  initializeGameMutation,
+  startGameMutation,
+  currentGame,
+  replacePlayerMutation
 }) {
-  const canStart = nextGamePlayers.length > 0 && !startLoading
+
+  const gamesBySkill =  training?.games_by_skill
+  const initializedSkillGroup = training?.initializedSkillGroup || ''
+  const initLoading = initializeGameMutation.isPending
+
   const [swapOpenId, setSwapOpenId] = useState(null)
   const [swappingPlayerId, setSwappingPlayerId] = useState(null)
   const [gameMode, setGameMode] = useState('skill')
   const [teamA, setTeamA] = useState('')
   const [teamB, setTeamB] = useState('')
+  
+  const { skillGroup, setSkillGroup } = useUIStore()
+
+  const nextGamePlayers = training?.initialized_players || []
+  const startGameLoading = startGameMutation.isPending
+  const canStart = nextGamePlayers.length > 0 && !startGameLoading
 
   const queuedIds = new Set(nextGamePlayers.map(p => p.id ?? p._id))
   const availableToSwap = attendance
@@ -47,9 +57,9 @@ function ControlsPanel({
 
   const handleInitialize = () => {
     if (gameMode === 'skill') {
-      onInitialize({ skillGroup })
+      handleInitializeGame({ skillGroup })
     } else {
-      onInitialize({ teamA, teamB })
+      handleInitializeGame({ teamA, teamB })
     }
   }
 
@@ -164,10 +174,10 @@ function ControlsPanel({
 
           <Button
             className="w-full bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-40"
-            onClick={onStartGame}
+            onClick={() => startGameMutation.mutate()}
             disabled={!canStart}
           >
-            {startLoading
+            {startGameLoading
               ? <Loader2 size={14} className="mr-2 animate-spin" />
               : <Play size={14} className="mr-2" />}
             Start Game
@@ -262,7 +272,7 @@ function ControlsPanel({
                                         if (isSwapping) return
                                         setSwappingPlayerId(playerId)
                                         try {
-                                          await onReplace({ outPlayerId: playerId, inPlayerId: p.id })
+                                          replacePlayerMutation.mutateAsync({ outPlayerId: playerId, inPlayerId: p.id })
                                           setSwapOpenId(null)
                                         } finally {
                                           setSwappingPlayerId(null)

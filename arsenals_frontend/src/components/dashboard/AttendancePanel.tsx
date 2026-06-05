@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import helper from '../../utils/helper'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,9 +9,10 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Users, UserPlus, Loader2, X, ChevronDown } from 'lucide-react'
+import { useState } from 'react'
 
-function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, removingId, onAdd, onRemove, onTogglePaid, addLoading, togglingId }) {
-  const [addOpen, setAddOpen] = useState(false)
+function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerMutation, togglePaidMutation, togglePaid, paidIds, currentGame }) {
+  const [attendanceAddOpen, setAttendanceAddOpen] = useState(false)
 
   const sortedAttendance = [...attendance].sort((a, b) => {
     const gamesA = a.games_played ?? 0
@@ -21,18 +21,20 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
     return a.name.localeCompare(b.name)
   })
 
+  const attendanceIds = new Set(attendance.map(p => p.id))
+  const availablePlayers = players.filter(p => !attendanceIds.has(p.id))
   const sortedAvailablePlayers = [...availablePlayers].sort((a, b) =>
     a.name.localeCompare(b.name)
   )
 
   const handleAdd = (id) => {
-    setAddOpen(false)
-    onAdd(id)
+    setAttendanceAddOpen(false)
+    addPlayerMutation.mutate(id)
   }
 
-  const handleTogglePaid = async (id) => {
-    onTogglePaid(id)
-  }
+  const addLoading = addPlayerMutation.isPending
+  const removingId = removePlayerMutation.isPending ? removePlayerMutation.variables : null
+  const togglingId = togglePaidMutation.isPending ? togglePaidMutation.variables?.id : null
 
   return (
     <div className="flex h-full min-h-0 flex-col rounded-xl border border-border bg-card">
@@ -45,7 +47,7 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
             {attendance.length} player{attendance.length !== 1 ? 's' : ''} — tap pill to mark paid
           </p>
         </div>
-        <Popover open={addOpen} onOpenChange={setAddOpen}>
+        <Popover open={attendanceAddOpen} onOpenChange={setAttendanceAddOpen}>
           <PopoverTrigger asChild>
             <Button
               size="sm"
@@ -124,7 +126,7 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                       {player.games_played ?? 0}G
                     </span>
                     <button
-                      onClick={() => handleTogglePaid(player.id)}
+                      onClick={() => togglePaid(player.id)}
                       className={`rounded-full px-2.5 py-1 text-[10px] font-semibold transition-all ${
                         isPaid
                           ? 'bg-emerald-500/15 text-emerald-400 hover:bg-red-500/[0.12] hover:text-red-400'
@@ -136,7 +138,7 @@ function AttendancePanel({ attendance, availablePlayers, paidIds, currentGame, r
                     : isPaid ? 'Paid' : 'Unpaid'}
                     </button>
                     <button
-                      onClick={() => onRemove(player.id)}
+                      onClick={() => removePlayerMutation.mutate(player.id)}
                       disabled={removingId === player.id}
                       className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground/40 transition-opacity hover:bg-red-500/20 hover:text-red-400"
                     >

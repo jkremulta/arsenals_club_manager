@@ -19,37 +19,28 @@ const Dashboard = ({ onLogout, user }) => {
   } = useDashboard(user.token)
 
   const currentGame = training?.current_players || []
-  const nextGamePlayers = training?.initialized_players || []
-  const initializedSkillGroup = training?.initializedSkillGroup || ''
   const currentGameSkillGroup = training?.currentGameSkillGroup || ''
 
-  const attendanceIds = new Set(attendance.map(p => p.id))
-
-  const sharedAttendanceProps = {
+  const attendancePanelProps = {
     attendance,
-    availablePlayers: players.filter(p => !attendanceIds.has(p.id)),
+    players,
+    addPlayerMutation,
+    removePlayerMutation,
+    togglePaidMutation,
+    togglePaid,
     paidIds,
-    currentGame,
-    removingId: removePlayerMutation.isPending ? removePlayerMutation.variables : null,
-    onAdd: addPlayerMutation.mutate,
-    onRemove: removePlayerMutation.mutate,
-    onTogglePaid: togglePaid,
-    addLoading: addPlayerMutation.isPending,
-    togglingId: togglePaidMutation.isPending ? togglePaidMutation.variables?.id : null,
+    currentGame
   }
 
   const sharedControlsProps = {
-    nextGamePlayers,
-    currentGame,
     attendance,
-    initLoading: initializeGameMutation.isPending,
-    startLoading: startGameMutation.isPending,
-    onInitialize: handleInitializeGame,
-    onStartGame: startGameMutation.mutate,
-    onReplace: replacePlayerMutation.mutate,
-    gamesBySkill: training?.games_by_skill,
+    training,
     teams,
-    initializedSkillGroup,
+    handleInitializeGame,
+    initializeGameMutation,
+    startGameMutation,
+    currentGame,
+    replacePlayerMutation
   }
 
   return (
@@ -81,7 +72,7 @@ const Dashboard = ({ onLogout, user }) => {
           <div className="flex flex-1 flex-col overflow-hidden">
             <StatBar attendance={attendance} paidIds={paidIds} training={training} />
             <DashboardLayout
-              sharedAttendanceProps={sharedAttendanceProps}
+              attendancePanelProps={attendancePanelProps}
               sharedControlsProps={sharedControlsProps}
               currentGame={currentGame}
               currentGameSkillGroup={currentGameSkillGroup}
