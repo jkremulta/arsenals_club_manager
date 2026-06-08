@@ -2,8 +2,12 @@ import helper from '../../utils/helper'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Play, Shield } from 'lucide-react'
 
-function GamePanel({ currentGame, currentGameSkillGroup, currentGameTeam, teamA, teamB }) {
+function GamePanel({ currentGame, currentGameSkillGroup, training }) {
   // show team name if team game, otherwise skill group
+  const teamA = training?.team_a
+  const teamB = training?.team_b
+  const currentGameTeam= training?.currentGameTeam
+
   const isTeamGame = (!!teamA && !!teamB) || !!currentGameTeam
   const pillLabel = isTeamGame
     ? [teamA?.name, teamB?.name].filter(Boolean).join(' vs ')

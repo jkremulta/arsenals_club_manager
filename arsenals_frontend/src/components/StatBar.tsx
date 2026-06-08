@@ -1,4 +1,4 @@
-import StatCard from "./StatCard";
+import StatCard from "./statbar/StatCard";
 import helper from "@/utils/helper";
 
 import {Users, ShieldCheck, Trophy, Clock } from 'lucide-react'

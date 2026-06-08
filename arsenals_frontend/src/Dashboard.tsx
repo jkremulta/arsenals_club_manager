@@ -5,7 +5,6 @@ import { useDashboard } from './hooks/useDashboard'
 
 import DashboardLoading from './components/dashboard/DashboardLoading'
 import DashboardEmpty from './components/dashboard/DashboardEmpty'
-import StatBar from './components/dashboard/StatBar'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 
 const Dashboard = ({ onLogout, user }) => {
@@ -30,6 +29,12 @@ const Dashboard = ({ onLogout, user }) => {
     togglePaid,
     paidIds,
     currentGame
+  }
+
+  const sharedGameProps = {
+    currentGame,
+    currentGameSkillGroup,
+    training,
   }
 
   const sharedControlsProps = {
@@ -69,16 +74,16 @@ const Dashboard = ({ onLogout, user }) => {
         ) : !training ? (
           <DashboardEmpty />
         ) : (
-          <div className="flex flex-1 flex-col overflow-hidden">
-            <StatBar attendance={attendance} paidIds={paidIds} training={training} />
-            <DashboardLayout
-              attendancePanelProps={attendancePanelProps}
-              sharedControlsProps={sharedControlsProps}
-              currentGame={currentGame}
-              currentGameSkillGroup={currentGameSkillGroup}
-              training={training}
-            />
-          </div>
+          <DashboardLayout
+            attendancePanelProps={attendancePanelProps}
+            sharedControlsProps={sharedControlsProps}
+            sharedGameProps={ sharedGameProps }
+            currentGame={currentGame}
+            currentGameSkillGroup={currentGameSkillGroup}
+            training={training}
+            attendance={attendance}
+            paidIds={paidIds}
+          />
         )}
       </div>
 

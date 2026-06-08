@@ -1,5 +1,5 @@
-import GameControls from './GameControls'
-import UpNextList from './UpNextList'
+import GameControls from '../controls/GameControls'
+import UpNextList from '../controls/UpNextList'
 
 function ControlsPanel({
   attendance,
