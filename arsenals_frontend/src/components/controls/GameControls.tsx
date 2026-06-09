@@ -6,29 +6,18 @@ import { Play, Zap, Loader2 } from 'lucide-react'
 
 import { useUIStore } from '@/stores/useUIStore'
 import helper from '../../utils/helper'
-import { useState } from 'react'
 
 
-const GameControls = ({ training, teams, handleInitializeGame, initializeGameMutation, startGameMutation }) => {
+const GameControls = ({ training, handleInitializeGame, initializeGameMutation, startGameMutation }) => {
   const SKILL_GROUPS = ['beginner', 'intermediate', 'advanced']
   const gamesBySkill =  training?.games_by_skill
   const initLoading = initializeGameMutation.isPending
-
-  const [gameMode, setGameMode] = useState('skill')
-  const [teamA, setTeamA] = useState('')
-  const [teamB, setTeamB] = useState('')
     
   const { skillGroup, setSkillGroup } = useUIStore()
 
   const nextGamePlayers = training?.initialized_players || []
   const startGameLoading = startGameMutation.isPending
   const canStart = nextGamePlayers.length > 0 && !startGameLoading
-  const canInitialize = gameMode === 'skill'
-    ? (!initLoading && !!skillGroup)
-    : (!initLoading && !!teamA && !!teamB)
-
-  const availableTeamsForA = teams?.filter((team) => team.id !== teamB)
-  const availableTeamsForB = teams?.filter((team) => team.id !== teamA)
 
   return (
     <div className="flex-shrink-0 rounded-xl border border-border bg-card p-4">
@@ -48,28 +37,7 @@ const GameControls = ({ training, teams, handleInitializeGame, initializeGameMut
         </div>
         <p className="mb-3 mt-0.5 text-[11px] text-muted-foreground">Initialize then start</p>
 
-        {/* Mode toggle */}
-        <div className="mb-3 flex rounded-lg border border-border bg-muted/40 p-0.5">
-          {[
-            { id: 'skill', label: 'By Skill' },
-            { id: 'team',  label: 'By Team' },
-          ].map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => setGameMode(id)}
-              className={`flex-1 rounded-md py-1.5 text-[11px] font-medium transition-all ${
-                gameMode === id
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground bg-card hover:text-foreground/80'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
         <div className="flex flex-col gap-2">
-          {gameMode === 'skill' ? (
             <Select value={skillGroup} onValueChange={setSkillGroup}>
               <SelectTrigger className="w-full border-border bg-card text-sm text-foreground focus:ring-0 focus:ring-offset-0">
                 <SelectValue placeholder="Select skill group" />
@@ -82,55 +50,13 @@ const GameControls = ({ training, teams, handleInitializeGame, initializeGameMut
                 ))}
               </SelectContent>
             </Select>
-          ) : (
-            <div className="flex items-center gap-2">
-  
-          {/* Team A */}
-          <Select value={teamA} onValueChange={setTeamA}>
-            <SelectTrigger className="w-full border-border bg-card text-sm text-foreground focus:ring-0">
-              <SelectValue placeholder="Team A" />
-            </SelectTrigger>
-            <SelectContent className="border-border bg-popover text-popover-foreground">
-              {availableTeamsForA?.map((team) => (
-                <SelectItem key={team.id} value={team.id}>
-                  {team.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Divider */}
-          <span className="flex items-center justify-center px-2 text-muted-foreground">
-            &
-          </span>
-
-          {/* Team B */}
-          <Select value={teamB} onValueChange={setTeamB}>
-            <SelectTrigger className="w-full border-border bg-card text-sm text-foreground focus:ring-0">
-              <SelectValue placeholder="Team B" />
-            </SelectTrigger>
-            <SelectContent className="border-border bg-popover text-popover-foreground">
-              {availableTeamsForB?.map((team) => (
-                <SelectItem key={team.id} value={team.id}>
-                  {team.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-        </div>
-          )}
 
           <Button
             className="w-full bg-violet-600/80 text-white hover:bg-violet-500 disabled:opacity-40"
             onClick={() => {
-              if (gameMode === 'skill') {
                 handleInitializeGame({ skillGroup })
-              } else {
-                handleInitializeGame({ teamA, teamB })
               }
-            }}
-            disabled={!canInitialize}
+            }
           >
             {initLoading
               ? <Loader2 size={14} className="mr-2 animate-spin" />

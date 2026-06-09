@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 import trainingApi from '../services/training'
 import attendanceApi from '../services/attendance'
 import playersApi from '../services/players'
-import teamsApi from '../services/team'
+// import teamsApi from '../services/team'
 
 import { useUIStore } from '@/stores/useUIStore'
 
@@ -20,7 +20,7 @@ export const useDashboard = (token) => {
         trainingApi.get(token),
         attendanceApi.get(token),
         playersApi.get(token),
-        teamsApi.get(token),
+        // teamsApi.get(token),
       ])
       return { training: trainingRes, attendance: attendanceRes, players: playersRes, teams: teamsRes }
     },
@@ -60,7 +60,7 @@ export const useDashboard = (token) => {
   })
 
   const initializeGameMutation = useMutation({
-    mutationFn: (data) => trainingApi.initializeGame(data, token),
+    mutationFn: (skillType) => trainingApi.initializeGame(skillType, token),
     onSuccess: () => { toast.success('Game initialized.', { duration: 2000 }); invalidate() },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
@@ -81,7 +81,7 @@ export const useDashboard = (token) => {
   const training = dashboardQuery.data?.training
   const attendance = dashboardQuery.data?.attendance || []
   const players = dashboardQuery.data?.players || []
-  const teams = dashboardQuery.data?.teams
+  // const teams = dashboardQuery.data?.teams
 
   // checks the attendance for players that has paid
   const paidIds = new Set(attendance.filter(p => p.paid).map(p => p.id))
@@ -97,10 +97,8 @@ export const useDashboard = (token) => {
     createTrainingMutation.mutate(startDate.toISOString())
   }
 
-  const handleInitializeGame = (data) => {
-    if (data?.teamA && data?.teamB && data.teamA === data.teamB)
-      return toast.warning('Select two different teams.', { duration: 2000 })
-    initializeGameMutation.mutate(data)
+  const handleInitializeGame = (skillType) => {
+    initializeGameMutation.mutate(skillType)
   }
 
  
@@ -108,7 +106,7 @@ export const useDashboard = (token) => {
   return {
     // query state
     dashboardQuery,
-    training, attendance, players, teams, paidIds,
+    training, attendance, players, paidIds,
 
     // handlers
     handleCreateTraining,

@@ -20,16 +20,6 @@ const trainingSchema = new mongoose.Schema({
     enum: ['skill', 'team'],
     default: 'skill'
   },
-  // for team vs team games
-  team_a: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Team', 
-    default: null },
-  team_b: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Team', 
-    default: null 
-  },
   attendance: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Player'

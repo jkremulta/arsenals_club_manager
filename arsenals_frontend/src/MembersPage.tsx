@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react'
 
-import attendanceApi from './services/attendance'
 import playersApi from './services/players'
-import teamsApi from './services/team'
 import helper from './utils/helper'
 import { toast } from 'sonner'
 
 import Header from './components/membersPage/Header'
 import Tabs from './components/membersPage/Tabs'
 import PlayersTab from './components/membersPage/PlayersTab'
-import TeamsTab from './components/membersPage/TeamsTab'
 
 const formatBirthday = (value) => value ? new Date(value).toISOString().slice(0, 10) : ''
 const EMPTY_FORM = { name: '', birthday: '', gender: '', rank: '' }
@@ -31,29 +28,7 @@ function MembersPage({ user }) {
   const [submitting, setSubmitting]     = useState(false)
   const [deletingId, setDeletingId]     = useState(null)
 
-  // ── Teams state ───────────────────────────────────────────────────
-  const [teams, setTeams]                       = useState([])
-  const [teamsLoading, setTeamsLoading]         = useState(true)
-  const [attendance, setAttendance]             = useState([])
-  const [newTeamName, setNewTeamName]           = useState('')
-  const [creatingTeam, setCreatingTeam]         = useState(false)
-  const [deletingTeamId, setDeletingTeamId]     = useState(null)
-  const [addingToTeam, setAddingToTeam]         = useState(null)
-  const [removingFromTeam, setRemovingFromTeam] = useState(null)
-  const [renamingTeamId, setRenamingTeamId]     = useState(null)
-  const [renameValue, setRenameValue]           = useState('')
-  const [renamingLoading, setRenamingLoading]   = useState(null)
-  const [collapsedTeams, setCollapsedTeams]     = useState(new Set())
-
   const canManagePlayers = user?.username === OWNER_USERNAME
-
-  const toggleTeamCollapse = (id) => {
-    setCollapsedTeams(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
 
   // ── Fetch ─────────────────────────────────────────────────────────
   const fetchPlayers = async () => {
@@ -68,31 +43,8 @@ function MembersPage({ user }) {
     }
   }
 
-  const fetchTeams = async () => {
-    try {
-      const data = await teamsApi.get(user.token)
-      setTeams(data)
-      setCollapsedTeams(new Set(data.map(team => team.id)))
-    } catch (error) {
-      toast.error(error?.response?.data?.error, { duration: 2000 })
-    } finally {
-      setTeamsLoading(false)
-    }
-  }
-
-  const fetchAttendance = async () => {
-    try {
-      const data = await attendanceApi.get(user.token)
-      setAttendance(data)
-    } catch (error) {
-      toast.error(error?.response?.data?.error, { duration: 2000 })
-    }
-  }
-
   useEffect(() => {
     fetchPlayers()
-    fetchTeams()
-    fetchAttendance()
   }, [])
 
   // ── Player handlers ───────────────────────────────────────────────
@@ -130,67 +82,6 @@ function MembersPage({ user }) {
     } finally { setDeletingId(null) }
   }
 
-  // ── Team handlers ─────────────────────────────────────────────────
-  const handleCreateTeam = async () => {
-    if (!newTeamName.trim()) return
-    setCreatingTeam(true)
-    try {
-      await teamsApi.create(newTeamName.trim(), user.token)
-      setNewTeamName('')
-      toast.success('Team created.', { duration: 2000 })
-      fetchTeams()
-    } catch (error) {
-      toast.error(error?.response?.data?.error, { duration: 2000 })
-    } finally { setCreatingTeam(false) }
-  }
-
-  const handleDeleteTeam = async (id) => {
-    setDeletingTeamId(id)
-    try {
-      await teamsApi.remove(id, user.token)
-      setTeams(prev => prev.filter(t => t.id !== id))
-      toast.success('Team deleted.', { duration: 2000 })
-    } catch (error) {
-      toast.error(error?.response?.data?.error, { duration: 2000 })
-    } finally { setDeletingTeamId(null) }
-  }
-
-  const handleAddToTeam = async (teamId, playerId) => {
-    setAddingToTeam(teamId)
-    try {
-      const updated = await teamsApi.addPlayer(teamId, playerId, user.token)
-      setTeams(prev => prev.map(t => t.id === teamId ? updated : t))
-      toast.success('Player added to team.', { duration: 2000 })
-    } catch (error) {
-      toast.error(error?.response?.data?.error, { duration: 2000 })
-    } finally { setAddingToTeam(null) }
-  }
-
-  const handleRemoveFromTeam = async (teamId, playerId) => {
-    setRemovingFromTeam(`${teamId}-${playerId}`)
-    try {
-      const updated = await teamsApi.removePlayer(teamId, playerId, user.token)
-      setTeams(prev => prev.map(t => t.id === teamId ? updated : t))
-      toast.success('Player removed from team.', { duration: 2000 })
-    } catch (error) {
-      toast.error(error?.response?.data?.error, { duration: 2000 })
-    } finally { setRemovingFromTeam(null) }
-  }
-
-  const handleRenameTeam = async (id) => {
-    if (!renameValue.trim()) return
-    setRenamingLoading(id)
-    try {
-      const updated = await teamsApi.rename(id, renameValue.trim(), user.token)
-      setTeams(prev => prev.map(t => t.id === id ? updated : t))
-      setRenamingTeamId(null)
-      setRenameValue('')
-      toast.success('Team renamed.', { duration: 2000 })
-    } catch (error) {
-      toast.error(error?.response?.data?.error, { duration: 2000 })
-    } finally { setRenamingLoading(null) }
-  }
-
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground">
       <Header />
@@ -221,32 +112,6 @@ function MembersPage({ user }) {
               onOpenNew={openNew}
               onOpenEdit={openEdit}
               onCloseForm={closeForm}
-            />
-          )}
-
-          {activeTab === 'teams' && (
-            <TeamsTab
-              teams={teams}
-              teamsLoading={teamsLoading}
-              attendance={attendance}
-              newTeamName={newTeamName}
-              setNewTeamName={setNewTeamName}
-              creatingTeam={creatingTeam}
-              deletingTeamId={deletingTeamId}
-              addingToTeam={addingToTeam}
-              removingFromTeam={removingFromTeam}
-              renamingTeamId={renamingTeamId}
-              setRenamingTeamId={setRenamingTeamId}
-              renameValue={renameValue}
-              setRenameValue={setRenameValue}
-              renamingLoading={renamingLoading}
-              collapsedTeams={collapsedTeams}
-              onCreateTeam={handleCreateTeam}
-              onDeleteTeam={handleDeleteTeam}
-              onAddToTeam={handleAddToTeam}
-              onRemoveFromTeam={handleRemoveFromTeam}
-              onRenameTeam={handleRenameTeam}
-              onToggleCollapse={toggleTeamCollapse}
             />
           )}
 

@@ -1,7 +1,6 @@
 const trainingRouter = require('express').Router()
 const Training = require('../models/training')
 const Player = require('../models/players')
-const Team = require('../models/team')
 const trainingService = require('../services/training.service')
 const { userExtractor } = require('../utils/middleware')
 
@@ -11,10 +10,6 @@ trainingRouter.get('/', userExtractor, async (request, response) => {
     .populate('attendance', { name: 1, games_played: 1, paid: 1 })
     .populate('current_players')
     .populate('initialized_players')
-    .populate('initializedTeam', { name: 1 })
-    .populate('currentGameTeam', { name: 1 })
-    .populate('team_a', { name: 1 })
-    .populate('team_b', { name: 1 })
 
   if (!activeTraining) return response.status(200).json(null)
   response.json(activeTraining)
@@ -49,24 +44,20 @@ trainingRouter.delete('/', userExtractor, async (request, response) => {
       }
     }
   )
-  await Team.deleteMany({})
+
   await Training.findByIdAndDelete(activeTraining.id)
 
   return response.status(200).json({ isActive: false })
 })
 
-// initialize game — skill or team
+// initialize game
 trainingRouter.post('/initializeGame', userExtractor, async (request, response) => {
-  const { skillGroup, teamA, teamB } = request.body || {}
+  const { skillGroup } = request.body || {}
 
-  if (!skillGroup && !(teamA && teamB)) {
-    return response.status(400).json({ error: 'Skill Group or Team Selection is required.' })
+  if (!skillGroup) {
+    return response.status(400).json({ error: 'Skill Group is required.' })
   }
 
-  if (teamA && teamB) {
-    const players = await trainingService.getPlayersByTeams(teamA, teamB)
-    return response.json(players)
-  }
 
   const players = await trainingService.getPlayersBySkillGroup(skillGroup)
 
