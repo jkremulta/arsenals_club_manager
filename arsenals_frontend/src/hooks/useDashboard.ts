@@ -4,7 +4,6 @@ import { toast } from 'sonner'
 import trainingApi from '../services/training'
 import attendanceApi from '../services/attendance'
 import playersApi from '../services/players'
-// import teamsApi from '../services/team'
 
 import { useUIStore } from '@/stores/useUIStore'
 
@@ -16,13 +15,12 @@ export const useDashboard = (token) => {
   const dashboardQuery = useQuery({
     queryKey: ['dashboard'],
     queryFn: async () => {
-      const [trainingRes, attendanceRes, playersRes, teamsRes] = await Promise.all([
+      const [trainingRes, attendanceRes, playersRes] = await Promise.all([
         trainingApi.get(token),
         attendanceApi.get(token),
         playersApi.get(token),
-        // teamsApi.get(token),
       ])
-      return { training: trainingRes, attendance: attendanceRes, players: playersRes, teams: teamsRes }
+      return { training: trainingRes, attendance: attendanceRes, players: playersRes }
     },
   })
 
@@ -77,14 +75,8 @@ export const useDashboard = (token) => {
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
 
-  // Derived handlers
-  const training = dashboardQuery.data?.training
-  const attendance = dashboardQuery.data?.attendance || []
-  const players = dashboardQuery.data?.players || []
-  // const teams = dashboardQuery.data?.teams
-
   // checks the attendance for players that has paid
-  const paidIds = new Set(attendance.filter(p => p.paid).map(p => p.id))
+  const paidIds = new Set(dashboardQuery.data?.attendance.filter(p => p.paid).map(p => p.id))
   // toggles paid status
   const togglePaid = (id) => {
     togglePaidMutation.mutate({ id, paid: !paidIds.has(id) })
@@ -101,12 +93,19 @@ export const useDashboard = (token) => {
     initializeGameMutation.mutate(skillType)
   }
 
+  const handleEndTraining = () => endTrainingMutation.mutate()
+  const handleRemovePlayer = (id) => removePlayerMutation.mutate(id)
+  const handleStartGame = () => startGameMutation.mutate()
+
  
 
   return {
     // query state
     dashboardQuery,
-    training, attendance, players, paidIds,
+    training: dashboardQuery.data?.training, 
+    attendance: dashboardQuery.data?.attendance || [], 
+    players : dashboardQuery.data?.players || [], 
+    paidIds,
 
     // handlers
     handleCreateTraining,

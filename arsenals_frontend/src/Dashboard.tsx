@@ -9,10 +9,10 @@ import DashboardLayout from './components/dashboard/DashboardLayout'
 
 const Dashboard = ({ onLogout, user }) => {
   const {
-    dashboardQuery, training, attendance, players, teams, paidIds,
+    dashboardQuery, training, attendance, players, paidIds,
     handleCreateTraining, handleInitializeGame, togglePaid,
     endTrainingMutation,
-    createTrainingMutation,
+    createTrainingMutation, 
     addPlayerMutation, removePlayerMutation, togglePaidMutation,
     initializeGameMutation, startGameMutation, replacePlayerMutation,
   } = useDashboard(user.token)
@@ -40,7 +40,6 @@ const Dashboard = ({ onLogout, user }) => {
   const sharedControlsProps = {
     attendance,
     training,
-    teams,
     handleInitializeGame,
     initializeGameMutation,
     startGameMutation,
@@ -54,8 +53,8 @@ const Dashboard = ({ onLogout, user }) => {
         dashboardQuery={dashboardQuery} 
         training={training} 
         createTrainingMutation={createTrainingMutation}
-        endTrainingMutation={endTrainingMutation}
         handleCreateTraining={handleCreateTraining}
+        endTrainingMutation={endTrainingMutation}
         user={user}
         onLogout={onLogout}/>
 

@@ -4,7 +4,6 @@ import UpNextList from '../controls/UpNextList'
 function ControlsPanel({
   attendance,
   training,
-  teams,
   handleInitializeGame,
   initializeGameMutation,
   startGameMutation,
@@ -17,7 +16,6 @@ function ControlsPanel({
 
       <GameControls
         training={training}
-        teams={teams}
         handleInitializeGame={handleInitializeGame}
         initializeGameMutation={initializeGameMutation}
         startGameMutation={startGameMutation}
