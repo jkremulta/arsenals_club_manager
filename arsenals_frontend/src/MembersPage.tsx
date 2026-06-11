@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
-import playersApi from './services/players'
-import helper from './utils/helper'
-import { toast } from 'sonner'
+import Header from './components/members/Header'
+import Tabs from './components/members/Tabs'
+import PlayersTab from './components/members/PlayersTab'
 
-import Header from './components/membersPage/Header'
-import Tabs from './components/membersPage/Tabs'
-import PlayersTab from './components/membersPage/PlayersTab'
+import { useMembers } from './hooks/useMembers'
+import { useUIStore } from '@/stores/useUIStore'
 
 const formatBirthday = (value) => value ? new Date(value).toISOString().slice(0, 10) : ''
 const EMPTY_FORM = { name: '', birthday: '', gender: '', rank: '' }
@@ -14,40 +13,24 @@ const OWNER_USERNAME = 'joshiee02'
 
 function MembersPage({ user }) {
 
-  const [activeTab, setActiveTab] = useState('players')
+  const { activeTab, setActiveTab } = useUIStore()
 
-  // ── Players state ─────────────────────────────────────────────────
-  const [players, setPlayers]           = useState([])
-  const [loading, setLoading]           = useState(true)
+  const { players, loading, handleSubmit, handleDelete, createPlayerMutation, updatePlayerMutation, deletePlayerMutation } = useMembers(user.token)
+
+  // ── Local transient UI state ───────────────────────────────────────
   const [search, setSearch]             = useState('')
   const [sortBy, setSortBy]             = useState('recent')
   const [sortDirection, setSortDirection] = useState('desc')
   const [formOpen, setFormOpen]         = useState(false)
   const [editingId, setEditingId]       = useState(null)
   const [form, setForm]                 = useState(EMPTY_FORM)
-  const [submitting, setSubmitting]     = useState(false)
-  const [deletingId, setDeletingId]     = useState(null)
 
   const canManagePlayers = user?.username === OWNER_USERNAME
 
-  // ── Fetch ─────────────────────────────────────────────────────────
-  const fetchPlayers = async () => {
-    try {
-      const data = await playersApi.get(user.token)
-      if (data?.error) return toast.error(data.error, { duration: 2000 })
-      setPlayers(data)
-    } catch (error) {
-      toast.error(error?.response?.data?.error, { duration: 2000 })
-    } finally {
-      setLoading(false)
-    }
-  }
+  const submitting = createPlayerMutation.isPending || updatePlayerMutation.isPending
+  const deletingId = deletePlayerMutation.isPending ? deletePlayerMutation.variables : null
 
-  useEffect(() => {
-    fetchPlayers()
-  }, [])
-
-  // ── Player handlers ───────────────────────────────────────────────
+  // ── Form handlers ─────────────────────────────────────────────────
   const openNew  = () => { setEditingId(null); setForm(EMPTY_FORM); setFormOpen(true) }
   const openEdit = (player) => {
     setEditingId(player.id)
@@ -56,31 +39,7 @@ function MembersPage({ user }) {
   }
   const closeForm = () => { setFormOpen(false); setEditingId(null); setForm(EMPTY_FORM) }
 
-  const handleSubmit = async () => {
-    const derivedSkill = helper.skillFromRank(form.rank)
-    const isFormComplete = Boolean(form.name.trim() && form.gender && form.rank && derivedSkill)
-    if (!isFormComplete) return toast.warning('Name, gender, and rank are required.', { duration: 2000 })
-    const payload = { ...form, name: form.name.trim(), skill: derivedSkill }
-    setSubmitting(true)
-    try {
-      if (editingId) { await playersApi.put(editingId, payload, user.token); toast.success('Player updated.', { duration: 2000 }) }
-      else { await playersApi.post(payload, user.token); toast.success('Player registered.') }
-      closeForm(); fetchPlayers()
-    } catch (error) {
-      toast.error(error?.response?.data?.error, { duration: 2000 })
-    } finally { setSubmitting(false) }
-  }
-
-  const handleDelete = async (id) => {
-    setDeletingId(id)
-    try {
-      await playersApi.delete(id, user.token)
-      setPlayers(prev => prev.filter(p => p.id !== id))
-      toast.success('Player deleted.', { duration: 2000 })
-    } catch (error) {
-      toast.error(error?.response?.data?.error, { duration: 2000 })
-    } finally { setDeletingId(null) }
-  }
+  const onSubmit = () => handleSubmit({ editingId, form, onSuccess: closeForm })
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground">
@@ -107,7 +66,7 @@ function MembersPage({ user }) {
               submitting={submitting}
               deletingId={deletingId}
               canManagePlayers={canManagePlayers}
-              onSubmit={handleSubmit}
+              onSubmit={onSubmit}
               onDelete={handleDelete}
               onOpenNew={openNew}
               onOpenEdit={openEdit}

@@ -1,6 +1,4 @@
 import { useUIStore } from '@/stores/useUIStore'
-import { useDashboard } from '@/hooks/useDashboard'
-
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useNavigate } from 'react-router-dom'
