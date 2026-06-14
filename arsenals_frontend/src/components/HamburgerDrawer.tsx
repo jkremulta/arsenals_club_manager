@@ -16,10 +16,12 @@ import { Button } from '@/components/ui/button'
 import helper from '../utils/helper'
 import { Loader2, Play, Trash2, LogOut, Users } from 'lucide-react'
 import { useUIStore } from '@/stores/useUIStore'
+import { useLoginStore } from '@/stores/useLoginStore'
 
-function HamburgerDrawer({dashboardQuery, handleCreateTraining, createTrainingMutation, endTrainingMutation, training, user, onLogout }) {
+function HamburgerDrawer({ dashboardQuery, handleCreateTraining, createTrainingMutation, endTrainingMutation, training, user }) {
 
   const { createOpen, setCreateOpen, drawerOpen, setDrawerOpen, startTime, setStartTime } = useUIStore()
+  const { logout } = useLoginStore()
 
   const dashboardLoading = dashboardQuery.isLoading
   const sessionLoading = createTrainingMutation.isPending || endTrainingMutation.isPending
@@ -127,7 +129,7 @@ function HamburgerDrawer({dashboardQuery, handleCreateTraining, createTrainingMu
 
         <div className="mt-auto border-t border-border">
           <button
-            onClick={onLogout}
+            onClick={logout}
             className="flex w-full items-center gap-3 px-4 py-4 text-[13px] text-red-400 hover:bg-red-500/[0.06]"
           >
             <LogOut size={15} />

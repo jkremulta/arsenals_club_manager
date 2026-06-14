@@ -14,10 +14,12 @@ import {
 } from '@/components/ui/alert-dialog'
 import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
+import { useLoginStore } from '@/stores/useLoginStore'
 
-function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining, user, onLogout }) {
+function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining, user }) {
 
   const { createOpen, setCreateOpen, startTime, setStartTime, setDrawerOpen } = useUIStore()
+  const { logout } = useLoginStore()
 
   const navigate = useNavigate()
 
@@ -140,7 +142,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
           <Button
             size="sm"
             variant="ghost"
-            onClick={onLogout}
+            onClick={logout}
             className="text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             Logout

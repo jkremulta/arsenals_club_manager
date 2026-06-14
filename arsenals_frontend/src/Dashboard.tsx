@@ -7,7 +7,7 @@ import DashboardLoading from './components/dashboard/DashboardLoading'
 import DashboardEmpty from './components/dashboard/DashboardEmpty'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 
-const Dashboard = ({ onLogout, user }) => {
+const Dashboard = ({ user }) => {
   const {
     dashboardQuery, training, attendance, players, paidIds,
     handleCreateTraining, togglePaid,
@@ -54,8 +54,7 @@ const Dashboard = ({ onLogout, user }) => {
         createTrainingMutation={createTrainingMutation}
         handleCreateTraining={handleCreateTraining}
         endTrainingMutation={endTrainingMutation}
-        user={user}
-        onLogout={onLogout}/>
+        user={user}/>
 
       <HamburgerDrawer
         dashboardQuery={dashboardQuery}
@@ -63,8 +62,7 @@ const Dashboard = ({ onLogout, user }) => {
         createTrainingMutation={createTrainingMutation}
         endTrainingMutation={endTrainingMutation}
         training={training}
-        user={user}
-        onLogout={onLogout}/>
+        user={user}/>
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {dashboardQuery.isLoading ? (
