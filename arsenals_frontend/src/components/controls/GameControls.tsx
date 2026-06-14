@@ -8,7 +8,7 @@ import { useUIStore } from '@/stores/useUIStore'
 import helper from '../../utils/helper'
 
 
-const GameControls = ({ training, handleInitializeGame, initializeGameMutation, startGameMutation }) => {
+const GameControls = ({ training, initializeGameMutation, startGameMutation }) => {
   const SKILL_GROUPS = ['beginner', 'intermediate', 'advanced']
   const gamesBySkill =  training?.games_by_skill
   const initLoading = initializeGameMutation.isPending
@@ -54,7 +54,7 @@ const GameControls = ({ training, handleInitializeGame, initializeGameMutation, 
           <Button
             className="w-full bg-violet-600/80 text-white hover:bg-violet-500 disabled:opacity-40"
             onClick={() => {
-                handleInitializeGame({ skillGroup })
+                initializeGameMutation.mutate({ skillGroup })
               }
             }
           >

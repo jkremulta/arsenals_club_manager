@@ -89,15 +89,6 @@ export const useDashboard = (token) => {
     createTrainingMutation.mutate(startDate.toISOString())
   }
 
-  const handleInitializeGame = (skillType) => {
-    initializeGameMutation.mutate(skillType)
-  }
-
-  const handleEndTraining = () => endTrainingMutation.mutate()
-  const handleRemovePlayer = (id) => removePlayerMutation.mutate(id)
-  const handleStartGame = () => startGameMutation.mutate()
-
- 
 
   return {
     // query state
@@ -109,7 +100,6 @@ export const useDashboard = (token) => {
 
     // handlers
     handleCreateTraining,
-    handleInitializeGame,
     togglePaid,
 
     // mutations (for isPending, variables, etc.)
