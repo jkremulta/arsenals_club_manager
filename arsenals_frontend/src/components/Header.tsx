@@ -1,24 +1,17 @@
 import { useUIStore } from '@/stores/useUIStore'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/retroui/Button'
 import { Separator } from '@/components/ui/separator'
 import { useNavigate } from 'react-router-dom'
 import { Loader2, Users, Play, Trash2 } from 'lucide-react'
-import {
-  Dialog, DialogContent, DialogDescription, DialogFooter,
-  DialogHeader, DialogTitle, DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
-  AlertDialogTitle, AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+import { Dialog } from "@/components/retroui/Dialog";
+import { Text } from "@/components/retroui/Text";
 import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
 import { useLoginStore } from '@/stores/useLoginStore'
 
 function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining, user }) {
 
-  const { createOpen, setCreateOpen, startTime, setStartTime, setDrawerOpen } = useUIStore()
+  const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, startTime, setStartTime, setDrawerOpen } = useUIStore()
   const { logout } = useLoginStore()
 
   const navigate = useNavigate()
@@ -67,68 +60,78 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               <Loader2 size={13} className="mr-1.5 animate-spin" />
               Checking session…
             </Button>
-          ) : !training ? (
-            <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-500">
+          ) : (
+            <>
+              <Dialog open={createSessionOpen} onOpenChange={setCreateSessionOpen}>
+                <Button
+                  size="sm"
+                  className="bg-emerald-600 text-white hover:bg-emerald-500"
+                  onClick={() => setCreateSessionOpen(true)}
+                  style={{ display: training ? 'none' : undefined }}
+                >
                   <Play size={13} className="mr-1.5" />
                   Start Session
                 </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create Training Session</DialogTitle>
-                  <DialogDescription>Set the official start time for this session.</DialogDescription>
-                </DialogHeader>
-                <div className="py-2">
-                  <label className="mb-1.5 block text-xs text-muted-foreground">Start Time</label>
-                  <input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-emerald-500/50"
-                  />
-                </div>
-                <DialogFooter>
-                  <Button
-                    onClick={handleCreateTraining}
-                    disabled={sessionLoading}
-                    className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
-                  >
-                    {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
-                    Create Session
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          ) : (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button size="sm" className="border border-border bg-card text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                <Dialog.Content className="w-[420px] max-w-[90vw]">
+                  <Dialog.Header>
+                    <Text as='h4'>Start training session?</Text>
+                  </Dialog.Header>
+                  <section className="flex flex-col gap-5 p-4">
+                    <section className="text-xl">
+                      <label className="mb-1.5 block text-sm text-muted-foreground">Start Time</label>
+                      <input
+                        type="time"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        className="w-full text-sm rounded-md border border-input bg-background px-3 py-2 text-foreground outline-none focus:border-emerald-500/50"
+                      />
+                    </section>
+                    <section className="flex w-full justify-end">
+                      <Button
+                        onClick={handleCreateTraining}
+                        disabled={sessionLoading}
+                        className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
+                      >
+                        {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
+                        Confirm
+                      </Button>
+                    </section>
+                  </section>
+                </Dialog.Content>
+              </Dialog>
+
+              <Dialog open={endSessionOpen} onOpenChange={setEndSessionOpen}>
+                <Button
+                  size="sm"
+                  className="bg-card text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                  onClick={() => setEndSessionOpen(true)}
+                  style={{ display: !training ? 'none' : undefined }}
+                >
                   <Trash2 size={13} className="mr-1.5" />
                   End Session
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>End this training session?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will reset all game counts and delete the active session. This cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => endTrainingMutation.mutate()}
-                    disabled={sessionLoading}
-                    className="bg-red-600 hover:bg-red-500 disabled:opacity-50"
-                  >
-                    {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
-                    End Session
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                <Dialog.Content className="w-[420px] max-w-[90vw]">
+                  <Dialog.Header>
+                    <Text as="h4">End training session?</Text>
+                  </Dialog.Header>
+                  <section className="flex flex-col gap-5 p-4">
+                    <p className="text-muted-foreground">
+                      This will reset all game counts and delete the active session. This cannot be undone.
+                    </p>
+                    <section className="flex w-full justify-end gap-2">
+                      <Button
+                        onClick={() => endTrainingMutation.mutate()}
+                        disabled={sessionLoading}
+                        className="bg-red-600 text-white hover:bg-red-500 disabled:opacity-50"
+                      >
+                        {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
+                        End
+                      </Button>
+                    </section>
+                  </section>
+                </Dialog.Content>
+              </Dialog>
+            </>
           )}
           <Button
             size="sm"
