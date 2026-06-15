@@ -8,13 +8,15 @@ const getDefaultStartTime = () => {
 
 export const useUIStore = create((set) => ({
   skillGroup: '',
-  createOpen: false,
+  createSessionOpen: false,
+  endSessionOpen: false,
   drawerOpen: false,
   activeTab: 'attendance',
   startTime: getDefaultStartTime(),
 
   setSkillGroup: (v) => set({ skillGroup: v }),
-  setCreateOpen: (v) => set({ createOpen: v }),
+  setCreateSessionOpen: (v) => set({ createSessionOpen: v }),
+  setEndSessionOpen: (v) => set({ endSessionOpen: v }),
   setDrawerOpen: (v) => set({ drawerOpen: v }),
   setActiveTab: (v) => set({ activeTab: v }),
   setStartTime: (v) => set({ startTime: v }),

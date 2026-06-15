@@ -10,7 +10,7 @@ import { useUIStore } from '@/stores/useUIStore'
 export const useDashboard = (token) => {
   const queryClient = useQueryClient()
 
-  const { startTime, setCreateOpen } = useUIStore()
+  const { startTime, setCreateSessionOpen, setEndSessionOpen } = useUIStore()
 
   const dashboardQuery = useQuery({
     queryKey: ['dashboard'],
@@ -29,13 +29,13 @@ export const useDashboard = (token) => {
 
   const createTrainingMutation = useMutation({
     mutationFn: (startDateIso) => trainingApi.post(startDateIso, token),
-    onSuccess: () => { toast.success('Training session created.', { duration: 2000 }); setCreateOpen(false); invalidate() },
+    onSuccess: () => { toast.success('Training session created.', { duration: 2000 }); setCreateSessionOpen(false); invalidate() },
     onError: (e) => toast.error(e?.response?.data?.error),
   })
 
   const endTrainingMutation = useMutation({
     mutationFn: () => trainingApi.delete(token),
-    onSuccess: () => { toast.success('Training ended.', { duration: 2000 }); invalidate() },
+    onSuccess: () => { toast.success('Training ended.', { duration: 2000 }); setEndSessionOpen(false); invalidate() },
     onError: (e) => toast.error(e?.response?.data?.error),
   })
 
