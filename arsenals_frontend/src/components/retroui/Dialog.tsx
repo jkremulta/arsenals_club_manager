@@ -11,10 +11,8 @@ const DialogTrigger = BaseDialog.Trigger;
 
 const overlayVariants = cva(
   ` fixed bg-black/80 font-head
-    data-[open]:fade-in-0
     data-[open]:animate-in
     data-[closed]:animate-out
-    data-[closed]:fade-out-0
   `,
   {
     variants: {
