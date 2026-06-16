@@ -53,8 +53,7 @@ const Dashboard = ({ user }) => {
         training={training} 
         createTrainingMutation={createTrainingMutation}
         handleCreateTraining={handleCreateTraining}
-        endTrainingMutation={endTrainingMutation}
-        user={user}/>
+        endTrainingMutation={endTrainingMutation}/>
 
       <HamburgerDrawer
         dashboardQuery={dashboardQuery}

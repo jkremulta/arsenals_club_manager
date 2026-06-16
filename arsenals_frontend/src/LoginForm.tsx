@@ -43,13 +43,13 @@ export function LoginForm() {
   }
 
   const inputClass =
-    'w-full rounded border-2 border-black bg-background px-3 py-2.5 text-sm text-foreground ' +
+    'w-full border-2 border-black bg-background px-3 py-2.5 text-sm text-foreground ' +
     'placeholder:text-muted-foreground/50 outline-none shadow-[2px_2px_0px_0px_#000] ' +
     'focus:shadow-[3px_3px_0px_0px_#000] transition-shadow'
 
   return (
     <div className={'w-full max-w-sm px-4 w-96'}>
-      <div className="rounded border-2 border-black bg-background p-6 shadow-[6px_6px_0px_0px_#000]">
+      <div className="border-2 border-black bg-background p-6 shadow-[6px_6px_0px_0px_#000]">
 
         {/* Logo */}
         <div className="mb-6 flex flex-col items-center gap-3">
@@ -79,7 +79,7 @@ export function LoginForm() {
                 setCheckedIn(false)
               }}
               className={
-                'flex-1 rounded border-2 border-black py-1.5 text-[13px] font-medium capitalize ' +
+                'flex-1 border-2 border-black py-1.5 text-[13px] font-medium capitalize ' +
                 (tab === t
                   ? 'bg-primary text-primary-foreground shadow-[3px_3px_0px_0px_#000]'
                   : 'bg-background text-foreground shadow-[3px_3px_0px_0px_#000]')
