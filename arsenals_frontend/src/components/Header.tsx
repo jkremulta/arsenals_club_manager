@@ -50,7 +50,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               size="sm"
               variant="secondary"
               disabled
-              className="pointer-events-none border-border bg-card text-muted-foreground shadow-none disabled:opacity-100"
+              className="font-sans pointer-events-none border-border bg-card text-muted-foreground shadow-none disabled:opacity-100"
             >
               <Loader2 size={13} className="mr-1.5 animate-spin" />
               Checking session…
@@ -97,7 +97,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               <Dialog open={endSessionOpen} onOpenChange={setEndSessionOpen}>
                 <Button
                   size="sm"
-                  className="font-sans bg-card text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                  className="font-sans bg-background text-red-400 hover:bg-red-500/10 hover:text-red-300"
                   onClick={() => setEndSessionOpen(true)}
                   style={{ display: !training ? 'none' : undefined }}
                 >
