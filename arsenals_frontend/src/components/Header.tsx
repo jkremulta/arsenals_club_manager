@@ -50,7 +50,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               size="sm"
               variant="secondary"
               disabled
-              className="font-sans pointer-events-none border-border bg-card text-muted-foreground shadow-none disabled:opacity-100"
+              className="border-2 border-black font-sans pointer-events-none bg-card text-muted-foreground shadow-none disabled:opacity-100"
             >
               <Loader2 size={13} className="mr-1.5 animate-spin" />
               Checking session…
