@@ -97,7 +97,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               <Dialog open={endSessionOpen} onOpenChange={setEndSessionOpen}>
                 <Button
                   size="sm"
-                  className="font-sans bg-background text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                  className="font-sans bg-card text-red-400 hover:bg-red-500/10 hover:text-red-300"
                   onClick={() => setEndSessionOpen(true)}
                   style={{ display: !training ? 'none' : undefined }}
                 >
@@ -129,7 +129,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
           <Button
             size="sm"
             onClick={() => navigate('/members')}
-            className="font-sans bg-background border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
+            className="font-sans bg-card border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             Members
           </Button>
@@ -137,7 +137,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
             size="sm"
 
             onClick={logout}
-            className="font-sans bg-background border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
+            className="font-sans bg-card border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             Logout
           </Button>

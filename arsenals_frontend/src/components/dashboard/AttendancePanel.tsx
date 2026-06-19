@@ -104,7 +104,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                     >
                       {player.name}
                     </span>
-                   <span className={`flex-shrink-0 rounded-none border-2 border-black/30 px-1.5 py-0.5 text-[9px] font-bold ${helper.skillPill(player.skill).className}`}>
+                   <span className={`flex-shrink-0 border-2 border-black/30 px-1.5 py-0.5 text-[9px] font-bold ${helper.skillPill(player.skill).className}`}>
                     {helper.skillPill(player.skill).label}
                   </span>
                   </div>
@@ -128,15 +128,15 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                     ? <Loader2 size={10} className="animate-spin" />
                     : isPaid ? 'Paid' : 'Unpaid'}
                     </button>
-                  <button
-                    onClick={() => removePlayerMutation.mutate(player.id)}
-                    disabled={removingId === player.id}
-                    className="flex h-6 w-6 items-center justify-center rounded-none border-2 border-black/30 text-muted-foreground/40 transition-all hover:border-red-500 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
-                  >
-                      {removingId === player.id
-                        ? <Loader2 size={10} className="animate-spin" />
-                        : <X size={11} />}
-                    </button>
+                 <button
+                  onClick={() => removePlayerMutation.mutate(player.id)}
+                  disabled={removingId === player.id}
+                  className="flex h-6 w-6 items-center justify-center rounded-none border-2 border-black/30 text-muted-foreground/40 transition-all shadow-[2px_2px_0px_black] hover:border-red-500 hover:bg-red-500/10 hover:text-red-400 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
+                >
+                  {removingId === player.id
+                    ? <Loader2 size={10} className="animate-spin" />
+                    : <X size={11} />}
+                </button>
                   </div>
                 </div>
               )

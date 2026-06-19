@@ -26,14 +26,13 @@ const UpNextList = ({ training, attendance, currentGame, replacePlayerMutation }
   })
 
   return (
-    <div className="flex flex-1 min-h-0 flex-col rounded-xl border border-violet-500/25 bg-violet-500/[0.04]">
-        <div className="flex flex-shrink-0 items-center justify-between border-b border-violet-500/15 bg-violet-500/[0.05] px-4 py-3">
+    <div className="flex flex-1 min-h-0 flex-col border-2 border-black bg-violet-500/[0.04]">
+        <div className="flex flex-shrink-0 items-center justify-between border-black border-b bg-violet-500/[0.05] px-4 py-3">
           <div className="flex items-center gap-2 text-violet-400">
-            <Zap size={12} />
             <p className="text-[11px] font-semibold uppercase tracking-widest">Up next</p>
           </div>
           {nextGamePlayers.length > 0 && initializedSkillGroup && (
-            <span className="rounded-full bg-violet-500/20 px-2.5 py-0.5 text-[10px] font-semibold capitalize text-violet-400">
+            <span className="border-2 border-black/30 bg-violet-500/20 px-2.5 py-0.5 text-[10px] font-semibold capitalize text-violet-400">
               {initializedSkillGroup}
             </span>
           )}
@@ -53,24 +52,24 @@ const UpNextList = ({ training, attendance, currentGame, replacePlayerMutation }
                 const isPlaying = currentGame?.some((p) => (p.id ?? p._id) === playerId)
                 const isSwapping = swappingPlayerId === playerId
                 return (
-                  <div key={playerId} className="group flex items-center justify-between rounded-md px-3 py-2 hover:bg-accent/40">
+                  <div key={playerId} className="group flex items-center justify-between rounded-md px-3 py-2 hover:bg-teal-500/10">
                     <div className="flex min-w-0 flex-1 items-center gap-3">
                       <span className="w-5 text-[10px] font-bold text-violet-500/50">
                         {String(i + 1).padStart(2, '0')}
                       </span>
                       <div className="flex min-w-0 flex-1 items-center gap-2">
                         <span className="truncate text-[12px] font-medium text-foreground/80">{player.name}</span>
-                        <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold ${helper.skillPill(player.skill).className}`}>
+                        <span className={`flex-shrink-0 rounded-none border-2 border-black/30 px-1.5 py-0.5 text-[9px] font-bold ${helper.skillPill(player.skill).className}`}>
                           {helper.skillPill(player.skill).label}
                         </span>
                       </div>
                     </div>
 
                     <div className="ml-2 flex flex-shrink-0 items-center gap-2">
-                      <span className={`rounded border px-1.5 py-0.5 text-[10px] ${
+                      <span className={`rounded-none border-2 px-1.5 py-0.5 text-[10px] font-bold ${
                         isPlaying
-                          ? 'border-emerald-500/25 text-emerald-400'
-                          : 'border-border text-muted-foreground/50'
+                          ? 'border-black/30 text-emerald-400'
+                          : 'border-black/30 text-muted-foreground/50'
                       }`}>
                         {player.games_played ?? 0}G
                       </span>
@@ -82,9 +81,9 @@ const UpNextList = ({ training, attendance, currentGame, replacePlayerMutation }
                         }}
                       >
                         <PopoverTrigger asChild>
-                          <button
+                         <button
                             disabled={isSwapping}
-                            className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground/60 opacity-0 transition-all group-hover:opacity-100 hover:bg-violet-500/20 hover:text-violet-400 opacity-100 disabled:opacity-50"
+                            className="opacity-100 flex h-6 w-6 items-center justify-center rounded-none border-2 border-black/30 text-muted-foreground/60 opacity-0 transition-all shadow-[2px_2px_0px_black] group-hover:opacity-100 hover:border-violet-500 hover:bg-violet-500/10 hover:text-violet-400 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
                           >
                             {isSwapping
                               ? <Loader2 size={11} className="animate-spin" />
