@@ -66,7 +66,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                       key={p.id}
                       value={p.name}
                       onSelect={() => handleAdd(p.id)}
-                      className="cursor-pointer"
+                      className="cursor-pointer data-[selected=true]:bg-white/10 data-[selected=true]:text-foreground"
                     >
                       <span className="text-sm">{p.name}</span>
                     </Command.Item>
