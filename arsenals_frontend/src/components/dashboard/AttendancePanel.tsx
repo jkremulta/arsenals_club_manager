@@ -111,7 +111,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                   <div className="flex flex-shrink-0 items-center gap-2">
                     <span className={`rounded-none border-2 px-1.5 py-0.5 text-[10px] font-bold ${
                       isPlaying
-                        ? 'border-emerald-500 text-emerald-400'
+                        ? 'border-black/30 text-emerald-400'
                         : 'border-black/30 text-muted-foreground/50'
                     }`}>
                       {player.games_played ?? 0}G
