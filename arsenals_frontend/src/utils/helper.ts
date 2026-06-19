@@ -21,9 +21,9 @@ const skillFromRank = (rank) => {
 // skill pill
 const skillPill = (skill) => {
   switch (skill) {
-    case 'advanced':     return { label: 'Adv', className: 'bg-red-500/15 text-red-400' }
-    case 'intermediate': return { label: 'Int', className: 'bg-yellow-500/15 text-yellow-400' }
-    case 'beginner':     return { label: 'Beg', className: 'bg-emerald-500/15 text-emerald-400' }
+    case 'advanced':     return { label: 'Adv', className: 'bg-red-500/20 text-red-400' }
+    case 'intermediate': return { label: 'Int', className: 'bg-[#C17F24]/20 text-[#C17F24]' }
+    case 'beginner':     return { label: 'Beg', className: 'bg-teal-500/20 text-teal-400' }
     default:             return { label: '—',   className: 'bg-white/10 text-white/30' }
   }
 }
