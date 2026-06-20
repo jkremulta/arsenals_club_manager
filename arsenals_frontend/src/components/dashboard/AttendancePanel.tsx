@@ -94,7 +94,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
               return (
                 <div
                   key={player.id}
-                  className="group flex items-center justify-between rounded-md px-3 py-2.5 transition-colors hover:bg-teal-500/10"
+                  className="group flex items-center justify-between rounded-md px-3 py-2.5 transition-colors hover:bg-white/10"
                 >
                   <div className="flex min-w-0 items-center gap-2.5">
                      <span
@@ -111,8 +111,8 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                   <div className="flex flex-shrink-0 items-center gap-2">
                     <span className={`rounded-none border-2 px-1.5 py-0.5 text-[10px] font-bold ${
                       isPlaying
-                        ? 'border-black/30 text-emerald-400'
-                        : 'border-black/30 text-muted-foreground/50'
+                        ? 'border-none'
+                        : 'border-none text-muted-foreground/60'
                     }`}>
                       {player.games_played ?? 0}G
                     </span>
@@ -131,7 +131,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                  <button
                   onClick={() => removePlayerMutation.mutate(player.id)}
                   disabled={removingId === player.id}
-                  className="flex h-6 w-6 items-center justify-center rounded-none border-2 border-black/30 text-muted-foreground/40 transition-all shadow-[2px_2px_0px_black] hover:border-red-500 hover:bg-red-500/10 hover:text-red-400 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
+                  className="flex h-6 w-6 items-center justify-center rounded-none border-2 border-black text-muted-foreground transition-all shadow-[2px_2px_0px_black] hover:bg-red-400 hover:text-white active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
                 >
                   {removingId === player.id
                     ? <Loader2 size={10} className="animate-spin" />
