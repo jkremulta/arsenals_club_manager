@@ -121,7 +121,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                       className={`rounded-none border-2 border-black px-2 py-0.5 text-[10px] font-bold transition-all shadow-[2px_2px_0px_black] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] ${
                         isPaid
                           ? 'bg-emerald-400 text-black hover:bg-red-400 hover:text-black'
-                          : 'bg-muted text-muted-foreground hover:bg-emerald-400 hover:text-black'
+                          : 'text-muted-foreground hover:bg-emerald-400 hover:text-black'
                       }`}
                     >
                       {togglingId === player.id
