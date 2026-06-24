@@ -98,7 +98,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                 >
                   <div className="flex min-w-0 items-center gap-2.5">
                      <span
-                      className={`truncate max-w-[120px] md:max-w-none text-[13px] font-medium ${
+                      className={`truncate max-w-[120px] md:max-w-[160px] text-[13px] font-medium ${
                         player.late ? 'text-yellow-400' : 'text-foreground/75'
                       }`}
                     >
