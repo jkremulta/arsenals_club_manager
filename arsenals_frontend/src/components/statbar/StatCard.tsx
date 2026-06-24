@@ -5,8 +5,8 @@ function StatCard({ icon: Icon, label, value, accent, valueStyle }) {
     <Card className="shadow-none px-3 py-2.5 md:px-4 md:py-3 border-2 border-black">
       <Card.Header className="flex flex-row items-center gap-3 space-y-0 p-0">
         <div
-          className="flex h-7 w-7 flex-shrink-0 items-center justify-center"
-          style={{ backgroundColor: `${accent}33`, color: accent }}
+          className="flex h-7 w-7 flex-shrink-0 items-center justify-center border-2 border-black"
+          style={{ backgroundColor: accent, color: '#1a2d4d' }}
         >
           <Icon size={13} />
         </div>

@@ -19,15 +19,15 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
   const sessionLoading = createTrainingMutation.isPending || endTrainingMutation.isPending
 
   return (
-    <header className="flex-shrink-0 border-solid border-black border-2 px-4 py-3 md:px-8 md:py-4">
+    <header className="flex-shrink-0 border-black border-b-2 px-4 py-3 md:px-8 md:py-4">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center">
+          <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center">
             <img src={arsenalsLogo} alt="Arsenals logo" className="h-full w-full object-contain" />
           </div>
           <div>
-            <Text as="h6">Arsenal Tchoukball Club</Text>
-            <p className="text-muted-foreground/60 md:text-[11px]">
+            <Text as="h6" className='text-sm md:text-base'>Arsenal Tchoukball Club</Text>
+            <p className="text-[11px] text-muted-foreground/60">
               Session ·{' '}
               {dashboardLoading ? (
                 <span className="inline-flex items-center gap-1">
@@ -60,31 +60,31 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               <Dialog open={createSessionOpen} onOpenChange={setCreateSessionOpen}>
                 <Button
                   size="sm"
-                  className="bg-emerald-600 text-white hover:bg-emerald-500 font-sans"
+                  className="bg-emerald-400 text-black font-sans"
                   onClick={() => setCreateSessionOpen(true)}
                   style={{ display: training ? 'none' : undefined }}
                 >
                   Start Session
                 </Button>
-                <Dialog.Content className="border-2 border-black w-[420px] max-w-[90vw]">
-                  <Dialog.Header className='bg-emerald-600 text-white'>
+                <Dialog.Content className="bg-card border-2 border-black w-[420px] max-w-[90vw]">
+                  <Dialog.Header className='border-b-2 border-black bg-emerald-400 text-black'>
                     <Text as='h4'>Start training session?</Text>
                   </Dialog.Header>
-                  <section className="flex flex-col gap-5 p-4">
+                  <section className="border-1 border-black flex flex-col gap-5 p-4">
                     <section className="text-xl">
                       <label className="mb-1.5 block text-sm text-muted-foreground">Start Time</label>
                       <input
                         type="time"
                         value={startTime}
                         onChange={(e) => setStartTime(e.target.value)}
-                        className="w-full text-sm border border-input bg-background px-3 py-2 text-foreground outline-none focus:border-emerald-500/50"
+                        className="w-full text-sm border bg-card border-input bg-background px-3 py-2 text-foreground outline-none focus:border-emerald-500/50"
                       />
                     </section>
                     <section className="flex w-full justify-end">
                       <Button
                         onClick={handleCreateTraining}
                         disabled={sessionLoading}
-                        className="text-white bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
+                        className="bg-emerald-400 text-black hover:bg-emerald-300 border-2 border-black disabled:opacity-50"
                       >
                         {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
                         Confirm
@@ -97,17 +97,17 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               <Dialog open={endSessionOpen} onOpenChange={setEndSessionOpen}>
                 <Button
                   size="sm"
-                  className="font-sans bg-card text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                  className="font-sans bg-red-400 text-black"
                   onClick={() => setEndSessionOpen(true)}
                   style={{ display: !training ? 'none' : undefined }}
                 >
                   End Session
                 </Button>
-                <Dialog.Content className="border-none w-[420px] max-w-[90vw]">
-                  <Dialog.Header className='bg-red-600 border-2 border-black text-white'>
+                <Dialog.Content className="bg-card border-none w-[420px] max-w-[90vw]">
+                  <Dialog.Header className='bg-red-400 border-1 border-black text-black'>
                     <Text as="h4">End training session?</Text>
                   </Dialog.Header>
-                  <section className="border-2 border-black flex flex-col gap-5 p-4">
+                  <section className="border-1 border-black flex flex-col gap-5 p-4">
                     <p className="text-muted-foreground">
                       This will reset all game counts and delete the active session. This cannot be undone.
                     </p>
@@ -115,7 +115,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
                       <Button
                         onClick={() => endTrainingMutation.mutate()}
                         disabled={sessionLoading}
-                        className="bg-red-600 text-white hover:bg-red-500 disabled:opacity-50"
+                        className="bg-red-400 text-black"
                       >
                         {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
                         End

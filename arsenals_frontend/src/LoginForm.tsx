@@ -43,7 +43,7 @@ export function LoginForm() {
   }
 
   const inputClass =
-    'w-full border-2 border-black bg-background px-3 py-2.5 text-sm text-foreground ' +
+    'w-full border-2 border-black bg-card px-3 py-2.5 text-sm text-foreground ' +
     'placeholder:text-muted-foreground/50 outline-none shadow-[2px_2px_0px_0px_#000] ' +
     'focus:shadow-[3px_3px_0px_0px_#000] transition-shadow'
 
@@ -70,7 +70,7 @@ export function LoginForm() {
         </div>
 
         {/* Tabs */}
-        <div className="mb-5 flex gap-2">
+        <div className="mb-5 flex gap-2 vg">
           {(['login', 'attendance'] as const).map((t) => (
             <button
               key={t}
@@ -79,7 +79,7 @@ export function LoginForm() {
                 setCheckedIn(false)
               }}
               className={
-                'flex-1 border-2 border-black py-1.5 text-[13px] font-medium capitalize ' +
+                'flex-1 bg-card border-2 border-black py-1.5 text-[13px] font-medium capitalize ' +
                 (tab === t
                   ? 'bg-primary text-primary-foreground shadow-[3px_3px_0px_0px_#000]'
                   : 'bg-background text-foreground shadow-[3px_3px_0px_0px_#000]')
@@ -127,7 +127,7 @@ export function LoginForm() {
             <Button
               type="submit"
               disabled={loginMutation.isPending}
-              className="w-full bg-emerald-500 text-white"
+              className="w-full bg-emerald-400 text-black"
             >
               {loginMutation.isPending && (
                 <Loader2 size={16} className="mr-2 animate-spin" />
@@ -173,7 +173,7 @@ export function LoginForm() {
                 <Button
                   onClick={submitAttendance}
                   disabled={!nameQuery.trim() || checkingIn}
-                  className="w-full bg-emerald-500 text-white"
+                  className="w-full bg-emerald-400 text-black"
                 >
                   {checkingIn && (
                     <Loader2 size={16} className="mr-2 animate-spin" />

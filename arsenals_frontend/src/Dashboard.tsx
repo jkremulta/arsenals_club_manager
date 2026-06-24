@@ -47,42 +47,44 @@ const Dashboard = ({ user }) => {
   }
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground">
-      <Header 
-        dashboardQuery={dashboardQuery} 
-        training={training} 
-        createTrainingMutation={createTrainingMutation}
-        handleCreateTraining={handleCreateTraining}
-        endTrainingMutation={endTrainingMutation}/>
+    <div className="h-screen overflow-hidden bg-card p-4">
+      <div className="flex h-full flex-col border-2 border-black bg-background font-sans text-foreground shadow-[6px_6px_0_#000]">
+        <Header 
+          dashboardQuery={dashboardQuery} 
+          training={training} 
+          createTrainingMutation={createTrainingMutation}
+          handleCreateTraining={handleCreateTraining}
+          endTrainingMutation={endTrainingMutation}/>
 
-      <HamburgerDrawer
-        dashboardQuery={dashboardQuery}
-        handleCreateTraining={handleCreateTraining}
-        createTrainingMutation={createTrainingMutation}
-        endTrainingMutation={endTrainingMutation}
-        training={training}
-        user={user}/>
+        <HamburgerDrawer
+          dashboardQuery={dashboardQuery}
+          handleCreateTraining={handleCreateTraining}
+          createTrainingMutation={createTrainingMutation}
+          endTrainingMutation={endTrainingMutation}
+          training={training}
+          user={user}/>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {dashboardQuery.isLoading ? (
-          <DashboardLoading />
-        ) : !training ? (
-          <DashboardEmpty />
-        ) : (
-          <DashboardLayout
-            attendancePanelProps={attendancePanelProps}
-            sharedControlsProps={sharedControlsProps}
-            sharedGameProps={ sharedGameProps }
-            currentGame={currentGame}
-            currentGameSkillGroup={currentGameSkillGroup}
-            training={training}
-            attendance={attendance}
-            paidIds={paidIds}
-          />
-        )}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          {dashboardQuery.isLoading ? (
+            <DashboardLoading />
+          ) : !training ? (
+            <DashboardEmpty />
+          ) : (
+            <DashboardLayout
+              attendancePanelProps={attendancePanelProps}
+              sharedControlsProps={sharedControlsProps}
+              sharedGameProps={ sharedGameProps }
+              currentGame={currentGame}
+              currentGameSkillGroup={currentGameSkillGroup}
+              training={training}
+              attendance={attendance}
+              paidIds={paidIds}
+            />
+          )}
+        </div>
+
+        <BottomNav />
       </div>
-
-      <BottomNav />
     </div>
   )
 }

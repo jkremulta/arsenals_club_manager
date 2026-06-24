@@ -11,29 +11,29 @@ const StatBar = ({ attendance, paidIds, training }) => {
           icon={Users}
           label="Attendance"
           value={attendance.length}
-          accent="#2DD4BF"  // brighter teal
+          accent="#e8d9b5"  // cream — neutral, always present
         />
         <StatCard
           icon={PhilippinePeso}
           label="Paid"
           value={`${paidIds.size} / ${attendance.length}`}
-          accent="#2DD4BF"
-          valueStyle={{ color: '#2DD4BF' }}
+          accent="#93c5d8"  // logo teal
+          valueStyle={{ color: "#93c5d8" }}
         />
         <StatCard
           icon={Trophy}
           label="Games Today"
           value={training.games_today}
-          accent="#F97316"  // brighter orange
+          accent="#c47a1e"  // logo burnt orange — trophy feels right here
         />
         <StatCard
           icon={Clock}
           label="Session Start"
           value={helper.formatTime(training.startTime) ?? '—'}
-          accent="#93C5FD"  // light blue-navy, readable on dark
+          accent="#e8d9b5"  // cream again — time is neutral info
         />
-            </div>
-          </div>
+      </div>
+    </div>
           )
         }
 

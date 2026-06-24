@@ -1,6 +1,6 @@
 import { Select } from "@/components/retroui/Select";
 import { Button } from '@/components/retroui/Button'
-import { Play, Zap, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 import { useUIStore } from '@/stores/useUIStore'
 import helper from '../../utils/helper'
@@ -51,14 +51,14 @@ const GameControls = ({ training, initializeGameMutation, startGameMutation }) =
 
           <Button
             size="sm"
-            className="font-sans w-full bg-violet-600/80 text-white hover:bg-violet-500 disabled:opacity-40"
+            className="font-sans w-full bg-[#93c5d8] h-8 text-black disabled:opacity-40"
             onClick={() => initializeGameMutation.mutate({ skillGroup })}
           >
             {initLoading ? <Loader2 size={12} className="animate-spin" /> : 'Initialize'}
           </Button>
           <Button
             size="sm"
-            className="font-sans w-full bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-40"
+            className="font-sans w-full bg-emerald-400 h-8 text-black disabled:opacity-40"
             onClick={() => startGameMutation.mutate()}
             disabled={!canStart}
           >

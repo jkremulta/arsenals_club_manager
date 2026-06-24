@@ -21,15 +21,27 @@ const skillFromRank = (rank) => {
 // skill pill
 const skillPill = (skill) => {
   switch (skill) {
-    case 'advanced':     return { label: 'Adv', className: 'bg-red-500/20 text-red-400' }
-    case 'intermediate': return { label: 'Int', className: 'bg-[#C17F24]/20 text-[#C17F24]' }
-    case 'beginner':     return { label: 'Beg', className: 'bg-teal-500/20 text-teal-400' }
-    default:             return { label: '—',   className: 'bg-white/10 text-white/30' }
+    case 'advanced':     return { label: 'ADV', className: 'bg-[#e8d9b5] text-[#1a2d4d] border font-bold' }
+    case 'intermediate': return { label: 'INT', className: 'bg-[#c47a1e] text-white border font-bold' }
+    case 'beginner':     return { label: 'BEG', className: 'bg-[#2e6f8e] text-[#e8d9b5] border font-bold' }
+    default:             return { label: '—',   className: 'bg-white/10 text-white/30 border font-bold' }
   }
 }
+
+const skillLabel = (skill) => {
+  switch (skill) {
+    case 'advanced':     return 'Advanced'
+    case 'intermediate': return 'Intermediate'
+    case 'beginner':     return 'Beginner'
+    default:             return skill ?? '—'
+  }
+}
+
+
 export default {
   formatTime,
   capitalize,
   skillFromRank,
-  skillPill
+  skillPill,
+  skillLabel
 }

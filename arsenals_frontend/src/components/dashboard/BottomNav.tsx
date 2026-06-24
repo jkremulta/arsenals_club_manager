@@ -1,37 +1,34 @@
-import {
-  Users,
-  Play,
-  Zap,
-} from 'lucide-react'
-
+import { Users, Play, Zap } from 'lucide-react'
 import { useUIStore } from '@/stores/useUIStore'
+import { Button } from '@/components/retroui/Button'
 
 const NAV_TABS = [
   { id: 'attendance', label: 'Attendance', icon: Users },
-  { id: 'game',       label: 'Game',       icon: Play },
-  { id: 'controls',  label: 'Controls',   icon: Zap },
+  { id: 'game', label: 'Game', icon: Play },
+  { id: 'controls', label: 'Controls', icon: Zap },
 ]
- 
+
 const BottomNav = () => {
   const { activeTab, setActiveTab } = useUIStore()
 
   return (
-    <div className="flex flex-shrink-0 border-t border-border bg-background md:hidden">
-      {NAV_TABS.map(({ id, label, icon: Icon }) => {
+    <div className="flex flex-shrink-0 gap-5 text-muted-foreground border-black bg-background pb-3 pt-2 px-4 md:hidden">
+      {NAV_TABS.map(({ id, icon: Icon }) => {
         const isActive = activeTab === id
+
         return (
-          <button
+          <Button
             key={id}
+            variant={isActive ? 'default' : 'outline'}
+            size="sm"
             onClick={() => setActiveTab(id)}
-            className="flex flex-1 flex-col items-center gap-1 py-3"
+            className={`
+              border-2 bg-card border-black flex-1 flex-col gap-1 rounded-none py-3
+              ${isActive ? 'bg-primary text-white' : ''}
+            `}
           >
-            <div className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${isActive ? 'bg-emerald-500/20' : 'bg-card'}`}>
-              <Icon size={13} className={isActive ? 'text-emerald-400' : 'text-muted-foreground'} />
-            </div>
-            <span className={`text-[9px] font-medium ${isActive ? 'text-emerald-400' : 'text-muted-foreground'}`}>
-              {label}
-            </span>
-          </button>
+            <Icon size={16} />
+          </Button>
         )
       })}
     </div>

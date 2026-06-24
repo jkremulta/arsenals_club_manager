@@ -66,7 +66,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                       key={p.id}
                       value={p.name}
                       onSelect={() => handleAdd(p.id)}
-                      className="cursor-pointer data-[selected=true]:bg-white/10 data-[selected=true]:text-foreground"
+                      className="hover:rounded-none cursor-pointer data-[selected=true]:bg-white/10 data-[selected=true]:text-foreground"
                     >
                       <span className="text-sm">{p.name}</span>
                     </Command.Item>
@@ -94,7 +94,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
               return (
                 <div
                   key={player.id}
-                  className="group flex items-center justify-between rounded-md px-3 py-2.5 transition-colors hover:bg-white/10"
+                  className="group flex items-center justify-between rounded-md px-3 py-2.5 transition-colors hover:rounded-none hover:bg-white/10"
                 >
                   <div className="flex min-w-0 items-center gap-2.5">
                      <span
@@ -104,7 +104,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                     >
                       {player.name}
                     </span>
-                   <span className={`flex-shrink-0 border-2 border-black/30 px-1.5 py-0.5 text-[9px] font-bold ${helper.skillPill(player.skill).className}`}>
+                   <span className={`flex-shrink-0 border-2 border-black/30 px-1 text-[9px] font-bold ${helper.skillPill(player.skill).className}`}>
                     {helper.skillPill(player.skill).label}
                   </span>
                   </div>
