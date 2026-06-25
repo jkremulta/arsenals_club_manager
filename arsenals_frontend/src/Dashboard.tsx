@@ -1,4 +1,3 @@
-import HamburgerDrawer from './components/HamburgerDrawer'
 import Header from './components/Header'
 import BottomNav from './components/dashboard/BottomNav'
 import { useDashboard } from './hooks/useDashboard'
@@ -55,14 +54,6 @@ const Dashboard = ({ user }) => {
           createTrainingMutation={createTrainingMutation}
           handleCreateTraining={handleCreateTraining}
           endTrainingMutation={endTrainingMutation}/>
-
-        <HamburgerDrawer
-          dashboardQuery={dashboardQuery}
-          handleCreateTraining={handleCreateTraining}
-          createTrainingMutation={createTrainingMutation}
-          endTrainingMutation={endTrainingMutation}
-          training={training}
-          user={user}/>
 
         <div className="flex flex-1 flex-col overflow-hidden">
           {dashboardQuery.isLoading ? (
