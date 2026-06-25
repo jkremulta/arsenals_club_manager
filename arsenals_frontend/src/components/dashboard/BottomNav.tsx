@@ -12,7 +12,7 @@ const BottomNav = () => {
   const { activeTab, setActiveTab } = useUIStore()
 
   return (
-    <div className="flex flex-shrink-0 gap-5 text-muted-foreground border-black bg-background pb-3 pt-2 px-4 md:hidden">
+    <div className="flex flex-shrink-0 gap-5 text-muted-foreground border-black bg-background pb-3 pt-1 px-4 md:hidden">
       {NAV_TABS.map(({ id, icon: Icon }) => {
         const isActive = activeTab === id
 
