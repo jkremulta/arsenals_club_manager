@@ -15,7 +15,7 @@ function StatCard({ icon: Icon, label, value, accent, valueStyle }) {
             {label}
           </Card.Description>
           <Card.Title
-            className="text-[15px] font-semibold leading-tight md:text-[17px]"
+            className="text-[15px] leading-tight md:text-[17px]"
             style={valueStyle}
           >
             {value}
