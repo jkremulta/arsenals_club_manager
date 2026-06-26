@@ -29,19 +29,23 @@ const MemberForm = () => {
   }
 
   const inputClass =
-    'w-64 border-2 border-black bg-card px-3 py-2.5 text-sm text-foreground ' +
+    'w-full border-2 border-black bg-card px-3 py-2.5 text-sm text-foreground ' +
     'placeholder:text-muted-foreground/50 outline-none shadow-[2px_2px_0px_0px_#000] ' +
     'focus:shadow-[3px_3px_0px_0px_#000] transition-shadow'
 
   return (
     <Dialog open={membersOpen} onOpenChange={setMembersOpen}>
-      <Dialog.Content className="bg-card border-2 border-black">
+      <Dialog.Content size="sm" className="
+        bg-card 
+        border-2 
+        border-black
+">
         <Dialog.Header className="border-b-2 border-black bg-emerald-400 px-4 py-3">
           <p className="font-head text-black">Add Member</p>
         </Dialog.Header>
         <section className="flex flex-col gap-4 p-4">
-          <section className="flex flex-col sm:flex-row gap-4">
-            <div className="flex flex-col flex-1">
+          <section className="flex w-full flex-col sm:flex-row gap-4">
+            <div className="flex w-full flex-1 flex-col">
               <label className="text-[12px] text-muted-foreground p-1">Full Name</label>
               <input
                 type="text"
@@ -51,7 +55,7 @@ const MemberForm = () => {
                 className={inputClass}
               />
             </div>
-            <div className="flex flex-col flex-1">
+            <div className="flex w-full flex-1 flex-col">
               <label className="text-[12px] text-muted-foreground p-1">Rank</label>
               <input
                 type="number"
@@ -65,8 +69,8 @@ const MemberForm = () => {
               />
             </div>
           </section>
-          <section className="flex flex-col sm:flex-row gap-4">
-            <div className="flex flex-col flex-1">
+          <section className="flex w-full flex-col sm:flex-row gap-4">
+            <div className="flex w-full flex-1 flex-col">
               <label className="text-[12px] text-muted-foreground p-1">Birthday</label>
               <input
                 type="date"
@@ -75,7 +79,7 @@ const MemberForm = () => {
                 className={inputClass}
               />
             </div>
-            <div className="flex flex-col flex-1">
+            <div className="flex w-full flex-1 flex-col">
               <label className="text-[12px] text-muted-foreground p-1">Gender</label>
               <Select value={form.gender} onValueChange={(v) => setForm(f => ({ ...f, gender: v ?? '' }))}>
                 <Select.Trigger className={`${inputClass} h-11`}>

@@ -55,7 +55,7 @@ const dialogVariants = cva(
     variants: {
       size: {
         auto: "max-w-fit",
-        sm: "lg:max-w-[30%]",
+        sm: "w-[90vw] lg:max-w-[30%]",
         md: "lg:max-w-[40%]",
         lg: "lg:max-w-[50%]",
         xl: "lg:max-w-[60%]",
