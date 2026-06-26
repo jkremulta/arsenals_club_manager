@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { Menu } from '@/components/retroui/Menu'
 import { Dialog } from "@/components/retroui/Dialog"
 import { Button } from '@/components/retroui/Button'
@@ -8,13 +7,14 @@ import { useUIStore } from '@/stores/useUIStore'
 import { useLoginStore } from '@/stores/useLoginStore'
 import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
+import MemberForm from './members/MemberForm'
+
 
 
 function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining }) {
 
-  const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, startTime, setStartTime } = useUIStore()
+  const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, setMembersOpen, startTime, setStartTime } = useUIStore()
   const { logout } = useLoginStore()
-  const navigate = useNavigate()
 
   const dashboardLoading = dashboardQuery.isLoading
 
@@ -75,13 +75,15 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
                 </Button>
             </>
           )}
-          <Button
-            size="sm"
-            onClick={() => navigate('/members')}
-            className="font-sans bg-card border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
-          >
-            Members
-          </Button>
+          <Menu>
+            <Menu.Trigger className="px-3 py-1 text-sm shadow hover:shadow-sm font-sans bg-card border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground shadow-md hover:shadow active:shadow-none border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-primary-hover">
+              Settings
+            </Menu.Trigger>
+            <Menu.Content className="min-w-36 mt-2 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]"> 
+              <Menu.Item onClick={() => setMembersOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">Add Member</Menu.Item>
+            </Menu.Content>
+
+          </Menu>
           <Button
             size="sm"
             onClick={logout}
@@ -99,7 +101,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               <span className="block h-[1.5px] w-[18px] bg-foreground/60" />
               <span className="block h-[1.5px] w-[18px] bg-foreground/60" />
             </Menu.Trigger>
-            <Menu.Content className="min-w-44 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]">
+            <Menu.Content align='center' className="min-w-36 mt-2 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]">
 
               {dashboardLoading ? (
                 <Menu.Item disabled className="flex items-center gap-2 text-[13px] text-muted-foreground">
@@ -123,8 +125,8 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               )}
 
               <div>
-                <Menu.Item onClick={() => navigate('/members')} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">
-                  Members
+                <Menu.Item onClick={() => setMembersOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">
+                  Add Member
                 </Menu.Item>
                 <Menu.Item onClick={logout} className="text-muted-foreground flex items-center gap-2 text-[13px] hover:text-white">
                   Logout
@@ -190,9 +192,11 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
           </section>
         </Dialog.Content>
       </Dialog>
+
+      {/* dialog for members  */}
+      <MemberForm />
     </>
 
-    
   )
 }
 
