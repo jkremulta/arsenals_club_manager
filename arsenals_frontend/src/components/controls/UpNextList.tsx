@@ -78,18 +78,23 @@ const UpNextList = ({ training, attendance, currentGame, replacePlayerMutation }
                       >
                         <Popover.Trigger 
                             disabled={isSwapping}
-                            className="opacity-100 flex h-6 w-6 items-center justify-center rounded-none border-2 border-black text-muted-foreground/60 opacity-0 transition-all shadow-[2px_2px_0px_black] group-hover:opacity-100 hover:border-black hover:bg-accent hover:text-white active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
+                            className={`
+                              flex h-6 w-6 items-center justify-center rounded-none 
+                              border-2 border-black text-muted-foreground/60
+                              opacity-100 transition-all 
+                              shadow-[2px_2px_0px_black]
+                              group-hover:opacity-100
+                              hover:bg-accent hover:text-white
+                              active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
+                              disabled:opacity-50
+                              ${swapOpenId === playerId ? 'bg-accent text-white border-black' : ''}
+                            `}
                         >
                           {isSwapping
                             ? <Loader2 size={11} className="animate-spin" />
                             : <ArrowLeftRight size={11} />}
                         </Popover.Trigger>
                         <Popover.Content className="w-64 p-0 rounded-none border-black" align="end">
-                          {/* <div className="border-b border-black px-3 py-2">
-                            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                              Replace {player.name}
-                            </p>
-                          </div> */}
                           <Command>
                             <Command.Input placeholder="Search player..." className="focus-visible:outline-none" />
                             <Command.List>
@@ -105,7 +110,7 @@ const UpNextList = ({ training, attendance, currentGame, replacePlayerMutation }
                                         if (isSwapping) return
                                         setSwappingPlayerId(playerId)
                                         try {
-                                          replacePlayerMutation.mutateAsync({ outPlayerId: playerId, inPlayerId: p.id })
+                                          await replacePlayerMutation.mutateAsync({ outPlayerId: playerId, inPlayerId: p.id })
                                           setSwapOpenId(null)
                                         } finally {
                                           setSwappingPlayerId(null)
