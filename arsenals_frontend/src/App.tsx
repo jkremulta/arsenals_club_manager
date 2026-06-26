@@ -1,19 +1,19 @@
 import { Routes, Route } from 'react-router-dom'
 import MembersPage from './MembersPage'
 import Dashboard from './Dashboard'
-import useAuth from './hooks/useAuth'
 import { LoginForm } from '@/LoginForm'
-import { Toaster } from '@/components/ui/sonner'
+import { Toaster } from "@/components/retroui/Sonner"
+import { useLoginStore } from './stores/useLoginStore'
 
 const App = () => {
-  const { user, login, logout } = useAuth()
+  const { user } = useLoginStore()
 
   if (!user) {
     return (
       <>
-        <Toaster position="top-right" richColors />
+        <Toaster position="top-right"/>
         <div className="flex min-h-screen items-center justify-center">
-          <LoginForm className="w-96" onSubmit={login} />
+          <LoginForm/>
         </div>
       </>
     )
@@ -21,9 +21,9 @@ const App = () => {
 
   return (
     <>
-      <Toaster position="top-right" richColors />
+      <Toaster position="top-right" />
       <Routes>
-        <Route path="/" element={<Dashboard onLogout={logout} user={user} />} />
+        <Route path="/" element={<Dashboard user={user} />} />
         <Route path="/members" element={<MembersPage user={user} />} />
       </Routes>
     </>

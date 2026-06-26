@@ -1,20 +1,13 @@
 import axiosLib from 'axios'
+import { useLoginStore } from '@/stores/useLoginStore'
 
 const instance = axiosLib.create()
-
-let onUnauthorized: (() => void) | null = null
-
-export const setUnauthorizedHandler = (fn: (() => void) | null) => {
-  onUnauthorized = fn
-}
 
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('loggedUser')
-      localStorage.removeItem('token')
-      if (onUnauthorized) onUnauthorized()
+      useLoginStore.getState().logout()
     }
     return Promise.reject(error)
   }

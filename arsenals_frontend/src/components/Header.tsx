@@ -1,175 +1,202 @@
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Loader2, Users } from 'lucide-react'
-import {
-  Dialog, DialogContent, DialogDescription, DialogFooter,
-  DialogHeader, DialogTitle, DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
-  AlertDialogTitle, AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Play, Trash2 } from 'lucide-react'
+import { Menu } from '@/components/retroui/Menu'
+import { Dialog } from "@/components/retroui/Dialog"
+import { Button } from '@/components/retroui/Button'
+import { Text } from "@/components/retroui/Text"
+import { Loader2 } from 'lucide-react'
+import { useUIStore } from '@/stores/useUIStore'
+import { useLoginStore } from '@/stores/useLoginStore'
 import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
+import MemberForm from './members/MemberForm'
 
-function Header({ user, training, onLogout, onCreateTraining, onEndTraining,
-  createOpen, setCreateOpen, startTime, setStartTime, onHamburgerClick,
-  dashboardLoading = false }) {
 
-  const [sessionLoading, setSessionLoading] = useState(false)
-  const navigate = useNavigate()
 
-  const handleCreate = async () => {
-    setSessionLoading(true)
-    try { await onCreateTraining() }
-    finally { setSessionLoading(false) }
-  }
+function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining }) {
 
-  const handleEnd = async () => {
-    setSessionLoading(true)
-    try { await onEndTraining() }
-    finally { setSessionLoading(false) }
-  }
+  const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, setMembersOpen, startTime, setStartTime } = useUIStore()
+  const { logout } = useLoginStore()
+
+  const dashboardLoading = dashboardQuery.isLoading
+
+  const sessionLoading = createTrainingMutation.isPending || endTrainingMutation.isPending
 
   return (
-    <header className="flex-shrink-0 border-b border-border px-4 py-3 md:px-8 md:py-4">
+    <>
+    <header className="flex-shrink-0 border-black border-b-2 px-4 py-3 md:px-8 md:py-4">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
+
+        {/* Logo */}
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center">
+          <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center">
             <img src={arsenalsLogo} alt="Arsenals logo" className="h-full w-full object-contain" />
           </div>
           <div>
-    <h1 className="text-[14px] font-semibold tracking-tight text-foreground md:text-[15px]">
-      Arsenal Tchoukball Club
-    </h1>
-
-    <p className="text-[10px] text-muted-foreground/60 md:text-[11px]">
-      Session ·{' '}
-      {dashboardLoading ? (
-        <span className="inline-flex items-center gap-1">
-          <Loader2 size={10} className="animate-spin text-muted-foreground/50" />
-          Checking…
-        </span>
-      ) : training?.startTime ? (
-        helper.formatTime(training.startTime)
-      ) : (
-        'N/A'
-      )}
-    </p>
-  </div>
+            <Text as="h6" className="text-sm md:text-base">Arsenal Tchoukball Club</Text>
+            <p className="text-[11px] text-muted-foreground/60">
+              Session ·{' '}
+              {dashboardLoading ? (
+                <span className="inline-flex items-center gap-1">
+                  <Loader2 size={10} className="animate-spin text-muted-foreground/50" />
+                  Checking…
+                </span>
+              ) : training?.startTime ? (
+                helper.formatTime(training.startTime)
+              ) : (
+                'N/A'
+              )}
+            </p>
+          </div>
         </div>
 
         {/* Desktop controls */}
         <div className="hidden items-center gap-3 md:flex">
-          <span className="text-xs text-muted-foreground">{helper.capitalize(user?.username)}</span>
-          <Separator orientation="vertical" className="bg-border" />
           {dashboardLoading ? (
-            <Button
-              size="sm"
-              variant="secondary"
-              disabled
-              className="pointer-events-none border-border bg-card text-muted-foreground shadow-none disabled:opacity-100"
-            >
+            <Button size="sm" disabled className="font-sans border-2 border-black pointer-events-none bg-card text-muted-foreground shadow-none disabled:opacity-100">
               <Loader2 size={13} className="mr-1.5 animate-spin" />
               Checking session…
             </Button>
-          ) : !training ? (
-            <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-500">
-                  <Play size={13} className="mr-1.5" />
+          ) : (
+            <>
+                <Button
+                  size="sm"
+                  className="font-sans bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:bg-emerald-300"
+                  onClick={() => setCreateSessionOpen(true)}
+                  style={{ display: training ? 'none' : undefined }}
+                >
                   Start Session
                 </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create Training Session</DialogTitle>
-                  <DialogDescription>Set the official start time for this session.</DialogDescription>
-                </DialogHeader>
-                <div className="py-2">
-                  <label className="mb-1.5 block text-xs text-muted-foreground">Start Time</label>
-                  <input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-emerald-500/50"
-                  />
-                </div>
-                <DialogFooter>
-                  <Button
-                    onClick={handleCreate}
-                    disabled={sessionLoading}
-                    className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
-                  >
-                    {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
-                    Create Session
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          ) : (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button size="sm" className="border border-border bg-card text-red-400 hover:bg-red-500/10 hover:text-red-300">
-                  <Trash2 size={13} className="mr-1.5" />
+                <Button
+                  size="sm"
+                  className="font-sans bg-red-400 text-black border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+                  onClick={() => setEndSessionOpen(true)}
+                  style={{ display: !training ? 'none' : undefined }}
+                >
                   End Session
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>End this training session?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will reset all game counts and delete the active session. This cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleEnd}
-                    disabled={sessionLoading}
-                    className="bg-red-600 hover:bg-red-500 disabled:opacity-50"
-                  >
-                    {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
-                    End Session
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            </>
           )}
+          <Menu>
+            <Menu.Trigger className="px-3 py-1 text-sm shadow hover:shadow-sm font-sans bg-card border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground shadow-md hover:shadow active:shadow-none border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-primary-hover">
+              Settings
+            </Menu.Trigger>
+            <Menu.Content className="min-w-36 mt-2 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]"> 
+              <Menu.Item onClick={() => setMembersOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">Add Member</Menu.Item>
+            </Menu.Content>
+
+          </Menu>
           <Button
             size="sm"
-            variant="ghost"
-            onClick={() => navigate('/members')}
-            className="text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
-          >
-            <Users size={13} className="mr-1.5" />
-            Members
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={onLogout}
-            className="text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
+            onClick={logout}
+            className="font-sans bg-card border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             Logout
           </Button>
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          className="flex flex-col gap-1 rounded p-2 hover:bg-card md:hidden"
-          onClick={onHamburgerClick}
-        >
-          <span className="block h-[1.5px] w-[18px] rounded bg-foreground/60" />
-          <span className="block h-[1.5px] w-[18px] rounded bg-foreground/60" />
-          <span className="block h-[1.5px] w-[18px] rounded bg-foreground/60" />
-        </button>
+        {/* Mobile menu */}
+        <div className="flex items-center md:hidden">
+          <Menu>
+            <Menu.Trigger className="transition hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex flex-col gap-1 p-2 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] bg-card">
+              <span className="block h-[1.5px] w-[18px] bg-foreground/60" />
+              <span className="block h-[1.5px] w-[18px] bg-foreground/60" />
+              <span className="block h-[1.5px] w-[18px] bg-foreground/60" />
+            </Menu.Trigger>
+            <Menu.Content align='center' className="min-w-36 mt-2 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]">
+
+              {dashboardLoading ? (
+                <Menu.Item disabled className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                  <Loader2 size={13} className="animate-spin" />
+                  Checking session…
+                </Menu.Item>
+              ) : !training ? (
+                <Menu.Item
+                  onClick={() => setCreateSessionOpen(true)}
+                  className="flex items-center gap-2 text-[13px] text-muted-foreground hover:!bg-emerald-400 hover:text-black"
+                >
+                  Start Session
+                </Menu.Item>
+              ) : (
+                <Menu.Item
+                  onClick={() => setEndSessionOpen(true)}
+                  className="flex items-center gap-2 text-[13px] text-muted-foreground hover:!bg-red-400 hover:text-black"
+                >
+                  End Session
+                </Menu.Item>
+              )}
+
+              <div>
+                <Menu.Item onClick={() => setMembersOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">
+                  Add Member
+                </Menu.Item>
+                <Menu.Item onClick={logout} className="text-muted-foreground flex items-center gap-2 text-[13px] hover:text-white">
+                  Logout
+                </Menu.Item>
+              </div>
+
+            </Menu.Content>
+          </Menu>
+
+        </div>
+
       </div>
     </header>
+    {/* Single shared dialogs */}
+      <Dialog open={createSessionOpen} onOpenChange={setCreateSessionOpen}>
+        <Dialog.Content className="bg-card border-2 border-black w-[90vw] max-w-[420px]">
+          <Dialog.Header className="border-b-2 border-black bg-emerald-400 px-4 py-3">
+            <p className="font-head text-black">Start Training Session</p>
+          </Dialog.Header>
+          <section className="flex flex-col gap-5 p-4">
+            <div>
+              <label className="mb-1.5 block text-sm text-muted-foreground">Start Time</label>
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="w-full text-sm border-2 border-black bg-card px-3 py-2 text-foreground outline-none"
+              />
+            </div>
+            <div className="flex w-full justify-end">
+              <Button
+                onClick={handleCreateTraining}
+                disabled={sessionLoading}
+                className="bg-emerald-400 text-black hover:bg-emerald-300 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] disabled:opacity-50"
+              >
+                {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
+                Confirm
+              </Button>
+            </div>
+          </section>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog open={endSessionOpen} onOpenChange={setEndSessionOpen}>
+        <Dialog.Content className="bg-card border-2 border-black w-[90vw] max-w-[420px]">
+          <Dialog.Header className="border-b-2 border-black bg-red-400 px-4 py-3">
+            <p className="font-head text-black">End Training Session</p>
+          </Dialog.Header>
+          <section className="flex flex-col gap-5 p-4">
+            <p className="text-muted-foreground text-sm">
+              This will reset all game counts and delete the active session. This cannot be undone.
+            </p>
+            <div className="flex w-full justify-end">
+              <Button
+                onClick={() => endTrainingMutation.mutate()}
+                disabled={sessionLoading}
+                className="bg-red-400 text-black border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] disabled:opacity-50"
+              >
+                {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
+                End
+              </Button>
+            </div>
+          </section>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* dialog for members  */}
+      <MemberForm />
+    </>
+
   )
 }
 
