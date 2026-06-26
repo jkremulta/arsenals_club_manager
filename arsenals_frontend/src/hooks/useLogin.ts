@@ -11,7 +11,7 @@ export const useLogin = () => {
       setUser(user)
       toast.success('Logged in successfully.', { duration: 2000 })
     },
-    onError: (e) => toast.error(e?.response?.data?.error ?? 'Could not connect to server.', { duration: 2000 })
+    onError: () => {}
   })
   return {
     loginMutation,
