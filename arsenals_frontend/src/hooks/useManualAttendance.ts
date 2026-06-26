@@ -8,7 +8,7 @@ export const useManualAttendance = () => {
 
   const manualAttendanceMutation = useMutation({
     mutationFn: (name) => attendanceApi.addManually(name),
-    onSuccess: () => toast.success('Checked in successfully.', { duration: 2000 }),
+    // onSuccess: () => toast.success('Checked in successfully.', { duration: 2000 }),
     onError: (e) => toast.error(e?.response?.data?.error ?? 'Could not connect to server.',{ duration: 2000 })
   })
 

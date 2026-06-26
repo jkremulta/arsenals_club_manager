@@ -149,14 +149,14 @@ export function LoginForm() {
           <div className="flex flex-col gap-3">
 
             {checkedIn ? (
-              <div className="text-center py-6">
+              <div className="flex flex-col items-center gap-2 text-center py-4">
                 <CheckCircle2 className="mx-auto text-emerald-500" size={40} />
-                <p className="font-bold mt-2">You're checked in!</p>
+                <p className="mt-2">You're checked in!</p>
 
                 <Button
                   size="sm"
                   onClick={() => setCheckedIn(false)}
-                  className="mt-3"
+                  className="mt-3 bg-emerald-400"
                 >
                   Done
                 </Button>

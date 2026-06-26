@@ -160,7 +160,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               <Button
                 onClick={handleCreateTraining}
                 disabled={sessionLoading}
-                className="bg-emerald-400 text-black hover:bg-emerald-300 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] disabled:opacity-50 font-bold"
+                className="bg-emerald-400 text-black hover:bg-emerald-300 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] disabled:opacity-50"
               >
                 {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
                 Confirm
@@ -183,7 +183,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               <Button
                 onClick={() => endTrainingMutation.mutate()}
                 disabled={sessionLoading}
-                className="bg-red-400 text-black border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] disabled:opacity-50 font-bold"
+                className="bg-red-400 text-black border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] disabled:opacity-50"
               >
                 {sessionLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
                 End
