@@ -4,7 +4,7 @@ const DashboardEmpty = () => {
   return (
     <>
       <div className="flex flex-1 items-center justify-center p-8">
-        <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-dashed border-border py-16 text-center">
+        <div className="flex w-full max-w-sm flex-col items-center border-2 border-dashed py-16 text-center">
           <AlertCircle
             size={30}
             className="mb-3 text-muted-foreground/40"

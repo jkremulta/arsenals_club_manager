@@ -4,7 +4,7 @@ const DashboardLoading = () => {
   return (
     <>
       <div className="flex flex-1 items-center justify-center p-8">
-        <div className="flex w-full max-w-sm flex-col items-center rounded-xl border border-border bg-card py-16 text-center">
+        <div className="flex w-full max-w-sm flex-col items-center border-2 border-dashed py-16 text-center">
           <Loader2
             size={30}
             className="mb-3 animate-spin text-muted-foreground/40"
