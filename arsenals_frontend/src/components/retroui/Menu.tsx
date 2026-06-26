@@ -2,22 +2,21 @@
 
 import { cn } from "@/lib/utils";
 import { Menu as BaseMenu } from "@base-ui/react/menu";
-import React, { ComponentPropsWithoutRef } from "react";
+import React, { type ComponentPropsWithoutRef } from "react";
 
 const Menu = BaseMenu.Root;
 const Trigger = BaseMenu.Trigger;
 
-interface IMenuContent
-  extends ComponentPropsWithoutRef<typeof BaseMenu.Popup> {}
+interface IMenuContent extends ComponentPropsWithoutRef<typeof BaseMenu.Popup> {
+  align?: "start" | "center" | "end";
+  side?: "top" | "bottom" | "left" | "right";
+}
 
-const Content = ({ className, ...props }: IMenuContent) => (
+const Content = ({ className, align = "start", side = "bottom", ...props }: IMenuContent) => (
   <BaseMenu.Portal>
-    <BaseMenu.Positioner>
+    <BaseMenu.Positioner align={align} side={side}>
       <BaseMenu.Popup
-        className={cn(
-          "bg-white border-2 shadow-md min-w-20",
-          className,
-        )}
+        className={cn("bg-white border-2 shadow-md min-w-20", className)}
         {...props}
       />
     </BaseMenu.Positioner>
