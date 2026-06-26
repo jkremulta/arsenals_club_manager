@@ -94,11 +94,11 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
               return (
                 <div
                   key={player.id}
-                  className="group flex items-center justify-between rounded-md px-3 py-2.5 transition-colors hover:rounded-none hover:bg-white/10"
+                  className="group flex items-center justify-between gap-2 rounded-md px-2 sm:px-3 py-2.5 transition-colors hover:rounded-none hover:bg-white/10"
                 >
-                  <div className="flex min-w-0 items-center gap-2.5">
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
                      <span
-                      className={`truncate max-w-[120px] md:max-w-[160px] text-[13px] font-medium ${
+                      className={`truncate max-w-[110px] sm:max-w-[140px] md:max-w-[160px] text-[13px] font-medium ${
                         player.late ? 'text-yellow-400' : 'text-foreground/75'
                       }`}
                     >
@@ -108,7 +108,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                     {helper.skillPill(player.skill).label}
                   </span>
                   </div>
-                  <div className="flex flex-shrink-0 items-center gap-2">
+                  <div className="flex flex-shrink-0 items-center gap-1.5">
                     <span className={`rounded-none border-2 px-1.5 py-0.5 text-[10px] font-bold ${
                       isPlaying
                         ? 'border-none'

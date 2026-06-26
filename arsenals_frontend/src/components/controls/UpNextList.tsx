@@ -54,7 +54,7 @@ const UpNextList = ({ training, attendance, currentGame, replacePlayerMutation }
                         {String(i + 1).padStart(2, '0')}
                       </span>
                       <div className="flex min-w-0 flex-1 items-center gap-2">
-                        <span className="truncate text-[12px] font-medium text-foreground/80">{player.name}</span>
+                        <span className="truncate max-w-[110px] sm:max-w-[140px] md:max-w-[160px] text-[12px] font-medium text-foreground/80">{player.name}</span>
                         <span className={`flex-shrink-0 rounded-none border-2 border-black/30 px-1 text-[9px] font-bold ${helper.skillPill(player.skill).className}`}>
                           {helper.skillPill(player.skill).label}
                         </span>
