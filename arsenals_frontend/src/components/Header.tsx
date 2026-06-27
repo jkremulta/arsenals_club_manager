@@ -96,10 +96,10 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
         {/* Mobile menu */}
         <div className="flex items-center md:hidden">
           <Menu>
-            <Menu.Trigger className="transition hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex flex-col gap-1 p-2 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] bg-card">
-              <span className="block h-[1.5px] w-[18px] bg-foreground/60" />
-              <span className="block h-[1.5px] w-[18px] bg-foreground/60" />
-              <span className="block h-[1.5px] w-[18px] bg-foreground/60" />
+            <Menu.Trigger className="transition hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex flex-col gap-1 p-2.5 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] bg-card">
+              <span className="block h-[1.5px] w-[20px] bg-foreground/60" />
+              <span className="block h-[1.5px] w-[20px] bg-foreground/60" />
+              <span className="block h-[1.5px] w-[20px] bg-foreground/60" />
             </Menu.Trigger>
             <Menu.Content align='center' className="min-w-36 mt-2 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]">
 
@@ -118,17 +118,17 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
               ) : (
                 <Menu.Item
                   onClick={() => setEndSessionOpen(true)}
-                  className="flex items-center gap-2 text-[13px] text-muted-foreground hover:!bg-red-400 hover:text-black"
+                  className="flex items-center gap-2 py-3 text-[13px] text-muted-foreground hover:!bg-red-400 hover:text-black"
                 >
                   End Session
                 </Menu.Item>
               )}
 
               <div>
-                <Menu.Item onClick={() => setMembersOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">
+                <Menu.Item onClick={() => setMembersOpen(true)} className="py-3 text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">
                   Add Member
                 </Menu.Item>
-                <Menu.Item onClick={logout} className="text-muted-foreground flex items-center gap-2 text-[13px] hover:text-white">
+                <Menu.Item onClick={logout} className="py-3 text-muted-foreground flex items-center gap-2 text-[13px] hover:text-white">
                   Logout
                 </Menu.Item>
               </div>
