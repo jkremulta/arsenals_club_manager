@@ -18,7 +18,6 @@ const StatBar = ({ attendance, paidIds, training }) => {
           label="Paid"
           value={`${paidIds.size} / ${attendance.length}`}
           accent="#93c5d8"  // logo teal
-          valueStyle={{ color: "#93c5d8" }}
         />
         <StatCard
           icon={Trophy}

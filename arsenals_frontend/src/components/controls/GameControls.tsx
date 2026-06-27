@@ -42,7 +42,7 @@ const GameControls = ({ training, initializeGameMutation, startGameMutation }) =
               </Select.Trigger>
               <Select.Content className="border-2 border-black text-sm">
                 {SKILL_GROUPS.map(g => (
-                  <Select.Item key={g} value={g} className="py-3 capitalize data-[highlighted]:bg-white/10 data-[highlighted]:text-foreground">
+                  <Select.Item key={g} value={g} className="py-3 capitalize data-[highlighted]:bg-muted data-[highlighted]:text-foreground">
                     {helper.capitalize(g)}
                   </Select.Item>
                 ))}

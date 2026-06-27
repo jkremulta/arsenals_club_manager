@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+
 import playersApi from '../services/players'
 import helper from '../utils/helper'
 
@@ -20,7 +21,9 @@ export const useMembers = (token) => {
 
   const createPlayerMutation = useMutation({
     mutationFn: (payload) => playersApi.post(payload, token),
-    onSuccess: () => { toast.success('Player registered', { duration: 2000 }); invalidate() },
+    onSuccess: () => { 
+      toast.success('Player registered', { duration: 2000 }); invalidate() 
+    },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
 
