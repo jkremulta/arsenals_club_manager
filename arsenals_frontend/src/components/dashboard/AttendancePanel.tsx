@@ -66,7 +66,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                       key={p.id}
                       value={p.name}
                       onSelect={() => handleAdd(p.id)}
-                      className="hover:rounded-none cursor-pointer data-[selected=true]:bg-white/10 data-[selected=true]:text-foreground"
+                      className="cursor-pointer hover:bg-muted hover:text-foreground data-[selected=true]:bg-muted data-[selected=true]:text-foreground"
                     >
                       <span className="text-sm">{p.name}</span>
                     </Command.Item>
@@ -94,7 +94,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
               return (
                 <div
                   key={player.id}
-                  className="group flex items-center justify-between gap-2 rounded-md px-2 sm:px-3 py-2.5 transition-colors hover:rounded-none hover:bg-white/10"
+                  className="group flex items-center justify-between gap-2 rounded-md px-2 sm:px-3 py-2.5 transition-colors hover:rounded-none hover:bg-muted"
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-2">
                      <span

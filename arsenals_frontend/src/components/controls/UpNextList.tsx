@@ -48,7 +48,7 @@ const UpNextList = ({ training, attendance, currentGame, replacePlayerMutation }
                 const isPlaying = currentGame?.some((p) => (p.id ?? p._id) === playerId)
                 const isSwapping = swappingPlayerId === playerId
                 return (
-                  <div key={playerId} className="hover:rounded-none group flex items-center justify-between rounded-md px-3 py-2 hover:bg-white/10">
+                  <div key={playerId} className="hover:rounded-none group flex items-center justify-between rounded-md px-3 py-2 hover:bg-muted">
                     <div className="flex min-w-0 flex-1 items-center gap-3">
                       <span className="w-5 text-[10px] font-bold text-muted-foreground/60">
                         {String(i + 1).padStart(2, '0')}
@@ -116,7 +116,7 @@ const UpNextList = ({ training, attendance, currentGame, replacePlayerMutation }
                                           setSwappingPlayerId(null)
                                         }
                                       }}
-                                      className="hover:rounded-none cursor-pointer data-[selected=true]:bg-white/10 data-[selected=true]:text-foreground"
+                                      className="hover:rounded-none cursor-pointer data-[selected=true]:bg-muted data-[selected=true]:text-foreground"
                                       disabled={isSwapping}
                                     >
                                       <div className="flex w-full items-center justify-between gap-2">

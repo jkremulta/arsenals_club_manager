@@ -62,7 +62,7 @@ export function LoginForm() {
           </div>
 
           <div className="text-center">
-            <h1 className="font-head text-[18px] font-bold">
+            <h1 className="font-head text-[18px]">
               Arsenal Tchoukball Club
             </h1>
             <p className="text-[13px] text-muted-foreground">
