@@ -8,12 +8,13 @@ import { useLoginStore } from '@/stores/useLoginStore'
 import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
 import MemberForm from './members/MemberForm'
+import MembersTab from './members/MembersTab'
 
 
 
 function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining }) {
 
-  const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, setMembersOpen, startTime, setStartTime } = useUIStore()
+  const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, setMembersOpen, setMembersTabOpen, startTime, setStartTime } = useUIStore()
   const { logout } = useLoginStore()
 
   const dashboardLoading = dashboardQuery.isLoading
@@ -81,8 +82,8 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
             </Menu.Trigger>
             <Menu.Content className="min-w-36 mt-2 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]"> 
               <Menu.Item onClick={() => setMembersOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">Add Member</Menu.Item>
+              <Menu.Item onClick={() => setMembersTabOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">Members Tab</Menu.Item>
             </Menu.Content>
-
           </Menu>
           <Button
             size="sm"
@@ -128,6 +129,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
                 <Menu.Item onClick={() => setMembersOpen(true)} className="py-3 text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">
                   Add Member
                 </Menu.Item>
+                <Menu.Item onClick={() => setMembersTabOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">Members Tab</Menu.Item>
                 <Menu.Item onClick={logout} className="py-3 text-muted-foreground flex items-center gap-2 text-[13px] hover:text-white">
                   Logout
                 </Menu.Item>
@@ -195,6 +197,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
 
       {/* dialog for members  */}
       <MemberForm />
+      <MembersTab />
     </>
 
   )

@@ -56,9 +56,9 @@ const dialogVariants = cva(
       size: {
         auto: "max-w-fit",
         sm: "w-[90vw] lg:max-w-[30%]",
-        md: "lg:max-w-[40%]",
-        lg: "lg:max-w-[50%]",
-        xl: "lg:max-w-[60%]",
+        md: "w-[90vw] lg:max-w-[40%]",
+        lg: "w-[90vw] lg:max-w-[50%]",
+        xl: "w-[90vw] lg:max-w-[60%]",
         "2xl": "lg:max-w-[70%]",
         "3xl": "lg:max-w-[80%]",
         "4xl": "lg:max-w-[90%]",
@@ -96,7 +96,7 @@ const DialogContent = (inputProps: IDialogContentProps & { ref?: React.Ref<HTMLD
         {...props}
       >
         <BaseDialog.Title className="sr-only" />
-        <div className="flex flex-col relative">{children}</div>
+        <div className="flex flex-col relative min-h-0 h-full">{children}</div>
       </BaseDialog.Popup>
     </BaseDialog.Portal>
   );

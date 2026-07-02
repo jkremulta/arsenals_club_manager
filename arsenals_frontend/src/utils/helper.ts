@@ -36,6 +36,15 @@ const skillLabel = (skill) => {
     default:             return skill ?? '—'
   }
 }
+const formatDate= (dateString) => {
+  const date = new Date(dateString)
+
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  })
+}
 
 
 export default {
@@ -43,5 +52,6 @@ export default {
   capitalize,
   skillFromRank,
   skillPill,
-  skillLabel
+  skillLabel,
+  formatDate
 }
