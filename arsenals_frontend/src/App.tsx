@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom'
-import MembersPage from './MembersPage'
 import Dashboard from './Dashboard'
 import { LoginForm } from '@/LoginForm'
 import { Toaster } from "@/components/retroui/Sonner"
@@ -24,7 +23,6 @@ const App = () => {
       <Toaster position="top-right" />
       <Routes>
         <Route path="/" element={<Dashboard user={user} />} />
-        <Route path="/members" element={<MembersPage user={user} />} />
       </Routes>
     </>
   )
