@@ -129,6 +129,7 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
                 <Menu.Item onClick={() => setMembersOpen(true)} className="py-3 text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">
                   Add Member
                 </Menu.Item>
+                <Menu.Item onClick={() => setMembersTabOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">Members Tab</Menu.Item>
                 <Menu.Item onClick={logout} className="py-3 text-muted-foreground flex items-center gap-2 text-[13px] hover:text-white">
                   Logout
                 </Menu.Item>
