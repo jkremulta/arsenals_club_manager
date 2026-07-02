@@ -1,13 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-
-
+import { useState, useMemo } from 'react'
 import playersApi from '../services/players'
 import helper from '../utils/helper'
 
 export const useMembers = (token) => {
   const queryClient = useQueryClient()
-
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['members'] })
 
   const playersQuery = useQuery({
@@ -19,6 +17,8 @@ export const useMembers = (token) => {
     }
   })
 
+  const players = playersQuery.data || []
+
   const createPlayerMutation = useMutation({
     mutationFn: (payload) => playersApi.post(payload, token),
     onSuccess: () => { 
@@ -26,13 +26,11 @@ export const useMembers = (token) => {
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
-
   const updatePlayerMutation = useMutation({
     mutationFn: ({ id, payload }) => playersApi.put(id, payload, token),
     onSuccess: () => { toast.success('Player updated', { duration: 2000 }); invalidate() },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
-
   const deletePlayerMutation = useMutation({
     mutationFn: (id) => playersApi.delete(id, token),
     onSuccess: () => { toast.success('Player deleted.', { duration: 2000 }); invalidate() },
@@ -58,7 +56,7 @@ export const useMembers = (token) => {
       // errors handled in mutation onError
     }
   }
- 
+
   const handleDelete = async (id) => {
     try {
       await deletePlayerMutation.mutateAsync(id)
@@ -67,20 +65,76 @@ export const useMembers = (token) => {
     }
   }
 
+  // --- sort / filter state ---
+  const [sortKey, setSortKey] = useState(null)
+  const [sortDirection, setSortDirection] = useState("asc")
+  const [query, setQuery] = useState("")
+
+  const toggleSortColumn = (key) => {
+    if (sortKey === key) {
+      setSortKey(null)
+      setSortDirection("asc")
+    } else {
+      setSortKey(key)
+      setSortDirection("asc")
+    }
+  }
+
+  const flipDirection = () => {
+    setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
+  }
+
+  const filteredPlayers = useMemo(() => {
+    if (!query.trim()) return players
+    const q = query.trim().toLowerCase()
+    return players.filter((p) =>
+      p.name?.toLowerCase().includes(q) ||
+      p.gender?.toLowerCase().includes(q) ||
+      String(p.rank ?? "").toLowerCase().includes(q)
+    )
+  }, [players, query])
+
+  const visiblePlayers = useMemo(() => {
+    if (!sortKey) return filteredPlayers
+    const sorted = [...filteredPlayers].sort((a, b) => {
+      let av = a[sortKey]
+      let bv = b[sortKey]
+      if (sortKey === "birthday") {
+        av = new Date(av).getTime()
+        bv = new Date(bv).getTime()
+      } else if (typeof av === "string") {
+        av = av.toLowerCase()
+        bv = bv.toLowerCase()
+      }
+      if (av < bv) return sortDirection === "asc" ? -1 : 1
+      if (av > bv) return sortDirection === "asc" ? 1 : -1
+      return 0
+    })
+    return sorted
+  }, [filteredPlayers, sortKey, sortDirection])
+
   return {
     // query state
     playersQuery,
-    players: playersQuery.data || [],
+    players,          // raw, untouched — for any other consumer
+    visiblePlayers,   // sorted + filtered — for MembersTab's table
     loading: playersQuery.isLoading,
- 
+
+    // sort/filter state + handlers
+    query,
+    setQuery,
+    sortKey,
+    sortDirection,
+    toggleSortColumn,
+    flipDirection,
+
     // handlers
     handleSubmit,
     handleDelete,
- 
+
     // mutations (for isPending, variables, etc.)
     createPlayerMutation,
     updatePlayerMutation,
     deletePlayerMutation,
   }
-
-} 
+}
