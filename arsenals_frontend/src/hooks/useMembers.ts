@@ -37,6 +37,22 @@ export const useMembers = (token) => {
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
 
+  // replace the existing updateField with this
+  const updateField = async (player, changes) => {
+    // changes = { rank: 5, name: "New Name", ... } — only the fields that actually changed
+    const updated = { ...player, ...changes }
+    if ("rank" in changes) {
+      updated.skill = helper.skillFromRank(changes.rank)
+    }
+    const playerId = player.id
+    const { id, ...payload } = updated
+    try {
+      await updatePlayerMutation.mutateAsync({ id: playerId, payload })
+    } catch {
+      // errors handled in mutation onError
+    }
+  }
+
   const handleSubmit = async ({ editingId, form, onSuccess }) => {
     const derivedSkill = helper.skillFromRank(form.rank)
     const isFormComplete = Boolean(form.name.trim() && form.gender && form.rank && derivedSkill)
@@ -66,9 +82,20 @@ export const useMembers = (token) => {
   }
 
   // --- sort / filter state ---
+  const [query, setQuery] = useState("") // search names
+
+  const filteredPlayers = useMemo(() => {
+    if (!query.trim()) return players
+
+    const q = query.trim().toLowerCase()
+
+     return players.filter((p) =>
+      p.name?.toLowerCase().includes(q)
+    )
+  }, [players, query]);
+
   const [sortKey, setSortKey] = useState(null)
   const [sortDirection, setSortDirection] = useState("asc")
-  const [query, setQuery] = useState("")
 
   const toggleSortColumn = (key) => {
     if (sortKey === key) {
@@ -84,30 +111,23 @@ export const useMembers = (token) => {
     setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
   }
 
-  const filteredPlayers = useMemo(() => {
-    if (!query.trim()) return players
-    const q = query.trim().toLowerCase()
-    return players.filter((p) =>
-      p.name?.toLowerCase().includes(q) ||
-      p.gender?.toLowerCase().includes(q) ||
-      String(p.rank ?? "").toLowerCase().includes(q)
-    )
-  }, [players, query])
-
   const visiblePlayers = useMemo(() => {
     if (!sortKey) return filteredPlayers
+
     const sorted = [...filteredPlayers].sort((a, b) => {
-      let av = a[sortKey]
-      let bv = b[sortKey]
+      let aValue = a[sortKey]
+      let bValue = b[sortKey]
+
       if (sortKey === "birthday") {
-        av = new Date(av).getTime()
-        bv = new Date(bv).getTime()
-      } else if (typeof av === "string") {
-        av = av.toLowerCase()
-        bv = bv.toLowerCase()
+        aValue = new Date(aValue).getTime()
+        bValue = new Date(bValue).getTime()
+      } else if (typeof aValue === "string") {
+        aValue = aValue.toLowerCase()
+        bValue = bValue.toLowerCase()
       }
-      if (av < bv) return sortDirection === "asc" ? -1 : 1
-      if (av > bv) return sortDirection === "asc" ? 1 : -1
+
+      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1
+      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1
       return 0
     })
     return sorted
@@ -131,6 +151,7 @@ export const useMembers = (token) => {
     // handlers
     handleSubmit,
     handleDelete,
+    updateField,
 
     // mutations (for isPending, variables, etc.)
     createPlayerMutation,
