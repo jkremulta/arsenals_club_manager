@@ -26,9 +26,10 @@ export const useMembers = (token) => {
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
+
   const updatePlayerMutation = useMutation({
     mutationFn: ({ id, payload }) => playersApi.put(id, payload, token),
-    onSuccess: () => { toast.success('Player updated', { duration: 2000 }); invalidate() },
+    onSuccess: () => { toast.success('Player updated', { id: 'keep this to only have one toast per update', duration: 2000 }); invalidate() },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
   const deletePlayerMutation = useMutation({
@@ -38,7 +39,7 @@ export const useMembers = (token) => {
   })
 
   // replace the existing updateField with this
-  const updateField = async (player, changes) => {
+  const handleUpdate = async (player, changes) => {
     // changes = { rank: 5, name: "New Name", ... } — only the fields that actually changed
     const updated = { ...player, ...changes }
     if ("rank" in changes) {
@@ -154,7 +155,7 @@ export const useMembers = (token) => {
     // handlers
     handleSubmit,
     handleDelete,
-    updateField,
+    handleUpdate,
 
     // mutations (for isPending, variables, etc.)
     createPlayerMutation,
