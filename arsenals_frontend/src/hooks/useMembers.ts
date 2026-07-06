@@ -121,6 +121,7 @@ export const useMembers = (token) => {
       if (sortKey === "birthday") {
         aValue = new Date(aValue).getTime()
         bValue = new Date(bValue).getTime()
+
       } else if (typeof aValue === "string") {
         aValue = aValue.toLowerCase()
         bValue = bValue.toLowerCase()
@@ -128,16 +129,18 @@ export const useMembers = (token) => {
 
       if (aValue < bValue) return sortDirection === "asc" ? -1 : 1
       if (aValue > bValue) return sortDirection === "asc" ? 1 : -1
+
       return 0
     })
+
     return sorted
   }, [filteredPlayers, sortKey, sortDirection])
 
   return {
     // query state
     playersQuery,
-    players,          // raw, untouched — for any other consumer
-    visiblePlayers,   // sorted + filtered — for MembersTab's table
+    players,   
+    visiblePlayers,
     loading: playersQuery.isLoading,
 
     // sort/filter state + handlers
