@@ -46,6 +46,10 @@ const formatDate= (dateString) => {
   })
 }
 
+const toIsoDate = (formattedDate) => {
+  return new Date(formattedDate).toISOString().slice(0, 10)
+}
+
 
 export default {
   formatTime,
@@ -53,5 +57,6 @@ export default {
   skillFromRank,
   skillPill,
   skillLabel,
-  formatDate
+  formatDate,
+  toIsoDate
 }
