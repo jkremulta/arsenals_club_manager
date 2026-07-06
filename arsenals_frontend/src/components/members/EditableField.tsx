@@ -1,12 +1,14 @@
 import helper from "@/utils/helper"
 
 const EditableField = ({
+  user,
   player,
   col,
   draftMap,
   handleDraftChange,
   className,
 }) => {
+
   const inputValue =
     draftMap[player.id]?.[col.key] ??
     (
@@ -17,9 +19,13 @@ const EditableField = ({
         : player[col.key] ?? ""
     )
 
+  const isDisabled =
+    user?.username === "arsenals" && col.key === "rank"
+
   if (col.type === "select") {
     return (
       <select
+        disabled={isDisabled}
         value={inputValue}
         onChange={(e) => handleDraftChange(player, col, e.target.value)}
         className={className}
@@ -35,6 +41,7 @@ const EditableField = ({
 
   return (
     <input
+      disabled={isDisabled}
       type={col.type}
       step={col.step}
       value={inputValue}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SlidersHorizontal, Search, X, Pencil, Check } from "lucide-react";
+import { SlidersHorizontal, Search, X, Pencil, Check, Loader2 } from "lucide-react";
 import { Table } from "@/components/retroui/Table";
 import { useUIStore } from "@/stores/useUIStore";
 import { Dialog } from "@/components/retroui/Dialog"
@@ -27,6 +27,7 @@ const MembersTab = () => {
     setQuery,
     sortKey,
     handleUpdate,
+    updatePlayerMutation,
     toggleSortColumn,
     flipDirection,
     sortDirection
@@ -34,6 +35,8 @@ const MembersTab = () => {
 
   const [editMode, setEditMode] = useState(false)
   const [draftMap, setDraftMap] = useState({})
+
+  const editPlayerLoading = updatePlayerMutation.isPending
 
   const toggleEditMode = () => {
     if (!editMode) {
@@ -82,6 +85,7 @@ const MembersTab = () => {
     return (
       <div className="h-10 px-2 flex items-center">
         <EditableField
+          user={user}
           player={player}
           col={col}
           draftMap={draftMap}
@@ -109,6 +113,7 @@ const MembersTab = () => {
 
     return (
       <EditableField
+        user={user}
         player={player}
         col={col}
         draftMap={draftMap}
@@ -167,6 +172,8 @@ const MembersTab = () => {
           >
             {editMode ? (
               <Check className="size-5 sm:size-4 text-black" />
+            ) : editPlayerLoading ? (
+              <Loader2 className="size-5 sm:size-4 animate-spin" />
             ) : (
               <Pencil className="size-5 sm:size-4 text-muted-foreground" />
             )}
