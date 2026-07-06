@@ -26,7 +26,7 @@ const MembersTab = () => {
     query,
     setQuery,
     sortKey,
-    updateField,
+    handleUpdate,
     toggleSortColumn,
     flipDirection,
     sortDirection
@@ -60,7 +60,7 @@ const MembersTab = () => {
       const player = visiblePlayers.find(p => String(p.id) === playerId)
 
       if (player) {
-        updateField(player, changes)
+        handleUpdate(player, changes)
       }
     })
   }
