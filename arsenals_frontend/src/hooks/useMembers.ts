@@ -6,7 +6,10 @@ import helper from '../utils/helper'
 
 export const useMembers = (token) => {
   const queryClient = useQueryClient()
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['members'] })
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ['members'] })
+    queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+  }
 
   const playersQuery = useQuery({
     queryKey: ['members'],
@@ -26,9 +29,10 @@ export const useMembers = (token) => {
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
+
   const updatePlayerMutation = useMutation({
     mutationFn: ({ id, payload }) => playersApi.put(id, payload, token),
-    onSuccess: () => { toast.success('Player updated', { duration: 2000 }); invalidate() },
+    onSuccess: () => { toast.success('Player updated', { id: 'keep this to only have one toast per update', duration: 2000 }); invalidate() },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
   const deletePlayerMutation = useMutation({
@@ -36,6 +40,22 @@ export const useMembers = (token) => {
     onSuccess: () => { toast.success('Player deleted.', { duration: 2000 }); invalidate() },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
+
+  // replace the existing updateField with this
+  const handleUpdate = async (player, changes) => {
+    // changes = { rank: 5, name: "New Name", ... } — only the fields that actually changed
+    const updated = { ...player, ...changes }
+    if ("rank" in changes) {
+      updated.skill = helper.skillFromRank(changes.rank)
+    }
+    const playerId = player.id
+    const { id, ...payload } = updated
+    try {
+      await updatePlayerMutation.mutateAsync({ id: playerId, payload })
+    } catch {
+      // errors handled in mutation onError
+    }
+  }
 
   const handleSubmit = async ({ editingId, form, onSuccess }) => {
     const derivedSkill = helper.skillFromRank(form.rank)
@@ -66,9 +86,20 @@ export const useMembers = (token) => {
   }
 
   // --- sort / filter state ---
+  const [query, setQuery] = useState("") // search names
+
+  const filteredPlayers = useMemo(() => {
+    if (!query.trim()) return players
+
+    const q = query.trim().toLowerCase()
+
+     return players.filter((p) =>
+      p.name?.toLowerCase().includes(q)
+    )
+  }, [players, query]);
+
   const [sortKey, setSortKey] = useState(null)
   const [sortDirection, setSortDirection] = useState("asc")
-  const [query, setQuery] = useState("")
 
   const toggleSortColumn = (key) => {
     if (sortKey === key) {
@@ -84,40 +115,36 @@ export const useMembers = (token) => {
     setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
   }
 
-  const filteredPlayers = useMemo(() => {
-    if (!query.trim()) return players
-    const q = query.trim().toLowerCase()
-    return players.filter((p) =>
-      p.name?.toLowerCase().includes(q) ||
-      p.gender?.toLowerCase().includes(q) ||
-      String(p.rank ?? "").toLowerCase().includes(q)
-    )
-  }, [players, query])
-
   const visiblePlayers = useMemo(() => {
     if (!sortKey) return filteredPlayers
+
     const sorted = [...filteredPlayers].sort((a, b) => {
-      let av = a[sortKey]
-      let bv = b[sortKey]
+      let aValue = a[sortKey]
+      let bValue = b[sortKey]
+
       if (sortKey === "birthday") {
-        av = new Date(av).getTime()
-        bv = new Date(bv).getTime()
-      } else if (typeof av === "string") {
-        av = av.toLowerCase()
-        bv = bv.toLowerCase()
+        aValue = new Date(aValue).getTime()
+        bValue = new Date(bValue).getTime()
+
+      } else if (typeof aValue === "string") {
+        aValue = aValue.toLowerCase()
+        bValue = bValue.toLowerCase()
       }
-      if (av < bv) return sortDirection === "asc" ? -1 : 1
-      if (av > bv) return sortDirection === "asc" ? 1 : -1
+
+      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1
+      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1
+
       return 0
     })
+
     return sorted
   }, [filteredPlayers, sortKey, sortDirection])
 
   return {
     // query state
     playersQuery,
-    players,          // raw, untouched — for any other consumer
-    visiblePlayers,   // sorted + filtered — for MembersTab's table
+    players,   
+    visiblePlayers,
     loading: playersQuery.isLoading,
 
     // sort/filter state + handlers
@@ -131,6 +158,7 @@ export const useMembers = (token) => {
     // handlers
     handleSubmit,
     handleDelete,
+    handleUpdate,
 
     // mutations (for isPending, variables, etc.)
     createPlayerMutation,
