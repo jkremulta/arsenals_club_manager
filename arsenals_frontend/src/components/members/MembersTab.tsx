@@ -6,6 +6,7 @@ import { Dialog } from "@/components/retroui/Dialog"
 import { useLoginStore } from "@/stores/useLoginStore";
 import { useMembers } from "@/hooks/useMembers";
 import EditableField from "./EditableField";
+import DeleteMemberButton from "./DeleteMemberButton";
 import helper from "@/utils/helper";
 import Filter from "./Filter";
 
@@ -27,7 +28,9 @@ const MembersTab = () => {
     setQuery,
     sortKey,
     handleUpdate,
+    handleDelete,
     updatePlayerMutation,
+    deletePlayerMutation,
     toggleSortColumn,
     flipDirection,
     sortDirection
@@ -67,6 +70,7 @@ const MembersTab = () => {
       }
     })
   }
+
 
   const renderDesktopField = (player, col) => {
     const display =
@@ -212,8 +216,16 @@ const MembersTab = () => {
           <div className="sm:hidden divide-y divide-black">
             {visiblePlayers.length > 0 ? (
               visiblePlayers.map((p) => (
-                <div key={p.id} className={`p-4 bg-background active:bg-muted ${editMode ? "space-y-3" : ""}`}>
-                  <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2 items-center">
+                <div key={p.id} className={`p-4 bg-background active:bg-muted relative ${editMode ? "space-y-3" : ""}`}>
+                  <div className="absolute top-3 right-3 z-10">
+                    <DeleteMemberButton
+                      player={p}
+                      handleDelete={handleDelete}
+                      deletePlayerMutation={deletePlayerMutation}
+                      size="size-9"
+                    />
+                  </div>
+                  <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2 items-center pr-11">
                     {/* Name */}
                     <div className="min-w-0 text-foreground">
                       {renderMobileField(p, MEMBER_FIELDS[0])}
@@ -257,6 +269,7 @@ const MembersTab = () => {
                     {col.label}
                   </Table.Head>
                 ))}
+                <Table.Head className="py-4 px-5 w-0" />
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -274,11 +287,20 @@ const MembersTab = () => {
                         {renderDesktopField(p, col)}
                       </Table.Cell>
                     ))}
+                    <Table.Cell className="px-5">
+                      <div className="flex justify-end">
+                        <DeleteMemberButton
+                          player={p}
+                          handleDelete={handleDelete}
+                          deletePlayerMutation={deletePlayerMutation}
+                        />
+                      </div>
+                    </Table.Cell>
                   </Table.Row>
                 ))
               ) : (
                 <Table.Row className="hover:bg-background bg-background">
-                  <Table.Cell colSpan={4} className="text-center text-muted-foreground py-8">
+                  <Table.Cell colSpan={5} className="text-center text-muted-foreground py-8">
                     No members match "{query}"
                   </Table.Cell>
                 </Table.Row>
