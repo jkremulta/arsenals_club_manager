@@ -4,7 +4,6 @@ import { Button } from "../retroui/Button";
 
 const DeleteMemberButton = ({ player, handleDelete, deletePlayerMutation, size = "size-8" }) => {
   const [confirming, setConfirming] = useState(false)
-
   const deletePlayerLoading =
     deletePlayerMutation.isPending && deletePlayerMutation.variables === player.id
 
@@ -18,8 +17,8 @@ const DeleteMemberButton = ({ player, handleDelete, deletePlayerMutation, size =
             handleDelete(player.id)
             setConfirming(false)
           }}
-          className={`shrink-0 flex items-center justify-center border-2 border-black rounded-none
-            bg-red-500 text-white
+          className={`${size} shrink-0 flex items-center justify-center border-2 border-black rounded-none
+            bg-emerald-400 text-white
             shadow-[2px_2px_0_0_rgba(0,0,0,1)]`}
           title="Confirm delete"
         >
@@ -29,8 +28,8 @@ const DeleteMemberButton = ({ player, handleDelete, deletePlayerMutation, size =
           type="button"
           size="icon"
           onClick={() => setConfirming(false)}
-          className={`shrink-0 flex items-center justify-center border-2 border-black rounded-none
-            bg-background text-white
+          className={`${size} shrink-0 flex items-center justify-center border-2 border-black rounded-none
+            bg-card text-white
             shadow-[2px_2px_0_0_rgba(0,0,0,1)]`}
         >
           <X className="size-4" />
@@ -46,7 +45,7 @@ const DeleteMemberButton = ({ player, handleDelete, deletePlayerMutation, size =
       onClick={() => setConfirming(true)}
       disabled={deletePlayerLoading}
       className={`${size} shrink-0 border-2 border-black rounded-none
-        bg-background text-muted-foreground hover:bg-red-500 hover:text-white
+        bg-card text-muted-foreground hover:bg-red-400 hover:text-white
         shadow-[2px_2px_0_0_rgba(0,0,0,1)]
         active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
         transition-all disabled:opacity-50`}
