@@ -6,7 +6,10 @@ import helper from '../utils/helper'
 
 export const useMembers = (token) => {
   const queryClient = useQueryClient()
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['members'] })
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ['members'] })
+    queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+  }
 
   const playersQuery = useQuery({
     queryKey: ['members'],
