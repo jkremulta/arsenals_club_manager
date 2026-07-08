@@ -7,14 +7,13 @@ import { useUIStore } from '@/stores/useUIStore'
 import { useLoginStore } from '@/stores/useLoginStore'
 import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
-import MemberForm from './members/MemberForm'
 import MembersTab from './members/MembersTab'
 
 
 
 function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining }) {
 
-  const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, setMembersOpen, setMembersTabOpen, startTime, setStartTime } = useUIStore()
+  const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, setMembersTabOpen, startTime, setStartTime } = useUIStore()
   const { logout } = useLoginStore()
 
   const dashboardLoading = dashboardQuery.isLoading
@@ -23,41 +22,41 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
 
   return (
     <>
-    <header className="flex-shrink-0 border-black border-b-2 px-4 py-3 md:px-8 md:py-4">
-      <div className="mx-auto flex max-w-7xl items-center justify-between">
+      <header className="flex-shrink-0 border-black border-b-2 px-4 py-3 md:px-8 md:py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
 
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center">
-            <img src={arsenalsLogo} alt="Arsenals logo" className="h-full w-full object-contain" />
+          {/* Logo */}
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center">
+              <img src={arsenalsLogo} alt="Arsenals logo" className="h-full w-full object-contain" />
+            </div>
+            <div>
+              <Text as="h6" className="text-sm md:text-base">Arsenal Tchoukball Club</Text>
+              <p className="text-[11px] text-muted-foreground/60">
+                Session ·{' '}
+                {dashboardLoading ? (
+                  <span className="inline-flex items-center gap-1">
+                    <Loader2 size={10} className="animate-spin text-muted-foreground/50" />
+                    Checking…
+                  </span>
+                ) : training?.startTime ? (
+                  helper.formatTime(training.startTime)
+                ) : (
+                  'N/A'
+                )}
+              </p>
+            </div>
           </div>
-          <div>
-            <Text as="h6" className="text-sm md:text-base">Arsenal Tchoukball Club</Text>
-            <p className="text-[11px] text-muted-foreground/60">
-              Session ·{' '}
-              {dashboardLoading ? (
-                <span className="inline-flex items-center gap-1">
-                  <Loader2 size={10} className="animate-spin text-muted-foreground/50" />
-                  Checking…
-                </span>
-              ) : training?.startTime ? (
-                helper.formatTime(training.startTime)
-              ) : (
-                'N/A'
-              )}
-            </p>
-          </div>
-        </div>
 
-        {/* Desktop controls */}
-        <div className="hidden items-center gap-3 md:flex">
-          {dashboardLoading ? (
-            <Button size="sm" disabled className="font-sans border-2 border-black pointer-events-none bg-card text-muted-foreground shadow-none disabled:opacity-100">
-              <Loader2 size={13} className="mr-1.5 animate-spin" />
-              Checking session…
-            </Button>
-          ) : (
-            <>
+          {/* Desktop controls */}
+          <div className="hidden items-center gap-3 md:flex">
+            {dashboardLoading ? (
+              <Button size="sm" disabled className="font-sans border-2 border-black pointer-events-none bg-card text-muted-foreground shadow-none disabled:opacity-100">
+                <Loader2 size={13} className="mr-1.5 animate-spin" />
+                Checking session…
+              </Button>
+            ) : (
+              <>
                 <Button
                   size="sm"
                   className="font-sans bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:bg-emerald-300"
@@ -74,75 +73,71 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
                 >
                   End Session
                 </Button>
-            </>
-          )}
-          <Menu>
-            <Menu.Trigger className="px-3 py-1 text-sm shadow hover:shadow-sm font-sans bg-card border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground shadow-md hover:shadow active:shadow-none border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-primary-hover">
-              Settings
-            </Menu.Trigger>
-            <Menu.Content className="min-w-36 mt-2 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]"> 
-              <Menu.Item onClick={() => setMembersOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">Add Member</Menu.Item>
-              <Menu.Item onClick={() => setMembersTabOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">Members Tab</Menu.Item>
-            </Menu.Content>
-          </Menu>
-          <Button
-            size="sm"
-            onClick={logout}
-            className="font-sans bg-card border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
-          >
-            Logout
-          </Button>
-        </div>
-
-        {/* Mobile menu */}
-        <div className="flex items-center md:hidden">
-          <Menu>
-            <Menu.Trigger className="transition hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex flex-col gap-1 p-2.5 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] bg-card">
-              <span className="block h-[1.5px] w-[20px] bg-foreground/60" />
-              <span className="block h-[1.5px] w-[20px] bg-foreground/60" />
-              <span className="block h-[1.5px] w-[20px] bg-foreground/60" />
-            </Menu.Trigger>
-            <Menu.Content align='center' className="min-w-36 mt-2 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]">
-
-              {dashboardLoading ? (
-                <Menu.Item disabled className="flex items-center gap-2 text-[13px] text-muted-foreground">
-                  <Loader2 size={13} className="animate-spin" />
-                  Checking session…
-                </Menu.Item>
-              ) : !training ? (
-                <Menu.Item
-                  onClick={() => setCreateSessionOpen(true)}
-                  className="flex items-center gap-2 text-[13px] text-muted-foreground hover:!bg-emerald-400 hover:text-black"
-                >
-                  Start Session
-                </Menu.Item>
-              ) : (
-                <Menu.Item
-                  onClick={() => setEndSessionOpen(true)}
-                  className="flex items-center gap-2 py-3 text-[13px] text-muted-foreground hover:!bg-red-400 hover:text-black"
-                >
-                  End Session
-                </Menu.Item>
-              )}
-
-              <div>
-                <Menu.Item onClick={() => setMembersOpen(true)} className="py-3 text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">
-                  Add Member
-                </Menu.Item>
+              </>
+            )}
+            <Menu>
+              <Menu.Trigger className="px-3 py-1 text-sm shadow hover:shadow-sm font-sans bg-card border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground shadow-md hover:shadow active:shadow-none border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-primary-hover">
+                Settings
+              </Menu.Trigger>
+              <Menu.Content className="min-w-36 mt-2 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]">
                 <Menu.Item onClick={() => setMembersTabOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">Members Tab</Menu.Item>
-                <Menu.Item onClick={logout} className="py-3 text-muted-foreground flex items-center gap-2 text-[13px] hover:text-white">
-                  Logout
-                </Menu.Item>
-              </div>
+              </Menu.Content>
+            </Menu>
+            <Button
+              size="sm"
+              onClick={logout}
+              className="font-sans bg-card border-2 border-black text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
+            >
+              Logout
+            </Button>
+          </div>
 
-            </Menu.Content>
-          </Menu>
+          {/* Mobile menu */}
+          <div className="flex items-center md:hidden">
+            <Menu>
+              <Menu.Trigger className="transition hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex flex-col gap-1 p-2.5 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] bg-card">
+                <span className="block h-[1.5px] w-[20px] bg-foreground/60" />
+                <span className="block h-[1.5px] w-[20px] bg-foreground/60" />
+                <span className="block h-[1.5px] w-[20px] bg-foreground/60" />
+              </Menu.Trigger>
+              <Menu.Content align='center' className="min-w-36 mt-2 border-2 bg-card border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]">
+
+                {dashboardLoading ? (
+                  <Menu.Item disabled className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                    <Loader2 size={13} className="animate-spin" />
+                    Checking session…
+                  </Menu.Item>
+                ) : !training ? (
+                  <Menu.Item
+                    onClick={() => setCreateSessionOpen(true)}
+                    className="flex items-center gap-2 text-[13px] text-muted-foreground hover:!bg-emerald-400 hover:text-black"
+                  >
+                    Start Session
+                  </Menu.Item>
+                ) : (
+                  <Menu.Item
+                    onClick={() => setEndSessionOpen(true)}
+                    className="flex items-center gap-2 py-3 text-[13px] text-muted-foreground hover:!bg-red-400 hover:text-black"
+                  >
+                    End Session
+                  </Menu.Item>
+                )}
+
+                <div>
+                  <Menu.Item onClick={() => setMembersTabOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 text-[13px]">Members Tab</Menu.Item>
+                  <Menu.Item onClick={logout} className="py-3 text-muted-foreground flex items-center gap-2 text-[13px] hover:text-white">
+                    Logout
+                  </Menu.Item>
+                </div>
+
+              </Menu.Content>
+            </Menu>
+
+          </div>
 
         </div>
-
-      </div>
-    </header>
-    {/* Single shared dialogs */}
+      </header>
+      {/* Single shared dialogs */}
       <Dialog open={createSessionOpen} onOpenChange={setCreateSessionOpen}>
         <Dialog.Content className="bg-card border-2 border-black w-[90vw] max-w-[420px]">
           <Dialog.Header className="border-b-2 border-black bg-emerald-400 px-4 py-3">
@@ -196,7 +191,6 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
       </Dialog>
 
       {/* dialog for members  */}
-      <MemberForm />
       <MembersTab />
     </>
 
