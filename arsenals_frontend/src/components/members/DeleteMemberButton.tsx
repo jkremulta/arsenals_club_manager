@@ -18,9 +18,8 @@ const DeleteMemberButton = ({ player, handleDelete, deletePlayerMutation, size =
             setConfirming(false)
           }}
           className={`${size} shrink-0 flex items-center justify-center border-2 border-black rounded-none
-            bg-emerald-400 text-white
+            bg-emerald-400 text-accent-foreground
             shadow-[2px_2px_0_0_rgba(0,0,0,1)]`}
-          title="Confirm delete"
         >
           <Check className="size-4" />
         </Button>
@@ -29,7 +28,7 @@ const DeleteMemberButton = ({ player, handleDelete, deletePlayerMutation, size =
           size="icon"
           onClick={() => setConfirming(false)}
           className={`${size} shrink-0 flex items-center justify-center border-2 border-black rounded-none
-            bg-card text-white
+            bg-card text-muted-foreground
             shadow-[2px_2px_0_0_rgba(0,0,0,1)]`}
         >
           <X className="size-4" />

@@ -168,7 +168,7 @@ const MembersTab = () => {
             <button
               type="button"
               onClick={() => setMembersOpen(true)}
-              className={`relative h-11 w-11 sm:h-9 sm:w-9 shrink-0 flex items-center bg-background hover:bg-card justify-center border-2 border-black rounded-none
+              className={`relative h-11 w-11 sm:h-9 sm:w-9 shrink-0 flex items-center bg-background hover:bg-muted justify-center border-2 border-black rounded-none
               shadow-[2px_2px_0_0_rgba(0,0,0,1)]
               active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
               transition-all
