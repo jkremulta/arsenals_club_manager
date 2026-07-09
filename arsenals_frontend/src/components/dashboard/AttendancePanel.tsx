@@ -7,7 +7,7 @@ import { Button } from '../retroui/Button';
 import { Users, UserPlus, Loader2, X, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 
-function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerMutation, togglePaidMutation, togglePaid, paidIds, currentGame }) {
+function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerMutation, togglePaidMutation, togglePaid, paidIds, currentGame, handleAddPlayer, handleRemovePlayer }) {
   const [attendanceAddOpen, setAttendanceAddOpen] = useState(false)
 
   const sortedAttendance = [...attendance].sort((a, b) => {
@@ -25,12 +25,12 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
 
   const handleAdd = (id) => {
     setAttendanceAddOpen(false)
-    addPlayerMutation.mutate(id)
+    handleAddPlayer(id)
   }
 
   const addLoading = addPlayerMutation.isPending
-  const removingId = removePlayerMutation.isPending ? removePlayerMutation.variables : null
-  const togglingId = togglePaidMutation.isPending ? togglePaidMutation.variables?.id : null
+  const removePlayerLoading = removePlayerMutation.isPending ? removePlayerMutation.variables : null
+  const togglePaidLoading = togglePaidMutation.isPending ? togglePaidMutation.variables?.id : null
 
   return (
     <div className="border-2 border-black flex h-full min-h-0 flex-col bg-card">
@@ -118,22 +118,26 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                     <Button
                       size='sm'
                       onClick={() => togglePaid(player.id)}
-                      className={`px-2 py-0.5 text-[10px] bg-card ${isPaid
-                        ? 'bg-emerald-400 text-black hover:bg-red-400 hover:text-black'
-                        : 'text-muted-foreground hover:bg-emerald-400 hover:text-black'
+                      className={`px-2 py-0.5 text-[10px] ${togglePaidLoading === player.id
+                        ? isPaid
+                          ? "bg-red-400 text-black"
+                          : "bg-emerald-400 text-black"
+                        : isPaid
+                          ? "bg-emerald-400 text-black hover:bg-red-400 hover:text-black"
+                          : "bg-card text-muted-foreground hover:bg-emerald-400 hover:text-black"
                         }`}
                     >
-                      {togglingId === player.id
+                      {togglePaidLoading === player.id
                         ? <Loader2 size={10} className="animate-spin" />
                         : isPaid ? 'Paid' : 'Unpaid'}
                     </Button>
                     <Button
                       size='sm'
-                      onClick={() => removePlayerMutation.mutate(player.id)}
-                      disabled={removingId === player.id}
-                      className="bg-card text-muted-foreground p-1 hover:bg-red-400 hover:text-black"
+                      onClick={() => handleRemovePlayer(player.id)}
+                      disabled={removePlayerLoading === player.id}
+                      className={`bg-card p-1 hover:bg-red-400 hover:text-black ${removePlayerLoading === player.id ? 'bg-red-400 text-black' : 'bg-card text-muted-foreground'}`}
                     >
-                      {removingId === player.id
+                      {removePlayerLoading === player.id
                         ? <Loader2 size={10} className="animate-spin" />
                         : <X size={11} />}
                     </Button>
