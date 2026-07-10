@@ -9,7 +9,8 @@ function ControlsPanel({
   startGameMutation,
   currentGame,
   replacePlayerMutation,
-  handleStartGame
+  handleStartGame,
+  handleReplacePlayer
 }) {
 
   return (
@@ -28,6 +29,7 @@ function ControlsPanel({
         attendance={attendance}
         currentGame={currentGame}
         replacePlayerMutation={replacePlayerMutation}
+        handleReplacePlayer={handleReplacePlayer}
       />
 
     </div>

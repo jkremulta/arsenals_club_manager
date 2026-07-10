@@ -9,12 +9,19 @@ import DashboardLayout from './components/dashboard/DashboardLayout'
 const Dashboard = ({ user }) => {
   const {
     dashboardQuery, training, attendance, players, paidIds,
-    handleCreateTraining, togglePaid,
     endTrainingMutation,
     createTrainingMutation,
     addPlayerMutation, removePlayerMutation, togglePaidMutation,
     initializeGameMutation, startGameMutation, replacePlayerMutation,
-    handleInitializeGame
+
+    handleTogglePaid,
+    handleCreateTraining,
+    handleInitializeGame,
+    handleAddPlayer,
+    handleRemovePlayer,
+    handleStartGame,
+    handleReplacePlayer
+
   } = useDashboard(user.token)
 
   const currentGame = training?.current_players || []
@@ -26,9 +33,13 @@ const Dashboard = ({ user }) => {
     addPlayerMutation,
     removePlayerMutation,
     togglePaidMutation,
-    togglePaid,
     paidIds,
-    currentGame
+    currentGame,
+
+    handleAddPlayer,
+    handleRemovePlayer,
+    handleStartGame,
+    handleTogglePaid,
   }
 
   const sharedGameProps = {
@@ -41,10 +52,13 @@ const Dashboard = ({ user }) => {
     attendance,
     training,
     initializeGameMutation,
-    handleInitializeGame,
     startGameMutation,
     currentGame,
-    replacePlayerMutation
+    replacePlayerMutation,
+
+    handleInitializeGame,
+    handleStartGame,
+    handleReplacePlayer
   }
 
   return (

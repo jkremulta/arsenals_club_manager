@@ -78,7 +78,7 @@ export const useDashboard = (token) => {
   // checks the attendance for players that has paid
   const paidIds = new Set(dashboardQuery.data?.attendance.filter(p => p.paid).map(p => p.id))
   // toggles paid status
-  const togglePaid = (id) => {
+  const handleTogglePaid = (id) => {
     togglePaidMutation.mutate({ id, paid: !paidIds.has(id) })
   }
 
@@ -93,6 +93,22 @@ export const useDashboard = (token) => {
     initializeGameMutation.mutate({ skillGroup })
   }
 
+  const handleAddPlayer = (id) => {
+    addPlayerMutation.mutate(id)
+  }
+
+  const handleRemovePlayer = (id) => {
+    removePlayerMutation.mutate(id)
+  }
+
+  const handleStartGame = () => {
+    startGameMutation.mutate()
+  }
+
+  const handleReplacePlayer = (players) => {
+    replacePlayerMutation.mutate(players)
+  }
+
 
   return {
     // query state
@@ -105,7 +121,11 @@ export const useDashboard = (token) => {
     // handlers
     handleCreateTraining,
     handleInitializeGame,
-    togglePaid,
+    handleAddPlayer,
+    handleRemovePlayer,
+    handleStartGame,
+    handleTogglePaid,
+    handleReplacePlayer,
 
     // mutations (for isPending, variables, etc.)
     createTrainingMutation,
