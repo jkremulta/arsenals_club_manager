@@ -88,7 +88,7 @@ const UpNextList = ({ training, attendance, currentGame, replacePlayerMutation, 
                               hover:bg-accent hover:text-white
                               active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
                               disabled:opacity-50
-                              ${swapOpenId === playerId ? 'bg-accent text-white border-black' : ''}
+                              ${swapOpenId === playerId || swapLoading ? 'bg-accent text-white border-black' : ''}
                             `}
                       >
                         {swapLoading
