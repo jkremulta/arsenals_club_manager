@@ -7,7 +7,7 @@ import { Button } from '../retroui/Button';
 import { Users, UserPlus, Loader2, X, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 
-function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerMutation, togglePaidMutation, togglePaid, paidIds, currentGame, handleAddPlayer, handleRemovePlayer }) {
+function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerMutation, togglePaidMutation, handleTogglePaid, paidIds, currentGame, handleAddPlayer, handleRemovePlayer }) {
   const [attendanceAddOpen, setAttendanceAddOpen] = useState(false)
 
   const sortedAttendance = [...attendance].sort((a, b) => {
@@ -117,7 +117,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                     </span>
                     <Button
                       size='sm'
-                      onClick={() => togglePaid(player.id)}
+                      onClick={() => handleTogglePaid(player.id)}
                       className={`px-2 py-0.5 text-[10px] ${togglePaidLoading === player.id
                         ? isPaid
                           ? "bg-red-400 text-black"
