@@ -231,7 +231,7 @@ const MembersTab = () => {
               {visiblePlayers.length > 0 ? (
                 visiblePlayers.map((p) => (
                   <div key={p.id} className={`p-4 bg-background active:bg-muted relative ${editMode ? "space-y-3" : ""}`}>
-                    <div className="absolute top-3 right-3 z-10">
+                    <div className="absolute top-1/2 -translate-y-1/2 right-3 z-10">
                       <DeleteMemberButton
                         player={p}
                         handleDelete={handleDelete}
