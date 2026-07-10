@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react"
 import { useState } from "react";
 import { SlidersHorizontal, Search, X, Pencil, Check, Loader2, Plus } from "lucide-react";
 import { Table } from "@/components/retroui/Table";
@@ -9,7 +10,7 @@ import EditableField from "./EditableField";
 import DeleteMemberButton from "./DeleteMemberButton";
 import helper from "@/utils/helper";
 import Filter from "./Filter";
-import MemberForm from "./MemberForm";
+const MemberForm = lazy(() => import('./MemberForm'))
 
 const MEMBER_FIELDS = [
   { key: "name", label: "NAME", align: "left", type: "text" },
@@ -22,7 +23,7 @@ const MEMBER_FIELDS = [
 const MembersTab = () => {
 
   const { user } = useLoginStore()
-  const { membersTabOpen, setMembersTabOpen, filterOpen, setFilterOpen, setMembersOpen } = useUIStore()
+  const { membersTabOpen, setMembersTabOpen, filterOpen, setFilterOpen, membersOpen, setMembersOpen } = useUIStore()
   const {
     visiblePlayers,
     query,
@@ -324,7 +325,12 @@ const MembersTab = () => {
         </Dialog.Content>
       </Dialog>
 
-      <MemberForm />
+      {membersOpen && (
+        <Suspense fallback={null}>
+          <MemberForm />
+        </Suspense>
+      )}
+
     </>
   )
 }
