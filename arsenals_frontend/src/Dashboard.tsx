@@ -9,11 +9,19 @@ import DashboardLayout from './components/dashboard/DashboardLayout'
 const Dashboard = ({ user }) => {
   const {
     dashboardQuery, training, attendance, players, paidIds,
-    handleCreateTraining, togglePaid,
     endTrainingMutation,
-    createTrainingMutation, 
+    createTrainingMutation,
     addPlayerMutation, removePlayerMutation, togglePaidMutation,
     initializeGameMutation, startGameMutation, replacePlayerMutation,
+
+    handleTogglePaid,
+    handleCreateTraining,
+    handleInitializeGame,
+    handleAddPlayer,
+    handleRemovePlayer,
+    handleStartGame,
+    handleReplacePlayer
+
   } = useDashboard(user.token)
 
   const currentGame = training?.current_players || []
@@ -25,9 +33,13 @@ const Dashboard = ({ user }) => {
     addPlayerMutation,
     removePlayerMutation,
     togglePaidMutation,
-    togglePaid,
     paidIds,
-    currentGame
+    currentGame,
+
+    handleAddPlayer,
+    handleRemovePlayer,
+    handleStartGame,
+    handleTogglePaid,
   }
 
   const sharedGameProps = {
@@ -42,18 +54,22 @@ const Dashboard = ({ user }) => {
     initializeGameMutation,
     startGameMutation,
     currentGame,
-    replacePlayerMutation
+    replacePlayerMutation,
+
+    handleInitializeGame,
+    handleStartGame,
+    handleReplacePlayer
   }
 
   return (
     <div className="h-screen overflow-hidden bg-card p-4">
       <div className="flex h-full flex-col border-2 border-black bg-background font-sans text-foreground shadow-[6px_6px_0_#000]">
-        <Header 
-          dashboardQuery={dashboardQuery} 
-          training={training} 
+        <Header
+          dashboardQuery={dashboardQuery}
+          training={training}
           createTrainingMutation={createTrainingMutation}
           handleCreateTraining={handleCreateTraining}
-          endTrainingMutation={endTrainingMutation}/>
+          endTrainingMutation={endTrainingMutation} />
 
         <div className="flex flex-1 flex-col overflow-hidden">
           {dashboardQuery.isLoading ? (
@@ -64,7 +80,7 @@ const Dashboard = ({ user }) => {
             <DashboardLayout
               attendancePanelProps={attendancePanelProps}
               sharedControlsProps={sharedControlsProps}
-              sharedGameProps={ sharedGameProps }
+              sharedGameProps={sharedGameProps}
               currentGame={currentGame}
               currentGameSkillGroup={currentGameSkillGroup}
               training={training}

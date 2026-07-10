@@ -14,7 +14,7 @@ const MemberForm = () => {
   const [form, setForm] = useState({ name: '', rank: '', gender: '', birthday: '' })
   const resetForm = () => setForm({ name: '', rank: '', gender: '', birthday: '' })
 
-  const { membersOpen, setMembersOpen } = useUIStore()
+  const { membersFormOpen, setMembersFormOpen } = useUIStore()
 
 
   const handleRegister = () => {
@@ -23,7 +23,7 @@ const MemberForm = () => {
       form,
       onSuccess: () => {
         resetForm()
-        setMembersOpen(false)
+        setMembersFormOpen(false)
       }
     })
   }
@@ -34,7 +34,7 @@ const MemberForm = () => {
     'focus:shadow-[3px_3px_0px_0px_#000] transition-shadow'
 
   return (
-    <Dialog open={membersOpen} onOpenChange={setMembersOpen}>
+    <Dialog open={membersFormOpen} onOpenChange={setMembersFormOpen}>
       <Dialog.Content size="sm" className="
         bg-card 
         border-2 

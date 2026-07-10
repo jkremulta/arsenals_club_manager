@@ -2,25 +2,16 @@ import helper from '../../utils/helper'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Play } from 'lucide-react'
 
-function GamePanel({ currentGame, currentGameSkillGroup, training }) {
-  // show team name if team game, otherwise skill group
-  const teamA = training?.team_a
-  const teamB = training?.team_b
-  const currentGameTeam= training?.currentGameTeam
-
-  const isTeamGame = (!!teamA && !!teamB) || !!currentGameTeam
-  const pillLabel = isTeamGame
-    ? [teamA?.name, teamB?.name].filter(Boolean).join(' vs ')
-    : currentGameSkillGroup
+function GamePanel({ currentGame, currentGameSkillGroup }) {
 
   return (
-   <div className="flex h-full min-h-0 flex-col border-2 border-black bg-card">
-    <div className="flex flex-shrink-0 items-center justify-between border-b-2 border-black bg-card px-4 py-3">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <p className="text-[11px] font-semibold uppercase tracking-widest">Game in progress</p>
-      </div> 
-        <span className={`flex-shrink-0 rounded-none border-2 border-black/30 px-1 text-[9px] font-bold ${helper.skillPill(pillLabel).className}`}>
-          {helper.skillLabel(pillLabel)}
+    <div className="flex h-full min-h-0 flex-col border-2 border-black bg-card">
+      <div className="flex flex-shrink-0 items-center justify-between border-b-2 border-black bg-card px-4 py-3">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <p className="text-[11px] font-semibold uppercase tracking-widest">Game in progress</p>
+        </div>
+        <span className={`flex-shrink-0 rounded-none border-2 border-black/30 px-1 text-[9px] font-bold ${helper.skillPill(currentGameSkillGroup).className}`}>
+          {helper.skillLabel(currentGameSkillGroup)}
         </span>
       </div>
 

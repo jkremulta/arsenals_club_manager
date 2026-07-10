@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react"
 import { Menu } from '@/components/retroui/Menu'
 import { Dialog } from "@/components/retroui/Dialog"
 import { Button } from '@/components/retroui/Button'
@@ -7,13 +8,13 @@ import { useUIStore } from '@/stores/useUIStore'
 import { useLoginStore } from '@/stores/useLoginStore'
 import helper from '../utils/helper'
 import arsenalsLogo from './icons/arsenals logo transparent.png'
-import MembersTab from './members/MembersTab'
+const MembersTab = lazy(() => import("./members/MembersTab"))
 
 
 
 function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining }) {
 
-  const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, setMembersTabOpen, startTime, setStartTime } = useUIStore()
+  const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, membersTabOpen, setMembersTabOpen, startTime, setStartTime } = useUIStore()
   const { logout } = useLoginStore()
 
   const dashboardLoading = dashboardQuery.isLoading
@@ -191,7 +192,11 @@ function Header({ dashboardQuery, training, createTrainingMutation, endTrainingM
       </Dialog>
 
       {/* dialog for members  */}
-      <MembersTab />
+      {membersTabOpen && (
+        <Suspense fallback={null}>
+          <MembersTab />
+        </Suspense>
+      )}
     </>
 
   )

@@ -8,7 +8,9 @@ function ControlsPanel({
   initializeGameMutation,
   startGameMutation,
   currentGame,
-  replacePlayerMutation
+  replacePlayerMutation,
+  handleStartGame,
+  handleReplacePlayer
 }) {
 
   return (
@@ -19,6 +21,7 @@ function ControlsPanel({
         handleInitializeGame={handleInitializeGame}
         initializeGameMutation={initializeGameMutation}
         startGameMutation={startGameMutation}
+        handleStartGame={handleStartGame}
       />
 
       <UpNextList
@@ -26,8 +29,9 @@ function ControlsPanel({
         attendance={attendance}
         currentGame={currentGame}
         replacePlayerMutation={replacePlayerMutation}
+        handleReplacePlayer={handleReplacePlayer}
       />
-      
+
     </div>
   )
 }

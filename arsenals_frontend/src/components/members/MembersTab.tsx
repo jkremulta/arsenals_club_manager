@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react"
 import { useState } from "react";
 import { SlidersHorizontal, Search, X, Pencil, Check, Loader2, Plus } from "lucide-react";
 import { Table } from "@/components/retroui/Table";
@@ -9,7 +10,7 @@ import EditableField from "./EditableField";
 import DeleteMemberButton from "./DeleteMemberButton";
 import helper from "@/utils/helper";
 import Filter from "./Filter";
-import MemberForm from "./MemberForm";
+const MemberForm = lazy(() => import('./MemberForm'))
 
 const MEMBER_FIELDS = [
   { key: "name", label: "NAME", align: "left", type: "text" },
@@ -22,7 +23,7 @@ const MEMBER_FIELDS = [
 const MembersTab = () => {
 
   const { user } = useLoginStore()
-  const { membersTabOpen, setMembersTabOpen, filterOpen, setFilterOpen, setMembersOpen } = useUIStore()
+  const { membersTabOpen, setMembersTabOpen, filterOpen, setFilterOpen, membersFormOpen, setMembersFormOpen } = useUIStore()
   const {
     visiblePlayers,
     query,
@@ -167,7 +168,7 @@ const MembersTab = () => {
 
             <button
               type="button"
-              onClick={() => setMembersOpen(true)}
+              onClick={() => setMembersFormOpen(true)}
               className={`relative h-11 w-11 sm:h-9 sm:w-9 shrink-0 flex items-center bg-background hover:bg-muted justify-center border-2 border-black rounded-none
               shadow-[2px_2px_0_0_rgba(0,0,0,1)]
               active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
@@ -230,7 +231,7 @@ const MembersTab = () => {
               {visiblePlayers.length > 0 ? (
                 visiblePlayers.map((p) => (
                   <div key={p.id} className={`p-4 bg-background active:bg-muted relative ${editMode ? "space-y-3" : ""}`}>
-                    <div className="absolute top-3 right-3 z-10">
+                    <div className="absolute top-1/2 -translate-y-1/2 right-3 z-10">
                       <DeleteMemberButton
                         player={p}
                         handleDelete={handleDelete}
@@ -324,7 +325,12 @@ const MembersTab = () => {
         </Dialog.Content>
       </Dialog>
 
-      <MemberForm />
+      {membersFormOpen && (
+        <Suspense fallback={null}>
+          <MemberForm />
+        </Suspense>
+      )}
+
     </>
   )
 }
