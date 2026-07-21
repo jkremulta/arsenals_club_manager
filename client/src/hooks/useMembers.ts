@@ -1,49 +1,54 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import { useState, useMemo } from 'react'
-import playersApi from '../services/players'
-import helper from '../utils/helper'
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { useState, useMemo } from "react"
+import playersApi from "../services/players"
+import helper from "../utils/helper"
 
 export const useMembers = (token) => {
   const queryClient = useQueryClient()
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ['members'] })
-    queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    queryClient.invalidateQueries({ queryKey: ["players"] })
+    queryClient.invalidateQueries({ queryKey: ["attendance"] })
+    queryClient.invalidateQueries({ queryKey: ["training"] })
   }
 
   const playersQuery = useQuery({
-    queryKey: ['members'],
-    queryFn: async () => {
-      const data = await playersApi.get(token)
-      if (data?.error) throw new Error(data.error)
-      return data
-    }
+    queryKey: ["players"],
+    queryFn: () => playersApi.get(token),
   })
-
-  const players = playersQuery.data || []
 
   const createPlayerMutation = useMutation({
     mutationFn: (payload) => playersApi.post(payload, token),
-    onSuccess: () => { 
-      toast.success('Player registered', { duration: 2000 }); invalidate() 
+    onSuccess: () => {
+      toast.success("Player registered", { duration: 2000 })
+      invalidate()
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
 
   const updatePlayerMutation = useMutation({
     mutationFn: ({ id, payload }) => playersApi.put(id, payload, token),
-    onSuccess: () => { toast.success('Player updated', { id: 'keep this to only have one toast per update', duration: 2000 }); invalidate() },
+    onSuccess: () => {
+      toast.success("Player updated", {
+        id: "keep this to only have one toast per update",
+        duration: 2000,
+      })
+      invalidate()
+    },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
   const deletePlayerMutation = useMutation({
     mutationFn: (id) => playersApi.delete(id, token),
-    onSuccess: () => { toast.success('Player deleted.', { duration: 2000 }); invalidate() },
+    onSuccess: () => {
+      toast.success("Player deleted.", { duration: 2000 })
+      invalidate()
+    },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
 
   // replace the existing updateField with this
   const handleUpdate = async (player, changes) => {
-    // changes = { rank: 5, name: "New Name", ... } — only the fields that actually changed
+    // changes = { rank: 5, name: "New Name", ... } only the fields that actually changed
     const updated = { ...player, ...changes }
     if ("rank" in changes) {
       updated.skill = helper.skillFromRank(changes.rank)
@@ -59,9 +64,11 @@ export const useMembers = (token) => {
 
   const handleSubmit = async ({ editingId, form, onSuccess }) => {
     const derivedSkill = helper.skillFromRank(form.rank)
-    const isFormComplete = Boolean(form.name.trim() && form.gender && form.rank && derivedSkill)
+    const isFormComplete = Boolean(
+      form.name.trim() && form.gender && form.rank && derivedSkill
+    )
     if (!isFormComplete) {
-      toast.warning('Name, gender, and rank are required.', { duration: 2000 })
+      toast.warning("Name, gender, and rank are required.", { duration: 2000 })
       return
     }
     const payload = { ...form, name: form.name.trim(), skill: derivedSkill }
@@ -89,14 +96,12 @@ export const useMembers = (token) => {
   const [query, setQuery] = useState("") // search names
 
   const filteredPlayers = useMemo(() => {
-    if (!query.trim()) return players
+    if (!query.trim()) return playersQuery.data
 
     const q = query.trim().toLowerCase()
 
-     return players.filter((p) =>
-      p.name?.toLowerCase().includes(q)
-    )
-  }, [players, query]);
+    return playersQuery.data.filter((p) => p.name?.toLowerCase().includes(q))
+  }, [playersQuery.data, query])
 
   const [sortKey, setSortKey] = useState(null)
   const [sortDirection, setSortDirection] = useState("asc")
@@ -125,7 +130,6 @@ export const useMembers = (token) => {
       if (sortKey === "birthday") {
         aValue = new Date(aValue).getTime()
         bValue = new Date(bValue).getTime()
-
       } else if (typeof aValue === "string") {
         aValue = aValue.toLowerCase()
         bValue = bValue.toLowerCase()
@@ -142,18 +146,16 @@ export const useMembers = (token) => {
 
   return {
     // query state
-    playersQuery,
-    players,   
-    visiblePlayers,
-    loading: playersQuery.isLoading,
+    membersLoading: playersQuery.isLoading, // only use for loading
 
-    // sort/filter state + handlers
+    // sort/filter state
     query,
     setQuery,
     sortKey,
     sortDirection,
     toggleSortColumn,
     flipDirection,
+    visiblePlayers,
 
     // handlers
     handleSubmit,

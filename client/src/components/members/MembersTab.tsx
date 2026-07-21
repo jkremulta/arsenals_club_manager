@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react"
 import { useState } from "react";
-import { SlidersHorizontal, Search, X, Pencil, Check, Loader2, Plus } from "lucide-react";
+import { SlidersHorizontal, Search, X, Pencil, Check, Loader2, Plus, Divide } from "lucide-react";
 import { Table } from "@/components/retroui/Table";
 import { useUIStore } from "@/stores/useUIStore";
 import { Dialog } from "@/components/retroui/Dialog"
@@ -25,6 +25,7 @@ const MembersTab = () => {
   const { user } = useLoginStore()
   const { membersTabOpen, setMembersTabOpen, filterOpen, setFilterOpen, membersFormOpen, setMembersFormOpen } = useUIStore()
   const {
+    membersLoading,
     visiblePlayers,
     query,
     setQuery,
@@ -132,6 +133,9 @@ const MembersTab = () => {
     )
   }
 
+  if (membersLoading) {
+    return null
+  }
 
   return (
     <>
