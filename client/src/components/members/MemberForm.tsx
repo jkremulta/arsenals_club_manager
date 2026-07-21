@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react'
 
 const MemberForm = () => {
   const { user } = useLoginStore()
-  const { handleSubmit, createPlayerMutation } = useMembers(user?.token)
+  const { handleCreatePlayer, createPlayerMutation } = useMembers(user?.token)
 
   const [form, setForm] = useState({ name: '', rank: '', gender: '', birthday: '' })
   const resetForm = () => setForm({ name: '', rank: '', gender: '', birthday: '' })
@@ -17,8 +17,8 @@ const MemberForm = () => {
   const { membersFormOpen, setMembersFormOpen } = useUIStore()
 
 
-  const handleRegister = () => {
-    handleSubmit({
+  const handleCreate = () => {
+    handleCreatePlayer({
       editingId: null,
       form,
       onSuccess: () => {
@@ -96,7 +96,7 @@ const MemberForm = () => {
           </section>
           <div className="flex w-full justify-end">
             <Button
-              onClick={handleRegister}
+              onClick={handleCreate}
               disabled={createPlayerMutation.isPending}
               className="bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] disabled:opacity-50"
             >

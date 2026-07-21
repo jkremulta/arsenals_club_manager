@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react"
 import { useState } from "react";
-import { SlidersHorizontal, Search, X, Pencil, Check, Loader2, Plus } from "lucide-react";
+import { SlidersHorizontal, Search, X, Pencil, Check, Loader2, Plus, Divide } from "lucide-react";
 import { Table } from "@/components/retroui/Table";
 import { useUIStore } from "@/stores/useUIStore";
 import { Dialog } from "@/components/retroui/Dialog"
@@ -25,12 +25,13 @@ const MembersTab = () => {
   const { user } = useLoginStore()
   const { membersTabOpen, setMembersTabOpen, filterOpen, setFilterOpen, membersFormOpen, setMembersFormOpen } = useUIStore()
   const {
+    membersLoading,
     visiblePlayers,
     query,
     setQuery,
     sortKey,
-    handleUpdate,
-    handleDelete,
+    handleUpdatePlayer,
+    handleDeletePlayer,
     updatePlayerMutation,
     deletePlayerMutation,
     toggleSortColumn,
@@ -68,7 +69,7 @@ const MembersTab = () => {
       const player = visiblePlayers.find(p => String(p.id) === playerId)
 
       if (player) {
-        handleUpdate(player, changes)
+        handleUpdatePlayer(player, changes)
       }
     })
   }
@@ -132,6 +133,9 @@ const MembersTab = () => {
     )
   }
 
+  if (membersLoading) {
+    return null
+  }
 
   return (
     <>
@@ -234,7 +238,7 @@ const MembersTab = () => {
                     <div className="absolute top-1/2 -translate-y-1/2 right-3 z-10">
                       <DeleteMemberButton
                         player={p}
-                        handleDelete={handleDelete}
+                        handleDeletePlayer={handleDeletePlayer}
                         deletePlayerMutation={deletePlayerMutation}
                         size="size-9"
                       />
@@ -305,7 +309,7 @@ const MembersTab = () => {
                         <div className="flex justify-end">
                           <DeleteMemberButton
                             player={p}
-                            handleDelete={handleDelete}
+                            handleDeletePlayer={handleDeletePlayer}
                             deletePlayerMutation={deletePlayerMutation}
                           />
                         </div>

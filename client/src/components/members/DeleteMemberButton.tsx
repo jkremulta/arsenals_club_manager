@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Check, X, Trash2, Loader2 } from "lucide-react";
 import { Button } from "../retroui/Button";
 
-const DeleteMemberButton = ({ player, handleDelete, deletePlayerMutation, size = "size-8" }) => {
+const DeleteMemberButton = ({ player, handleDeletePlayer, deletePlayerMutation, size = "size-8" }) => {
   const [confirming, setConfirming] = useState(false)
   const deletePlayerLoading =
     deletePlayerMutation.isPending && deletePlayerMutation.variables === player.id
@@ -14,7 +14,7 @@ const DeleteMemberButton = ({ player, handleDelete, deletePlayerMutation, size =
           type="button"
           size="icon"
           onClick={() => {
-            handleDelete(player.id)
+            handleDeletePlayer(player.id)
             setConfirming(false)
           }}
           className={`${size} shrink-0 flex items-center justify-center border-2 border-black rounded-none
