@@ -90,6 +90,7 @@ export const useDashboard = (token) => {
     mutationFn: () => trainingApi.startGame(token),
     onSuccess: () => {
       toast.success("Game started!", { duration: 2000 })
+      setSkillGroup("")
       invalidate()
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
@@ -135,7 +136,6 @@ export const useDashboard = (token) => {
 
   const handleStartGame = () => {
     startGameMutation.mutate()
-    setSkillGroup("")
   }
 
   const handleReplacePlayer = (players) => {
