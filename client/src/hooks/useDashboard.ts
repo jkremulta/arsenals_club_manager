@@ -44,6 +44,7 @@ export const useDashboard = (token) => {
       toast.success("Training ended.", { duration: 2000 })
       setEndSessionOpen(false)
       queryClient.invalidateQueries({ queryKey: ["training"] })
+      queryClient.invalidateQueries({ queryKey: ["attendance"] })
     },
     onError: (e) => toast.error(e?.response?.data?.error),
   })
