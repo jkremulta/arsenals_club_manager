@@ -30,8 +30,8 @@ const MembersTab = () => {
     query,
     setQuery,
     sortKey,
-    handleUpdate,
-    handleDelete,
+    handleUpdatePlayer,
+    handleDeletePlayer,
     updatePlayerMutation,
     deletePlayerMutation,
     toggleSortColumn,
@@ -69,7 +69,7 @@ const MembersTab = () => {
       const player = visiblePlayers.find(p => String(p.id) === playerId)
 
       if (player) {
-        handleUpdate(player, changes)
+        handleUpdatePlayer(player, changes)
       }
     })
   }
@@ -238,7 +238,7 @@ const MembersTab = () => {
                     <div className="absolute top-1/2 -translate-y-1/2 right-3 z-10">
                       <DeleteMemberButton
                         player={p}
-                        handleDelete={handleDelete}
+                        handleDeletePlayer={handleDeletePlayer}
                         deletePlayerMutation={deletePlayerMutation}
                         size="size-9"
                       />
@@ -309,7 +309,7 @@ const MembersTab = () => {
                         <div className="flex justify-end">
                           <DeleteMemberButton
                             player={p}
-                            handleDelete={handleDelete}
+                            handleDeletePlayer={handleDeletePlayer}
                             deletePlayerMutation={deletePlayerMutation}
                           />
                         </div>

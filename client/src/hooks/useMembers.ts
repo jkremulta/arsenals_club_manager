@@ -47,7 +47,7 @@ export const useMembers = (token) => {
   })
 
   // replace the existing updateField with this
-  const handleUpdate = async (player, changes) => {
+  const handleUpdatePlayer = async (player, changes) => {
     // changes = { rank: 5, name: "New Name", ... } only the fields that actually changed
     const updated = { ...player, ...changes }
     if ("rank" in changes) {
@@ -62,7 +62,7 @@ export const useMembers = (token) => {
     }
   }
 
-  const handleSubmit = async ({ editingId, form, onSuccess }) => {
+  const handleCreatePlayer = async ({ editingId, form, onSuccess }) => {
     const derivedSkill = helper.skillFromRank(form.rank)
     const isFormComplete = Boolean(
       form.name.trim() && form.gender && form.rank && derivedSkill
@@ -84,7 +84,7 @@ export const useMembers = (token) => {
     }
   }
 
-  const handleDelete = async (id) => {
+  const handleDeletePlayer = async (id) => {
     try {
       await deletePlayerMutation.mutateAsync(id)
     } catch {
@@ -158,9 +158,9 @@ export const useMembers = (token) => {
     visiblePlayers,
 
     // handlers
-    handleSubmit,
-    handleDelete,
-    handleUpdate,
+    handleCreatePlayer,
+    handleDeletePlayer,
+    handleUpdatePlayer,
 
     // mutations (for isPending, variables, etc.)
     createPlayerMutation,
