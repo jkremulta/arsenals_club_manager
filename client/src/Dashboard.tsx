@@ -8,7 +8,7 @@ import DashboardLayout from './components/dashboard/DashboardLayout'
 
 const Dashboard = ({ user }) => {
   const {
-    dashboardQuery, training, attendance, players, paidIds,
+    dashboardLoading, training, attendance, players, paidIds,
     endTrainingMutation,
     createTrainingMutation,
     addPlayerMutation, removePlayerMutation, togglePaidMutation,
@@ -65,14 +65,14 @@ const Dashboard = ({ user }) => {
     <div className="h-screen overflow-hidden bg-card p-4">
       <div className="flex h-full flex-col border-2 border-black bg-background font-sans text-foreground shadow-[6px_6px_0_#000]">
         <Header
-          dashboardQuery={dashboardQuery}
+          dashboardLoading={dashboardLoading}
           training={training}
           createTrainingMutation={createTrainingMutation}
           handleCreateTraining={handleCreateTraining}
           endTrainingMutation={endTrainingMutation} />
 
         <div className="flex flex-1 flex-col overflow-hidden">
-          {dashboardQuery.isLoading ? (
+          {dashboardLoading ? (
             <DashboardLoading />
           ) : !training ? (
             <DashboardEmpty />

@@ -12,12 +12,10 @@ const MembersTab = lazy(() => import("./members/MembersTab"))
 
 
 
-function Header({ dashboardQuery, training, createTrainingMutation, endTrainingMutation, handleCreateTraining }) {
+function Header({ dashboardLoading, training, createTrainingMutation, endTrainingMutation, handleCreateTraining }) {
 
   const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, membersTabOpen, setMembersTabOpen, startTime, setStartTime } = useUIStore()
   const { logout } = useLoginStore()
-
-  const dashboardLoading = dashboardQuery.isLoading
 
   const sessionLoading = createTrainingMutation.isPending || endTrainingMutation.isPending
 
