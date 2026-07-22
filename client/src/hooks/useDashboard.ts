@@ -92,7 +92,7 @@ export const useDashboard = (token) => {
     onSuccess: () => {
       toast.success("Game started!", { duration: 2000 })
       setSkillGroup("")
-      invalidate(["training", "players"])
+      invalidate(["training", "attendance"])
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
