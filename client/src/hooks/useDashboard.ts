@@ -13,6 +13,12 @@ export const useDashboard = (token) => {
   const { startTime, setCreateSessionOpen, setEndSessionOpen, setSkillGroup } =
     useUIStore()
 
+  const invalidate = (queryKeys) => {
+    queryKeys.forEach((queryKey) => {
+      queryClient.invalidateQueries({ queryKey: [queryKey] })
+    })
+  }
+
   const trainingQuery = useQuery({
     queryKey: ["training"],
     queryFn: () => trainingApi.get(token),
@@ -33,7 +39,7 @@ export const useDashboard = (token) => {
     onSuccess: () => {
       toast.success("Training session created.", { duration: 2000 })
       setCreateSessionOpen(false)
-      queryClient.invalidateQueries({ queryKey: ["training"] })
+      invalidate(["training"])
     },
     onError: (e) => toast.error(e?.response?.data?.error),
   })
@@ -43,8 +49,7 @@ export const useDashboard = (token) => {
     onSuccess: () => {
       toast.success("Training ended.", { duration: 2000 })
       setEndSessionOpen(false)
-      queryClient.invalidateQueries({ queryKey: ["training"] })
-      queryClient.invalidateQueries({ queryKey: ["attendance"] })
+      invalidate(["training", "attendance"])
     },
     onError: (e) => toast.error(e?.response?.data?.error),
   })
@@ -53,7 +58,7 @@ export const useDashboard = (token) => {
     mutationFn: (playerId) => attendanceApi.post(playerId, token),
     onSuccess: () => {
       toast.success("Player added.")
-      queryClient.invalidateQueries({ queryKey: ["attendance"] })
+      invalidate(["attendance"])
     },
     onError: (e) => toast.error(e?.response?.data?.error),
   })
@@ -62,15 +67,14 @@ export const useDashboard = (token) => {
     mutationFn: (playerId) => attendanceApi.delete(playerId, token),
     onSuccess: () => {
       toast.success("Player removed.", { duration: 2000 })
-      queryClient.invalidateQueries({ queryKey: ["attendance"] })
+      invalidate(["attendance"])
     },
     onError: (e) => toast.error(e?.response?.data?.error),
   })
 
   const togglePaidMutation = useMutation({
     mutationFn: ({ id, paid }) => attendanceApi.put(id, token, { paid }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["attendance"] }),
+    onSuccess: () => invalidate(["attendance"]),
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
 
@@ -78,7 +82,7 @@ export const useDashboard = (token) => {
     mutationFn: (skillGroup) => trainingApi.initializeGame(skillGroup, token),
     onSuccess: () => {
       toast.success("Game initialized.", { duration: 2000 })
-      queryClient.invalidateQueries({ queryKey: ["training"] })
+      invalidate(["training"])
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
@@ -88,8 +92,7 @@ export const useDashboard = (token) => {
     onSuccess: () => {
       toast.success("Game started!", { duration: 2000 })
       setSkillGroup("")
-      queryClient.invalidateQueries({ queryKey: ["training"] })
-      queryClient.invalidateQueries({ queryKey: ["players"] })
+      invalidate(["training", "players"])
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
@@ -99,7 +102,7 @@ export const useDashboard = (token) => {
       trainingApi.replacePlayer(outPlayerId, inPlayerId, token),
     onSuccess: () => {
       toast.success("Player replaced.", { duration: 2000 })
-      queryClient.invalidateQueries({ queryKey: ["training"] })
+      invalidate(["training"])
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
   })
