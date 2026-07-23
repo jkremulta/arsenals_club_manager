@@ -68,7 +68,7 @@ export const useDashboard = (token) => {
   const removePlayerMutation = useMutation({
     mutationFn: (playerId) => attendanceApi.delete(playerId, token),
     onSuccess: (data) => {
-      toast.success(`${data.removedPlayer} was removed from attendance.`, {
+      toast.success(`${data.removedPlayer} removed from attendance.`, {
         duration: 2000,
       })
       invalidate(["attendance"])
