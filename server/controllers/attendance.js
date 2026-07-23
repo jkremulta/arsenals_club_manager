@@ -74,12 +74,21 @@ attendanceRouter.delete("/:id", userExtractor, async (request, response) => {
     return response.status(404).json({ error: "no active training found" });
   }
 
+  const player = await Player.findById(id);
+
+  if (!player) {
+    return response.status(404).json({ error: "Player not found" });
+  }
+
   activeTraining.attendance = activeTraining.attendance.filter(
     (playerId) => playerId.toString() !== id,
   );
 
   await activeTraining.save();
-  return response.status(204).end();
+
+  return response.status(200).json({
+    removedPlayer: player.name,
+  });
 });
 
 attendanceRouter.put("/:id", userExtractor, async (request, response) => {
