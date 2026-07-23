@@ -37,7 +37,10 @@ export const useDashboard = (token) => {
   const createTrainingMutation = useMutation({
     mutationFn: (startDateIso) => trainingApi.post(startDateIso, token),
     onSuccess: () => {
-      toast.success("Training session created.", { duration: 2000 })
+      toast.success("Training session created.", {
+        id: "keep this to only have one toast per update",
+        duration: 2000,
+      })
       setCreateSessionOpen(false)
       invalidate(["training"])
     },
@@ -47,7 +50,10 @@ export const useDashboard = (token) => {
   const endTrainingMutation = useMutation({
     mutationFn: () => trainingApi.delete(token),
     onSuccess: () => {
-      toast.success("Training ended.", { duration: 2000 })
+      toast.success("Training ended.", {
+        id: "keep this to only have one toast per update",
+        duration: 2000,
+      })
       setEndSessionOpen(false)
       invalidate(["training", "attendance"])
     },
@@ -58,6 +64,7 @@ export const useDashboard = (token) => {
     mutationFn: (playerId) => attendanceApi.post(playerId, token),
     onSuccess: (data) => {
       toast.success(`${data.addedPlayer} checked in.`, {
+        id: "keep this to only have one toast per update",
         duration: 2000,
       })
       invalidate(["attendance"])
@@ -69,6 +76,7 @@ export const useDashboard = (token) => {
     mutationFn: (playerId) => attendanceApi.delete(playerId, token),
     onSuccess: (data) => {
       toast.success(`${data.removedPlayer} removed from attendance.`, {
+        id: "keep this to only have one toast per update",
         duration: 2000,
       })
       invalidate(["attendance"])
@@ -85,7 +93,10 @@ export const useDashboard = (token) => {
   const initializeGameMutation = useMutation({
     mutationFn: (skillGroup) => trainingApi.initializeGame(skillGroup, token),
     onSuccess: () => {
-      toast.success("Game initialized.", { duration: 2000 })
+      toast.success("Game initialized.", {
+        id: "keep this to only have one toast per update",
+        duration: 2000,
+      })
       invalidate(["training"])
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
@@ -94,7 +105,10 @@ export const useDashboard = (token) => {
   const startGameMutation = useMutation({
     mutationFn: () => trainingApi.startGame(token),
     onSuccess: () => {
-      toast.success("Game started!", { duration: 2000 })
+      toast.success("Game started!", {
+        id: "keep this to only have one toast per update",
+        duration: 2000,
+      })
       setSkillGroup("")
       invalidate(["training", "attendance"])
     },
@@ -107,7 +121,7 @@ export const useDashboard = (token) => {
     onSuccess: (data) => {
       toast.success(
         `${data.replacedPlayer} was replaced by ${data.replacementPlayer}.`,
-        { duration: 2000 }
+        { id: "keep this to only have one toast per update", duration: 2000 }
       )
       invalidate(["training"])
     },
