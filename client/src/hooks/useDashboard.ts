@@ -56,8 +56,10 @@ export const useDashboard = (token) => {
 
   const addPlayerMutation = useMutation({
     mutationFn: (playerId) => attendanceApi.post(playerId, token),
-    onSuccess: () => {
-      toast.success("Player added.")
+    onSuccess: (data) => {
+      toast.success(`${data.addedPlayer} checked in.`, {
+        duration: 2000,
+      })
       invalidate(["attendance"])
     },
     onError: (e) => toast.error(e?.response?.data?.error),
