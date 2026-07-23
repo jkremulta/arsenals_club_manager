@@ -19,8 +19,11 @@ export const useMembers = (token) => {
 
   const createPlayerMutation = useMutation({
     mutationFn: (payload) => playersApi.post(payload, token),
-    onSuccess: () => {
-      toast.success("Player registered", { duration: 2000 })
+    onSuccess: (data) => {
+      toast.success(`${data.name} registered`, {
+        id: "keep this to only have one toast per update",
+        duration: 2000,
+      })
       invalidate()
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
@@ -29,7 +32,7 @@ export const useMembers = (token) => {
   const updatePlayerMutation = useMutation({
     mutationFn: ({ id, payload }) => playersApi.put(id, payload, token),
     onSuccess: () => {
-      toast.success("Player updated", {
+      toast.success("Data updated", {
         id: "keep this to only have one toast per update",
         duration: 2000,
       })
@@ -39,8 +42,11 @@ export const useMembers = (token) => {
   })
   const deletePlayerMutation = useMutation({
     mutationFn: (id) => playersApi.delete(id, token),
-    onSuccess: () => {
-      toast.success("Player deleted.", { duration: 2000 })
+    onSuccess: (data) => {
+      toast.success(`${data.deletedPlayer} deleted.`, {
+        id: "keep this to only have one toast per update",
+        duration: 2000,
+      })
       invalidate()
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),

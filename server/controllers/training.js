@@ -91,6 +91,14 @@ trainingRouter.patch(
         .json({ error: "outPlayerId and inPlayerId are required" });
     }
 
+    // include in the return the outPlayer and inPlayer
+    const outPlayer = await Player.findById(outPlayerId);
+    const inPlayer = await Player.findById(inPlayerId);
+
+    if (!outPlayer || !inPlayer) {
+      return response.status(404).json({ error: "Player not found." });
+    }
+
     const activeTraining = await Training.findOne({ isActive: true });
     if (!activeTraining)
       return response.status(404).json({ error: "No active training." });
@@ -116,7 +124,11 @@ trainingRouter.patch(
       .map((id) => byId.get(id.toString()))
       .filter(Boolean);
 
-    return response.json(ordered);
+    return response.json({
+      ordered,
+      replacedPlayer: outPlayer.name,
+      replacementPlayer: inPlayer.name,
+    });
   },
 );
 module.exports = trainingRouter;

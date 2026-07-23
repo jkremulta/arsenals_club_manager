@@ -1,31 +1,31 @@
-const playersRouter = require('express').Router()
-const Player = require('../models/players')
-const { userExtractor } = require('../utils/middleware')
+const playersRouter = require("express").Router();
+const Player = require("../models/players");
+const { userExtractor } = require("../utils/middleware");
 
-playersRouter.get('/', userExtractor, async (request, response) => {
-  const players = await Player.find({})
-  
-  response.json(players)
-})
+playersRouter.get("/", userExtractor, async (request, response) => {
+  const players = await Player.find({});
 
-playersRouter.post('/', userExtractor, async (request, response) => {
-  const { name, birthday, gender, skill, rank } = request.body
+  response.json(players);
+});
+
+playersRouter.post("/", userExtractor, async (request, response) => {
+  const { name, birthday, gender, skill, rank } = request.body;
 
   const newPlayer = new Player({
     name,
     birthday,
     gender,
-    skill, 
-    rank
-  })
+    skill,
+    rank,
+  });
 
-  const savedPlayer = await newPlayer.save()
-  response.status(201).json(savedPlayer)
-})
+  const savedPlayer = await newPlayer.save();
+  response.status(201).json(savedPlayer);
+});
 
-playersRouter.put('/:id', userExtractor, async (request, response) => {
-  const { id } = request.params
-  const { name, birthday, gender, skill, rank } = request.body
+playersRouter.put("/:id", userExtractor, async (request, response) => {
+  const { id } = request.params;
+  const { name, birthday, gender, skill, rank } = request.body;
 
   const updatedPlayer = await Player.findByIdAndUpdate(
     id,
@@ -37,24 +37,32 @@ playersRouter.put('/:id', userExtractor, async (request, response) => {
       rank,
     },
     {
-      returnDocument: 'after',
+      returnDocument: "after",
       runValidators: true,
-      context: 'query',
-    }
-  )
+      context: "query",
+    },
+  );
 
   if (!updatedPlayer) {
-    return response.status(404).json({ error: 'player not found' })
+    return response.status(404).json({ error: "player not found" });
   }
 
-  response.json(updatedPlayer)
-})
+  response.json(updatedPlayer);
+});
 
-playersRouter.delete('/:id', userExtractor, async (request, response) => {
-  const { id } = request.params
-  
-  await Player.findByIdAndDelete(id)
-  response.status(204).end()
-})
+playersRouter.delete("/:id", userExtractor, async (request, response) => {
+  const { id } = request.params;
 
-module.exports = playersRouter
+  const player = await Player.findById(id);
+
+  if (!player) {
+    return response.status(404).json({ error: "Player not found" });
+  }
+
+  await Player.findByIdAndDelete(id);
+  return response.status(200).json({
+    deletedPlayer: player.name,
+  });
+});
+
+module.exports = playersRouter;

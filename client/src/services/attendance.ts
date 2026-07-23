@@ -1,9 +1,9 @@
-import axios from './axiosInstance'
+import axios from "./axiosInstance"
 
-const baseUrl = '/api/attendance'
+const baseUrl = "/api/attendance"
 
 const authHeaders = (token) => ({
-  headers: { Authorization: `Bearer ${token}` }
+  headers: { Authorization: `Bearer ${token}` },
 })
 
 const getAttendance = async (token) => {
@@ -12,33 +12,25 @@ const getAttendance = async (token) => {
 }
 
 const deleteAttendance = async (id, token) => {
-  await axios.delete(`${baseUrl}/${id}`, authHeaders(token))
+  const response = await axios.delete(`${baseUrl}/${id}`, authHeaders(token))
+
+  return response.data
 }
 
 const updateAttendance = async (id, token, data) => {
-  const response = await axios.put(
-    `${baseUrl}/${id}`,
-    data,
-    authHeaders(token))
-  
+  const response = await axios.put(`${baseUrl}/${id}`, data, authHeaders(token))
+
   return response.data
 }
 
 const addAttendance = async (id, token) => {
-
-  const response = await axios.post(
-    baseUrl,
-    { id },
-    authHeaders(token))
+  const response = await axios.post(baseUrl, { id }, authHeaders(token))
 
   return response.data
 }
 
 const addAttendanceManually = async (name) => {
-  const response = await axios.post(
-    `${baseUrl}/manual`,
-    { name }
-  )
+  const response = await axios.post(`${baseUrl}/manual`, { name })
 
   return response.data
 }
@@ -48,5 +40,5 @@ export default {
   delete: deleteAttendance,
   put: updateAttendance,
   post: addAttendance,
-  addManually: addAttendanceManually
+  addManually: addAttendanceManually,
 }
