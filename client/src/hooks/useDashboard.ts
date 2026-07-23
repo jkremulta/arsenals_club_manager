@@ -100,8 +100,11 @@ export const useDashboard = (token) => {
   const replacePlayerMutation = useMutation({
     mutationFn: ({ outPlayerId, inPlayerId }) =>
       trainingApi.replacePlayer(outPlayerId, inPlayerId, token),
-    onSuccess: () => {
-      toast.success("Player replaced.", { duration: 2000 })
+    onSuccess: (data) => {
+      toast.success(
+        `${data.replacedPlayer} was replaced by ${data.replacementPlayer}.`,
+        { duration: 2000 }
+      )
       invalidate(["training"])
     },
     onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
