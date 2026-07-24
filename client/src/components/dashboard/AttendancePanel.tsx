@@ -4,11 +4,12 @@ import { Command } from "@/components/retroui/Command";
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '../retroui/Button';
-import { Users, UserPlus, Loader2, X, ChevronDown } from 'lucide-react'
+import { Users, UserPlus, Loader2, X, ChevronDown, Check } from 'lucide-react'
 import { useState } from 'react'
 
 function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerMutation, togglePaidMutation, handleTogglePaid, paidIds, currentGame, handleAddPlayer, handleRemovePlayer }) {
   const [attendanceAddOpen, setAttendanceAddOpen] = useState(false)
+  const [removeConfirmId, setRemoveConfirmId] = useState(null)
 
   const sortedAttendance = [...attendance].sort((a, b) => {
     const gamesA = a.games_played ?? 0
@@ -27,6 +28,7 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
     setAttendanceAddOpen(false)
     handleAddPlayer(id)
   }
+
 
   const addLoading = addPlayerMutation.isPending
   const removePlayerLoading = removePlayerMutation.isPending ? removePlayerMutation.variables : null
@@ -132,14 +134,28 @@ function AttendancePanel({ attendance, players, addPlayerMutation, removePlayerM
                         : isPaid ? 'Paid' : 'Unpaid'}
                     </Button>
                     <Button
-                      size='sm'
-                      onClick={() => handleRemovePlayer(player.id)}
+                      size="sm"
+                      onClick={() => {
+                        if (removeConfirmId === player.id) {
+                          handleRemovePlayer(player.id)
+                          setRemoveConfirmId(null)
+                        } else {
+                          setRemoveConfirmId(player.id)
+                        }
+                      }}
                       disabled={removePlayerLoading === player.id}
-                      className={`bg-card p-1 hover:bg-red-400 hover:text-black ${removePlayerLoading === player.id ? 'bg-red-400 text-black' : 'bg-card text-muted-foreground'}`}
+                      className={`p-1 ${removeConfirmId === player.id
+                          ? 'bg-red-400 text-black'
+                          : 'bg-card text-muted-foreground hover:bg-red-400 hover:text-black'
+                        }`}
                     >
-                      {removePlayerLoading === player.id
-                        ? <Loader2 size={10} className="animate-spin" />
-                        : <X size={11} />}
+                      {removePlayerLoading === player.id ? (
+                        <Loader2 size={10} className="animate-spin" />
+                      ) : removeConfirmId === player.id ? (
+                        <Check size={11} />
+                      ) : (
+                        <X size={11} />
+                      )}
                     </Button>
                   </div>
                 </div>

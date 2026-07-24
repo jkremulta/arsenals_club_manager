@@ -71,13 +71,23 @@ attendanceRouter.delete("/:id", userExtractor, async (request, response) => {
   const activeTraining = await Training.findOne({ isActive: true });
 
   if (!activeTraining) {
-    return response.status(404).json({ error: "no active training found" });
+    return response.status(404).json({ error: "No active training found." });
   }
 
   const player = await Player.findById(id);
 
   if (!player) {
-    return response.status(404).json({ error: "Player not found" });
+    return response.status(404).json({ error: "Player not found." });
+  }
+
+  const isInInitialized = activeTraining.initialized_players.some(
+    (playerId) => playerId.toString() === id,
+  );
+
+  if (isInInitialized) {
+    return response.status(400).json({
+      error: "Cannot remove a player who is initialized for a game.",
+    });
   }
 
   activeTraining.attendance = activeTraining.attendance.filter(
