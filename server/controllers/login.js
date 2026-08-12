@@ -1,37 +1,32 @@
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
-const loginRouter = require('express').Router()
-const User = require('../models/user')
-const { userExtractor } = require('../utils/middleware')
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const loginRouter = require("express").Router();
+const User = require("../models/user");
+const { userExtractor } = require("../utils/middleware");
 
-loginRouter.post('/', async (request, response) => {
-  const username = request.body.username.toLowerCase()
-  const password = request.body.password
-  
-  const user = await User.findOne({ username })
+loginRouter.post("/", async (request, response) => {
+  const username = request.body.username.toLowerCase();
+  const password = request.body.password;
 
-  const passwordCorrect = user === null
-    ? false
-    : await bcrypt.compare(password, user.passwordHash)
+  const user = await User.findOne({ username });
+
+  const passwordCorrect =
+    user === null ? false : await bcrypt.compare(password, user.passwordHash);
 
   if (!(user && passwordCorrect)) {
     return response.status(401).json({
-      error: 'Invalid username or password.'
-    })
+      error: "Invalid username or password.",
+    });
   }
 
   const userForToken = {
     username: user.username,
-    id: user._id
-  }
+    id: user._id,
+  };
 
-  const token = jwt.sign(
-    userForToken,
-    process.env.SECRET,
-    { expiresIn: '6h' }
-  )
+  const token = jwt.sign(userForToken, process.env.SECRET, { expiresIn: "6h" });
 
-  response.status(200).send({ token, username })
-})
+  response.status(200).send({ token, username });
+});
 
-module.exports = loginRouter
+module.exports = loginRouter;
