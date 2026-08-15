@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model, Types } from "mongoose";
+import mongoose, { Schema, Document, Model, Types } from 'mongoose'
 
 export interface GamesBySkill {
   beginner: number;
@@ -38,46 +38,46 @@ const trainingSchema = new Schema<TrainingDocument>({
   attendance: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Player",
+      ref: 'Player',
     },
   ],
   current_players: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Player",
+      ref: 'Player',
     },
   ],
   initializedSkillGroup: String,
   currentGameSkillGroup: String,
   initializedTeam: {
     type: Schema.Types.ObjectId,
-    ref: "Team",
+    ref: 'Team',
     default: null,
   },
   currentGameTeam: {
     type: Schema.Types.ObjectId,
-    ref: "Team",
+    ref: 'Team',
     default: null,
   },
   initialized_players: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Player",
+      ref: 'Player',
     },
   ],
-});
+})
 
-trainingSchema.set("toJSON", {
+trainingSchema.set('toJSON', {
   transform: (_document, returnedObject: any) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
   },
-});
+})
 
 const Training: Model<TrainingDocument> = mongoose.model<TrainingDocument>(
-  "Training",
+  'Training',
   trainingSchema,
-);
+)
 
-export default Training;
+export default Training

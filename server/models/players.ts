@@ -1,14 +1,14 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model } from 'mongoose'
 
-export type Gender = "male" | "female";
-export type Skill = "beginner" | "intermediate" | "advanced";
+export type Gender = 'male' | 'female'
+export type Skill = 'beginner' | 'intermediate' | 'advanced'
 
 export interface PlayerDocument extends Document {
   name: string;
   birthday?: Date;
   gender: Gender;
   skill: Skill;
-  rank?: number;
+  rank: number;
   games_played: number;
   paid: boolean;
   late: boolean;
@@ -27,12 +27,12 @@ const playerSchema = new Schema<PlayerDocument>({
   gender: {
     type: String,
     required: true,
-    enum: ["male", "female"],
+    enum: ['male', 'female'],
   },
   skill: {
     type: String,
     required: true,
-    enum: ["beginner", "intermediate", "advanced"],
+    enum: ['beginner', 'intermediate', 'advanced'],
   },
   rank: {
     type: Number,
@@ -51,19 +51,19 @@ const playerSchema = new Schema<PlayerDocument>({
     type: Boolean,
     default: false,
   },
-});
+})
 
-playerSchema.set("toJSON", {
+playerSchema.set('toJSON', {
   transform: (_document, returnedObject: any) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
   },
-});
+})
 
 const Player: Model<PlayerDocument> = mongoose.model<PlayerDocument>(
-  "Player",
+  'Player',
   playerSchema,
-);
+)
 
-export default Player;
+export default Player

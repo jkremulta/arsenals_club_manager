@@ -2,7 +2,6 @@ import { Router } from 'express'
 const playersRouter = Router()
 import Player from '../models/players'
 import { userExtractor } from '../utils/middleware'
-import type { Request, Response } from 'express'
 
 // zod parsing
 import { z } from 'zod'
@@ -14,13 +13,13 @@ const playerInput = z.object({
   rank: z.number(),
 })
 
-playersRouter.get('/', userExtractor, async (_request: Request, response: Response) => {
+playersRouter.get('/', userExtractor, async (_request, response) => {
   const players = await Player.find({})
 
   response.json(players)
 })
 
-playersRouter.post('/', userExtractor, async (request: Request, response: Response) => {
+playersRouter.post('/', userExtractor, async (request, response) => {
   const { name, birthday, gender, skill, rank } = playerInput.parse(request.body)
 
   const newPlayer = new Player({
@@ -77,4 +76,4 @@ playersRouter.delete('/:id', userExtractor, async (request, response) => {
   })
 })
 
-module.exports = playersRouter
+export default playersRouter

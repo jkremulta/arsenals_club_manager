@@ -1,32 +1,33 @@
-import User from "../models/user";
-import jwt from "jsonwebtoken";
-import logger from "../utils/logger";
+import User from '../models/user'
+import jwt from 'jsonwebtoken'
+import logger from '../utils/logger'
 import type {
   Request,
   Response,
   NextFunction,
   ErrorRequestHandler,
-} from "express";
+} from 'express'
+import { ZodError } from 'zod'
 
 interface JwtPayload {
   id: string;
 }
 
 const unknownEndpoint = (_request: Request, response: Response) => {
-  response.status(404).send({ error: "unknown endpoint" });
-};
+  response.status(404).send({ error: 'unknown endpoint' })
+}
 
 const tokenExtractor = (
   request: Request,
   _response: Response,
   next: NextFunction,
 ) => {
-  const authorization = request.get("authorization");
-  if (authorization && authorization.startsWith("Bearer ")) {
-    request.token = authorization.replace("Bearer ", "");
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    request.token = authorization.replace('Bearer ', '')
   }
-  next();
-};
+  next()
+}
 
 const userExtractor = async (
   request: Request,
@@ -34,53 +35,59 @@ const userExtractor = async (
   next: NextFunction,
 ) => {
   if (!request.token) {
-    return response.status(401).json({ error: "token missing" });
+    return response.status(401).json({ error: 'token missing' })
   }
 
   if (!process.env.SECRET) {
-    throw new Error("SECRET environment variable is not set");
+    throw new Error('SECRET environment variable is not set')
   }
 
   const decodedToken = jwt.verify(
     request.token,
     process.env.SECRET,
-  ) as JwtPayload;
+  ) as JwtPayload
 
   if (!decodedToken.id) {
-    return response.status(401).json({ error: "token invalid" });
+    return response.status(401).json({ error: 'token invalid' })
   }
 
-  const user = await User.findById(decodedToken.id);
-  request.user = user ?? undefined;
-  next();
-};
+  const user = await User.findById(decodedToken.id)
+  request.user = user ?? undefined
+  next()
+}
 
 const errorHandler: ErrorRequestHandler = (
   error,
   _request,
   response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next,
 ) => {
-  logger.error(error.message);
+  if (!(error instanceof Error)) {
+    return response.status(500).json({ error: 'Unknown error' })
+  }
+  logger.error(error.message)
 
-  if (error.name === "CastError") {
-    return response.status(400).send({ error: "malformatted id" });
-  } else if (error.name === "ValidationError") {
-    return response.status(400).json({ error: error.message });
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   } else if (
-    error.name === "MongoServerError" &&
-    error.message.includes("E11000 duplicate key error")
+    error.name === 'MongoServerError' &&
+    error.message.includes('E11000 duplicate key error')
   ) {
-    return response.status(400).json({ error: "Player already exists." });
-  } else if (error.name === "JsonWebTokenError") {
-    return response.status(401).json({ error: "Invalid token." });
-  } else if (error.name === "TokenExpiredError") {
+    return response.status(400).json({ error: 'Player already exists.' })
+  } else if (error.name === 'JsonWebTokenError') {
+    return response.status(401).json({ error: 'Invalid token.' })
+  } else if (error.name === 'TokenExpiredError') {
     return response
       .status(401)
-      .json({ error: "Session Expired, please log in again." });
+      .json({ error: 'Session Expired, please log in again.' })
+  } else if (error instanceof ZodError) {
+    return response.status(400).json({ error: error.issues })
   }
 
-  return response.status(400).json({ error: error.message });
-};
+  return response.status(400).json({ error: error.message })
+}
 
-export default { unknownEndpoint, errorHandler, tokenExtractor, userExtractor };
+export { unknownEndpoint, errorHandler, tokenExtractor, userExtractor }

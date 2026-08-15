@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model } from 'mongoose'
 
 export interface UserDocument extends Document {
   username: string;
@@ -13,17 +13,17 @@ const userSchema = new Schema<UserDocument>({
     unique: true,
   },
   passwordHash: String,
-});
+})
 
-userSchema.set("toJSON", {
+userSchema.set('toJSON', {
   transform: (_document, returnedObject: any) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-    delete returnedObject.passwordHash;
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+    delete returnedObject.passwordHash
   },
-});
+})
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema)
 
-export default User;
+export default User
