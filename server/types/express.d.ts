@@ -1,10 +1,10 @@
-import "express";
+import 'express'
 
 declare global {
   namespace Express {
     interface Request {
       token?: string;
-      user?: InstanceType<typeof import("../models/user").default>;
+      user?: InstanceType<typeof import('../models/user').default>;
     }
   }
 }
