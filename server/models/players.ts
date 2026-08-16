@@ -36,6 +36,7 @@ const playerSchema = new Schema<PlayerDocument>({
   },
   rank: {
     type: Number,
+    required: true,
     min: 0.5,
     max: 10,
   },
@@ -53,11 +54,17 @@ const playerSchema = new Schema<PlayerDocument>({
   },
 })
 
+type PlayerJSON = PlayerDocument & {
+  _id: mongoose.Types.ObjectId;
+  __v?: number;
+  id?: string;
+}
+
 playerSchema.set('toJSON', {
-  transform: (_document, returnedObject: any) => {
+  transform: (_document, returnedObject: PlayerJSON) => {
     returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
+    delete (returnedObject as Partial<PlayerJSON>)._id
+    delete (returnedObject as Partial<PlayerJSON>).__v
   },
 })
 

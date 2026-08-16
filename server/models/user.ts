@@ -15,15 +15,21 @@ const userSchema = new Schema<UserDocument>({
   passwordHash: String,
 })
 
+type UserJSON = UserDocument & {
+  _id: mongoose.Types.ObjectId;
+  __v?: number;
+  id?: string;
+}
+
 userSchema.set('toJSON', {
-  transform: (_document, returnedObject: any) => {
+  transform: (_document, returnedObject: UserJSON) => {
     returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-    delete returnedObject.passwordHash
+    delete (returnedObject as Partial<UserJSON>)._id
+    delete (returnedObject as Partial<UserJSON>).__v
+    delete (returnedObject as Partial<UserJSON>).passwordHash
   },
 })
 
-const User = mongoose.model('User', userSchema)
+const User: Model<UserDocument> = mongoose.model<UserDocument>('User', userSchema)
 
 export default User

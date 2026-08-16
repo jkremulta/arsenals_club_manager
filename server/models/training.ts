@@ -67,11 +67,17 @@ const trainingSchema = new Schema<TrainingDocument>({
   ],
 })
 
+type TrainingJSON = TrainingDocument & {
+  _id: mongoose.Types.ObjectId;
+  __v?: number;
+  id?: string;
+}
+
 trainingSchema.set('toJSON', {
-  transform: (_document, returnedObject: any) => {
+  transform: (_document, returnedObject: TrainingJSON) => {
     returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
+    delete (returnedObject as Partial<TrainingJSON>)._id
+    delete (returnedObject as Partial<TrainingJSON>).__v
   },
 })
 
