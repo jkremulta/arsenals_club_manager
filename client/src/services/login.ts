@@ -1,7 +1,11 @@
 import axios from './axiosInstance'
 const baseUrl = '/api/login'
 
-const login = async (credentials) => {
+interface LoginType {
+  username: string
+  password: string
+}
+const login = async (credentials: LoginType) => {
   const response = await axios.post(baseUrl, credentials)
   return response.data
 }

@@ -2,26 +2,28 @@ import axios from './axiosInstance'
 
 const baseUrl = '/api/training'
 
-const authHeaders = (token) => ({
+const authHeaders = (token: string) => ({
   headers: { Authorization: `Bearer ${token}` }
 })
 
-const createTraining = async (startTime, token) => {
+const createTraining = async (startTime: string, token: string) => {
   const { data } = await axios.post(baseUrl, { startTime }, authHeaders(token))
   return data
 }
 
-const deleteTraining = async (token) => {
+const deleteTraining = async (token: string) => {
   const { data } = await axios.delete(baseUrl, authHeaders(token))
   return data
 }
 
-const getTraining = async (token) => {
+const getTraining = async (token: string) => {
   const { data } = await axios.get(baseUrl, authHeaders(token))
   return data
 }
 
-const initializeGame = async (skillType, token) => {
+type SkillType = "beginner" | "intermediate" | "advanced"
+
+const initializeGame = async (skillType: SkillType, token: string) => {
   const { data } = await axios.post(
     `${baseUrl}/initializeGame`,
     skillType,
@@ -31,7 +33,7 @@ const initializeGame = async (skillType, token) => {
   return data
 }
 
-const startGame = async (token) => {
+const startGame = async (token: string) => {
   const { data } = await axios.post(
     `${baseUrl}/startGame`,
     {},
@@ -41,7 +43,7 @@ const startGame = async (token) => {
   return data
 }
 
-const replacePlayer = async (outPlayerId, inPlayerId, token) => {
+const replacePlayer = async (outPlayerId: string, inPlayerId: string, token: string) => {
   const { data } = await axios.patch(
     `${baseUrl}/replacePlayer`,
     { outPlayerId, inPlayerId },
