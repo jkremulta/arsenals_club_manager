@@ -7,10 +7,10 @@ import { userExtractor } from '../utils/middleware'
 import { z } from 'zod'
 const playerInput = z.object({
   name: z.string(),
-  birthday: z.date,
+  birthday: z.coerce.date(),
   gender: z.string(),
-  skill: z.number(),
-  rank: z.number(),
+  skill: z.enum(['beginner', 'intermediate', 'advanced']),
+  rank: z.coerce.number(),
 })
 
 playersRouter.get('/', userExtractor, async (_request, response) => {

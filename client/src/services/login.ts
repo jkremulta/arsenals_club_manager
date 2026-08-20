@@ -1,11 +1,13 @@
 import axios from './axiosInstance'
 const baseUrl = '/api/login'
+import type { User } from '@/stores/useLoginStore'
 
-interface LoginType {
+export interface LoginType {
   username: string
   password: string
 }
-const login = async (credentials: LoginType) => {
+
+const login = async (credentials: LoginType): Promise<User> => {
   const response = await axios.post(baseUrl, credentials)
   return response.data
 }

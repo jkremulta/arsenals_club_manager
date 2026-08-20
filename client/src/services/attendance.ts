@@ -6,8 +6,8 @@ const authHeaders = (token: string) => ({
   headers: { Authorization: `Bearer ${token}` },
 })
 
-type SkillType = 'beginner' | 'intermediate' | 'advanced'
-export interface Attendance {
+export type SkillType = 'beginner' | 'intermediate' | 'advanced'
+export interface Players {
   name: string
   birthday: string
   gender: string
@@ -16,11 +16,12 @@ export interface Attendance {
   games_played: number
   paid: boolean
   late: boolean
-  updatedAt: string
+  createdAt?: string
+  updatedAt?: string
   id: string
 }
 
-const getAttendance = async (token: string): Promise<Attendance[]> => {
+const getAttendance = async (token: string): Promise<Players[]> => {
   const response = await axios.get(baseUrl, authHeaders(token))
   return response.data
 }
@@ -36,7 +37,7 @@ const deleteAttendance = async (id: string, token: string): Promise<RemoveAttend
 }
 
 // this is for toggling the payment status of a player
-type UpdateAttendanceData = Pick<Attendance, "paid">
+type UpdateAttendanceData = Pick<Players, "paid">
 
 const updateAttendance = async (
   id: string,
@@ -65,3 +66,6 @@ export default {
   post: addAttendance,
   addManually: addAttendanceManually,
 }
+
+
+// ts need to be fixed to return only the needed data

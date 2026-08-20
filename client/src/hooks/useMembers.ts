@@ -3,8 +3,11 @@ import { toast } from "sonner"
 import { useState, useMemo } from "react"
 import playersApi from "../services/players"
 import helper from "../utils/helper"
+import type { AxiosError } from 'axios'
+import type { PlayerType } from "../services/players"
+import type { Players } from "@/services/attendance"
 
-export const useMembers = (token) => {
+export const useMembers = (token: string) => {
   const queryClient = useQueryClient()
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["players"] })
@@ -18,7 +21,7 @@ export const useMembers = (token) => {
   })
 
   const createPlayerMutation = useMutation({
-    mutationFn: (payload) => playersApi.post(payload, token),
+    mutationFn: (payload: PlayerType) => playersApi.post(payload, token),
     onSuccess: (data) => {
       toast.success(`${data.name} registered`, {
         id: "keep this to only have one toast per update",
@@ -26,11 +29,13 @@ export const useMembers = (token) => {
       })
       invalidate()
     },
-    onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
+    onError: (e: AxiosError<{ error: string }>) => {
+    toast.error(e.response?.data.error)
+    },
   })
 
   const updatePlayerMutation = useMutation({
-    mutationFn: ({ id, payload }) => playersApi.put(id, payload, token),
+    mutationFn: ({ id, payload }: { id: string, payload: PlayerType }) => playersApi.put(id, payload, token),
     onSuccess: () => {
       toast.success("Data updated", {
         id: "keep this to only have one toast per update",
@@ -38,10 +43,12 @@ export const useMembers = (token) => {
       })
       invalidate()
     },
-    onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
+    onError: (e: AxiosError<{ error: string }>) => {
+    toast.error(e.response?.data.error)
+    },
   })
   const deletePlayerMutation = useMutation({
-    mutationFn: (id) => playersApi.delete(id, token),
+    mutationFn: (id: string) => playersApi.delete(id, token),
     onSuccess: (data) => {
       toast.success(`${data.deletedPlayer} deleted.`, {
         id: "keep this to only have one toast per update",
@@ -49,17 +56,21 @@ export const useMembers = (token) => {
       })
       invalidate()
     },
-    onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
+    onError: (e: AxiosError<{ error: string }>) => {
+    toast.error(e.response?.data.error)
+    },
   })
 
   // replace the existing updateField with this
-  const handleUpdatePlayer = async (player, changes) => {
+  const handleUpdatePlayer = async (player: Players, changes: Partial<Players>) => {
     // changes = { rank: 5, name: "New Name", ... } only the fields that actually changed
     const updated = { ...player, ...changes }
     if ("rank" in changes) {
       updated.skill = helper.skillFromRank(changes.rank)
     }
     const playerId = player.id
+    
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...payload } = updated
     try {
       await updatePlayerMutation.mutateAsync({ id: playerId, payload })
