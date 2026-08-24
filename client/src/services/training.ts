@@ -26,7 +26,7 @@ type SkillType = "beginner" | "intermediate" | "advanced"
 const initializeGame = async (skillType: SkillType, token: string) => {
   const { data } = await axios.post(
     `${baseUrl}/initializeGame`,
-    skillType,
+    { skillGroup: skillType },
     authHeaders(token)
   )
 
