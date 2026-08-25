@@ -1,4 +1,6 @@
 import axios from "./axiosInstance"
+import type { Player } from '../../../shared/types/player'
+import type { Training } from '../../../shared/types/training'
 
 const baseUrl = "/api/attendance"
 
@@ -6,38 +8,25 @@ const authHeaders = (token: string) => ({
   headers: { Authorization: `Bearer ${token}` },
 })
 
-export type SkillType = 'beginner' | 'intermediate' | 'advanced'
-export interface Players {
-  name: string
-  birthday: string
-  gender: string
-  skill: SkillType
-  rank: number
-  games_played: number
-  paid: boolean
-  late: boolean
-  createdAt?: string
-  updatedAt?: string
-  id: string
-}
-
-const getAttendance = async (token: string): Promise<Players[]> => {
-  const response = await axios.get(baseUrl, authHeaders(token))
-  return response.data
-}
+type UpdateAttendanceData = Pick<Player, "paid">
 
 interface RemoveAttendanceResponse {
   removedPlayer: string
 }
 
-const deleteAttendance = async (id: string, token: string): Promise<RemoveAttendanceResponse> => {
-  const response = await axios.delete(`${baseUrl}/${id}`, authHeaders(token))
-
-  return response.data
+interface AddAttendanceResponse extends Training {
+  addedPlayer: string
 }
 
-// this is for toggling the payment status of a player
-type UpdateAttendanceData = Pick<Players, "paid">
+const getAttendance = async (token: string): Promise<Player[]> => {
+  const { data } = await axios.get<Player[]>(baseUrl, authHeaders(token))
+  return data
+}
+
+const deleteAttendance = async (id: string, token: string): Promise<RemoveAttendanceResponse> => {
+  const { data } = await axios.delete<RemoveAttendanceResponse>(`${baseUrl}/${id}`, authHeaders(token))
+  return data
+}
 
 const updateAttendance = async (
   id: string,
@@ -47,25 +36,20 @@ const updateAttendance = async (
   await axios.put(`${baseUrl}/${id}`, data, authHeaders(token))
 }
 
-const addAttendance = async (id: string, token: string) => {
-  const response = await axios.post(baseUrl, { id }, authHeaders(token))
-
-  return response.data
+const addAttendance = async (id: string, token: string): Promise<AddAttendanceResponse> => {
+  const { data } = await axios.post<AddAttendanceResponse>(baseUrl, { id }, authHeaders(token))
+  return data
 }
 
-const addAttendanceManually = async (name: string) => {
-  const response = await axios.post(`${baseUrl}/manual`, { name })
-
-  return response.data
+const addAttendanceManually = async (name: string): Promise<AddAttendanceResponse> => {
+  const { data } = await axios.post<AddAttendanceResponse>(`${baseUrl}/manual`, { name })
+  return data
 }
 
-export default {
-  get: getAttendance,
-  delete: deleteAttendance,
-  put: updateAttendance,
-  post: addAttendance,
-  addManually: addAttendanceManually,
+export const attendanceApi = {
+  getAttendance,
+  deleteAttendance,
+  updateAttendance,
+  addAttendance,
+  addAttendanceManually,
 }
-
-
-// ts need to be fixed to return only the needed data
