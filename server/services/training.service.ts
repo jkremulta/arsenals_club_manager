@@ -1,6 +1,8 @@
 import Training from '../models/training'
 import Player from '../models/players'
-import type { Skill, PlayerDocument } from '../models/players'
+import type { PlayerDocument } from '../models/players'
+import type { Skill } from '../../shared/types/player'
+import { Types } from 'mongoose'
 
 // helper
 const sortAndSlice = (players: PlayerDocument[], desc = true, amount = 0): PlayerDocument[] => {
@@ -105,10 +107,8 @@ const startGame = async () => {
 
   // update games_by_skill
   if (activeTraining.currentGameSkillGroup) {
-    const key = activeTraining.currentGameSkillGroup as Skill
-
-    activeTraining.games_by_skill[key] =
-      (activeTraining.games_by_skill[key] || 0) + 1
+    const key = activeTraining.currentGameSkillGroup
+    await Training.updateOne({ _id: activeTraining._id }, { $inc: { [`games_by_skill.${key}`]: 1 } })
   }
 
   await Player.updateMany(
@@ -121,7 +121,44 @@ const startGame = async () => {
   return updatedPlayers
 }
 
+const replacePlayer = async (outPlayerId: string, inPlayerId: string) => {
+  const outPlayer = await Player.findById(outPlayerId)
+  const inPlayer = await Player.findById(inPlayerId)
+
+  if (!outPlayer || !inPlayer) {
+    throw new Error('Player not found.')
+  }
+
+  const activeTraining = await Training.findOne({ isActive: true })
+  if (!activeTraining) {
+    throw new Error('No active training.')
+  }
+
+  const index = activeTraining.initialized_players.findIndex(
+    (id) => id?.toString() === outPlayerId,
+  )
+
+  if (index === -1) {
+    throw new Error('Player not in initialized list.')
+  }
+
+  activeTraining.initialized_players[index] = new Types.ObjectId(inPlayerId)
+  await activeTraining.save()
+
+  const updatedPlayers = await Player.find({
+    _id: { $in: activeTraining.initialized_players },
+  })
+  const byId = new Map(updatedPlayers.map((p) => [p.id, p]))
+  const ordered = activeTraining.initialized_players
+    .filter(Boolean)
+    .map((id) => byId.get(id.toString()))
+    .filter(Boolean)
+
+  return { ordered, outPlayer, inPlayer }
+}
+
 export default {
   getPlayersBySkillGroup,
   startGame,
+  replacePlayer,
 }

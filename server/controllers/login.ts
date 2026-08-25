@@ -1,20 +1,16 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import User from '../models/user'
-import type { Request, Response } from 'express'
+import type { Request } from 'express'
 import { Router } from 'express'
+import type { LoginCredentials } from '../../shared/types/user'
 const loginRouter = Router()
-
-interface LoginRequestBody {
-  username: string;
-  password: string;
-}
 
 loginRouter.post(
   '/',
   async (
-    request: Request<unknown, unknown, LoginRequestBody>,
-    response: Response,
+    request: Request<unknown, unknown, LoginCredentials>,
+    response,
   ) => {
     const username = request.body.username.toLowerCase()
     const password = request.body.password

@@ -1,10 +1,5 @@
 import mongoose, { Schema, Document, Model, Types } from 'mongoose'
-
-export interface GamesBySkill {
-  beginner: number;
-  intermediate: number;
-  advanced: number;
-}
+import type { GamesBySkill } from '../../shared/types/training'
 
 export interface TrainingDocument extends Document {
   startTime: Date;

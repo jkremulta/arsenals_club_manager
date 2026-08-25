@@ -1,7 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose'
-
-export type Gender = 'male' | 'female'
-export type Skill = 'beginner' | 'intermediate' | 'advanced'
+import type { Gender, Skill } from '../../shared/types/player'
 
 export interface PlayerDocument extends Document {
   name: string;

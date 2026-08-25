@@ -1,13 +1,13 @@
-import { Router } from 'express'
-const trainingRouter = Router()
+import { Router, Request, Response } from 'express'
 import Training from '../models/training'
 import Player from '../models/players'
 import trainingService from '../services/training.service'
 import { userExtractor } from '../utils/middleware'
-import type { Request, Response } from 'express'
-import { Types } from 'mongoose'
+import { z } from 'zod'
 
-trainingRouter.get('/', userExtractor, async (request, response) => {
+const trainingRouter = Router()
+
+trainingRouter.get('/', userExtractor, async (_request, response) => {
   const activeTraining = await Training.findOne({ isActive: true })
     .populate('attendance', { name: 1, games_played: 1, paid: 1 })
     .populate('current_players')
@@ -72,23 +72,22 @@ trainingRouter.delete('/', userExtractor, async (_request, response) => {
 })
 
 // initialize game
-
-interface InitializeGameBody {
-  skillGroup: string;
-}
+const initializeGameSchema = z.object({
+  skillGroup: z.enum(['beginner', 'intermediate', 'advanced']),
+})
 
 trainingRouter.post(
   '/initializeGame',
   userExtractor,
-  async (request: Request <unknown, unknown, InitializeGameBody>, response: Response) => {
-    const { skillGroup } = request.body
-
-    if (!skillGroup) {
-      return response.status(400).json({ error: 'Skill Group is required.' })
+  async (request, response) => {
+    const parsed = initializeGameSchema.safeParse(request.body)
+    if (!parsed.success) {
+      return response.status(400).json({ error: parsed.error.issues[0]?.message ?? 'Invalid request.' })
     }
 
-    const players = await trainingService.getPlayersBySkillGroup(skillGroup)
+    const { skillGroup } = parsed.data
 
+    const players = await trainingService.getPlayersBySkillGroup(skillGroup)
     return response.json(players)
   },
 )
@@ -117,43 +116,12 @@ trainingRouter.patch(
         .json({ error: 'outPlayerId and inPlayerId are required' })
     }
 
-    // include in the return the outPlayer and inPlayer
-    const outPlayer = await Player.findById(outPlayerId)
-    const inPlayer = await Player.findById(inPlayerId)
-
-    if (!outPlayer || !inPlayer) {
-      return response.status(404).json({ error: 'Player not found.' })
-    }
-
-    const activeTraining = await Training.findOne({ isActive: true })
-    if (!activeTraining)
-      return response.status(404).json({ error: 'No active training.' })
-
-    const index = activeTraining.initialized_players.findIndex(
-      (id) => id?.toString() === outPlayerId, // <- fixed
-    )
-    if (index === -1)
-      return response
-        .status(404)
-        .json({ error: 'Player not in initialized list.' })
-
-    activeTraining.initialized_players[index] = new Types.ObjectId(inPlayerId)
-    await activeTraining.save()
-
-    // this code makes it so the list doesn't reshuffle after being replace
-    const updatedPlayers = await Player.find({
-      _id: { $in: activeTraining.initialized_players },
-    }) // <- removed duplicate
-    const byId = new Map(updatedPlayers.map((p) => [p.id, p]))
-    const ordered = activeTraining.initialized_players
-      .filter(Boolean)
-      .map((id) => byId.get(id.toString()))
-      .filter(Boolean)
+    const result = await trainingService.replacePlayer(outPlayerId, inPlayerId)
 
     return response.json({
-      ordered,
-      replacedPlayer: outPlayer.name,
-      replacementPlayer: inPlayer.name,
+      ordered: result.ordered,
+      replacedPlayer: result.outPlayer.name,
+      replacementPlayer: result.inPlayer.name,
     })
   },
 )

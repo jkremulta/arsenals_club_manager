@@ -3,7 +3,7 @@ import Player from '../models/players'
 import { Types } from 'mongoose'
 import type { TrainingDocument } from '../models/training'
 import type { PlayerDocument } from '../models/players'
-import { Document } from 'mongoose'
+import type { Player as PlayerShape } from '../../shared/types/player'
 
 const isAttendanceOpen = (startTime: Date) => {
   const now = Date.now()
@@ -80,7 +80,7 @@ export const removeAttendancePlayer = async (playerId: string): Promise<Attendan
   return { ok: true, training: activeTraining, player }
 }
 
-type UpdatePlayerBody = Partial<Omit<PlayerDocument, keyof Document>>
+type UpdatePlayerBody = Partial<PlayerShape>
 
 export const updateAttendancePlayer = async (
   playerId: string,

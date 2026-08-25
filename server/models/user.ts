@@ -6,27 +6,24 @@ export interface UserDocument extends Document {
 }
 
 const userSchema = new Schema<UserDocument>({
-  username: {
-    type: String,
-    required: true,
-    minlength: 3,
-    unique: true,
-  },
+  username: { type: String, required: true, minlength: 3, unique: true },
   passwordHash: String,
 })
 
-type UserJSON = UserDocument & {
+type UserJSON = Omit<UserDocument, '_id' | 'passwordHash'> & {
   _id: mongoose.Types.ObjectId;
   __v?: number;
   id?: string;
+  passwordHash?: string;
 }
 
 userSchema.set('toJSON', {
-  transform: (_document, returnedObject: UserJSON) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete (returnedObject as Partial<UserJSON>)._id
-    delete (returnedObject as Partial<UserJSON>).__v
-    delete (returnedObject as Partial<UserJSON>).passwordHash
+  transform: (_document, ret: UserJSON) => {
+    ret.id = ret._id.toString()
+    delete (ret as Partial<UserJSON>)._id
+    delete (ret as Partial<UserJSON>).__v
+    delete (ret as Partial<UserJSON>).passwordHash
+    return ret
   },
 })
 
