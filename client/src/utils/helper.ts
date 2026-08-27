@@ -1,4 +1,4 @@
-import type { SkillType } from "@/services/attendance"
+import type { Skill } from "../../../shared/types/player"
 
 const formatTime = (time) => {
   if (!time) return null
@@ -12,7 +12,7 @@ const capitalize = (str = "") => {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-const skillFromRank = (rank: number): SkillType => {
+const skillFromRank = (rank: number): Skill => {
   if (rank <= 5) return "beginner"
   if (rank <= 8) return "intermediate"
   return "advanced"
