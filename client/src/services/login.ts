@@ -7,4 +7,4 @@ const login = async (credentials: LoginCredentials): Promise<LoginResponse> => {
   return response.data
 }
 
-export default { login}
+export default { login }
