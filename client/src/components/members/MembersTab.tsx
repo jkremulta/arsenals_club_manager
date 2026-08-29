@@ -84,7 +84,9 @@ const MembersTab = () => {
     if (!editMode) {
       return (
         <div className="h-8 px-2 flex items-center">
-          <span className="w-full">{display}</span>
+          <span className={`w-full ${col.key === "gender" ? "capitalize" : ""}`}>
+            {display}
+          </span>
         </div>
       )
     }
@@ -259,7 +261,7 @@ const MembersTab = () => {
                         {renderMobileField(p, MEMBER_FIELDS[2])}
                       </div>
                       {/* Gender */}
-                      <div className="text-sm text-muted-foreground text-right">
+                      <div className="text-sm text-muted-foreground text-right capitalize">
                         {renderMobileField(p, MEMBER_FIELDS[3])}
                       </div>
                     </div>
