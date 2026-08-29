@@ -7,6 +7,9 @@ import type { AxiosError } from 'axios'
 import type { CreatePlayer } from '../../../shared/types/player'
 import type { Player } from "../../../shared/types/player"
 
+type SortableKey = keyof Pick<Player, "name" | "birthday" | "rank" | "gender">
+type SortDirection = "asc" | "desc"
+
 export const useMembers = (token: string) => {
   const queryClient = useQueryClient()
   const invalidate = () => {
@@ -47,6 +50,7 @@ export const useMembers = (token: string) => {
     toast.error(e.response?.data.error)
     },
   })
+
   const deletePlayerMutation = useMutation({
     mutationFn: (id: string) => playersApi.deletePlayer(id, token),
     onSuccess: (data) => {
@@ -61,7 +65,6 @@ export const useMembers = (token: string) => {
     },
   })
 
-  // replace the existing updateField with this
   const handleUpdatePlayer = async (player: Player, changes: Partial<Player>) => {
     // changes = { rank: 5, name: "New Name", ... } only the fields that actually changed
     const updated = { ...player, ...changes }
@@ -101,7 +104,7 @@ export const useMembers = (token: string) => {
     }
   }
 
-  const handleDeletePlayer = async (id) => {
+  const handleDeletePlayer = async (id: string) => {
     try {
       await deletePlayerMutation.mutateAsync(id)
     } catch {
@@ -119,46 +122,42 @@ export const useMembers = (token: string) => {
   return players.filter((p) => p.name?.toLowerCase().includes(q))
 }, [playersQuery.data, query])
 
-  const [sortKey, setSortKey] = useState(null)
-  const [sortDirection, setSortDirection] = useState("asc")
+const [sortKey, setSortKey] = useState<SortableKey | null>(null)
+const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
 
-  const toggleSortColumn = (key) => {
-    if (sortKey === key) {
-      setSortKey(null)
-      setSortDirection("asc")
-    } else {
-      setSortKey(key)
-      setSortDirection("asc")
-    }
+const toggleSortColumn = (key: SortableKey) => {
+  if (sortKey === key) {
+    setSortKey(null)
+    setSortDirection("asc")
+  } else {
+    setSortKey(key)
+    setSortDirection("asc")
   }
+}
 
-  const flipDirection = () => {
-    setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
-  }
+const flipDirection = () => {
+  setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
+}
 
-  const visiblePlayers = useMemo(() => {
-    if (!sortKey) return filteredPlayers
+const getComparableValue = (player: Player, key: SortableKey): string | number => {
+  const value = player[key]
+  if (key === "birthday") return new Date(value as string).getTime()
+  if (typeof value === "string") return value.toLowerCase()
+  return value as number
+}
 
-    const sorted = [...filteredPlayers].sort((a, b) => {
-      let aValue = a[sortKey]
-      let bValue = b[sortKey]
+const visiblePlayers = useMemo(() => {
+  if (!sortKey) return filteredPlayers
 
-      if (sortKey === "birthday") {
-        aValue = new Date(aValue).getTime()
-        bValue = new Date(bValue).getTime()
-      } else if (typeof aValue === "string") {
-        aValue = aValue.toLowerCase()
-        bValue = bValue.toLowerCase()
-      }
-
-      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1
-      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1
-
-      return 0
-    })
-
-    return sorted
-  }, [filteredPlayers, sortKey, sortDirection])
+  const direction = sortDirection === "asc" ? 1 : -1
+  return [...filteredPlayers].sort((a, b) => {
+    const aValue = getComparableValue(a, sortKey)
+    const bValue = getComparableValue(b, sortKey)
+    if (aValue < bValue) return -1 * direction
+    if (aValue > bValue) return 1 * direction
+    return 0
+  })
+}, [filteredPlayers, sortKey, sortDirection])
 
   return {
     // query state

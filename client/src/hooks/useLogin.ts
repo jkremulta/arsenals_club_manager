@@ -1,12 +1,13 @@
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
+import type { AxiosError } from "axios"
 import loginApi from "../services/login"
 import { useLoginStore } from "../stores/useLoginStore"
-import type { LoginCredentials } from "../../../shared/types/user"
+import type { LoginCredentials, LoginResponse } from "../../../shared/types/user"
 
 export const useLogin = () => {
   const { setUser } = useLoginStore()
-  const loginMutation = useMutation({
+  const loginMutation = useMutation<LoginResponse, AxiosError<{ error: string }>, LoginCredentials>({
     mutationFn: (credentials: LoginCredentials) => loginApi.login(credentials),
     onSuccess: (user) => {
       setUser(user)

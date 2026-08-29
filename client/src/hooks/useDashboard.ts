@@ -95,7 +95,7 @@ export const useDashboard = (token: string) => {
   })
 
   const togglePaidMutation = useMutation({
-    mutationFn: ({ id, paid } : { id: string, paid: boolean }) => attendanceApi.put(id, token, { paid }),
+    mutationFn: ({ id, paid } : { id: string, paid: boolean }) => attendanceApi.updateAttendance(id, token, { paid }),
     onSuccess: () => invalidate(["attendance"]),
     onError: (e: AxiosError<{ error: string }>) => {
     toast.error(e.response?.data.error)
