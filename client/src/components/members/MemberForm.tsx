@@ -24,7 +24,6 @@ const MemberForm = () => {
         ...form,
         rank: Number(form.rank),
         birthday: new Date(form.birthday).toISOString(),
-        gender: form.gender.toLowerCase(),
       },
       onSuccess: () => {
         resetForm()
