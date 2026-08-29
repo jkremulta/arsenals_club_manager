@@ -24,8 +24,9 @@ const playerSchema = new Schema<PlayerDocument>({
   },
   gender: {
     type: String,
-    required: true,
     enum: ['male', 'female'],
+    required: true,
+    set: (v: string) => v?.toLowerCase(),
   },
   skill: {
     type: String,
