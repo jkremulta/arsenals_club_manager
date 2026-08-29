@@ -39,7 +39,6 @@ attendanceRouter.post('/', userExtractor, async (request: Request<unknown, unkno
   }
 
   return response.status(201).json({
-    ...result.training.toObject(),
     addedPlayer: result.player.name,
   })
 })
@@ -55,6 +54,7 @@ attendanceRouter.delete('/:id', userExtractor, async (request: Request<RoutePara
   return response.status(200).json({ removedPlayer: result.player.name })
 })
 
+// payment update
 attendanceRouter.put('/:id', userExtractor, async (request: Request<RouteParams, unknown, UpdatePlayerBody>, response) => {
   const { id } = request.params
   const result = await updateAttendancePlayer(id, request.body)
@@ -63,7 +63,7 @@ attendanceRouter.put('/:id', userExtractor, async (request: Request<RouteParams,
     return response.status(result.status).json({ error: result.error })
   }
 
-  return response.json(result.training)
+  return response.status(200).json({ ok: true })
 })
 
 attendanceRouter.post('/manual', async (request: Request<unknown, unknown, ManualCheckInBody>, response) => {
