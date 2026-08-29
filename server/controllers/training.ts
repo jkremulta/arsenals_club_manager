@@ -9,7 +9,6 @@ const trainingRouter = Router()
 
 trainingRouter.get('/', userExtractor, async (_request, response) => {
   const activeTraining = await Training.findOne({ isActive: true })
-    .populate('attendance', { name: 1, games_played: 1, paid: 1 })
     .populate('current_players')
     .populate('initialized_players')
 
@@ -44,8 +43,8 @@ trainingRouter.post(
       isActive: true,
     })
 
-    const saved = await newTraining.save()
-    response.status(201).json(saved)
+    await newTraining.save()
+    response.sendStatus(201)
   }
 )
 
@@ -68,7 +67,7 @@ trainingRouter.delete('/', userExtractor, async (_request, response) => {
 
   await Training.findByIdAndDelete(activeTraining.id)
 
-  return response.status(200).json({ isActive: false })
+  response.sendStatus(200)
 })
 
 // initialize game
@@ -87,8 +86,8 @@ trainingRouter.post(
 
     const { skillGroup } = parsed.data
 
-    const players = await trainingService.getPlayersBySkillGroup(skillGroup)
-    return response.json(players)
+    await trainingService.getPlayersBySkillGroup(skillGroup)
+    response.sendStatus(200)
   },
 )
 
@@ -119,7 +118,6 @@ trainingRouter.patch(
     const result = await trainingService.replacePlayer(outPlayerId, inPlayerId)
 
     return response.json({
-      ordered: result.ordered,
       replacedPlayer: result.outPlayer.name,
       replacementPlayer: result.inPlayer.name,
     })

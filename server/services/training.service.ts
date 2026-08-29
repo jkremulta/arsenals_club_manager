@@ -83,10 +83,6 @@ const getPlayersBySkillGroup = async (skillGroup: Skill) => {
       initializedTeam: null,
     },
   )
-
-  const freshPlayers = await Player.find({ _id: { $in: playerIds } })
-  const byId = new Map(freshPlayers.map((player) => [player.id, player]))
-  return playerIds.map((id) => byId.get(id.toString())).filter(Boolean)
 }
 
 // start game logic
@@ -145,16 +141,7 @@ const replacePlayer = async (outPlayerId: string, inPlayerId: string) => {
   activeTraining.initialized_players[index] = new Types.ObjectId(inPlayerId)
   await activeTraining.save()
 
-  const updatedPlayers = await Player.find({
-    _id: { $in: activeTraining.initialized_players },
-  })
-  const byId = new Map(updatedPlayers.map((p) => [p.id, p]))
-  const ordered = activeTraining.initialized_players
-    .filter(Boolean)
-    .map((id) => byId.get(id.toString()))
-    .filter(Boolean)
-
-  return { ordered, outPlayer, inPlayer }
+  return { outPlayer, inPlayer }
 }
 
 export default {

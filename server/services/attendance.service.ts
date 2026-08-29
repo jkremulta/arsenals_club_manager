@@ -13,7 +13,7 @@ const isAttendanceOpen = (startTime: Date) => {
 }
 
 type AttendanceResult =
-  | { ok: true; training: TrainingDocument; player: PlayerDocument }
+  | { ok: true; player: PlayerDocument }
   | { ok: false; status: number; error: string }
 
 export const checkInPlayer = async (playerId: string): Promise<AttendanceResult> => {
@@ -38,7 +38,6 @@ export const checkInPlayer = async (playerId: string): Promise<AttendanceResult>
 
   const alreadyCheckedIn = activeTraining.attendance.includes(new Types.ObjectId(playerId))
 
-
   if (!alreadyCheckedIn) {
     activeTraining.attendance.push(new Types.ObjectId(playerId))
     await activeTraining.save()
@@ -48,9 +47,7 @@ export const checkInPlayer = async (playerId: string): Promise<AttendanceResult>
     await Player.findByIdAndUpdate(playerId, { late: isLate })
   }
 
-  const populatedTraining = await activeTraining.populate('attendance')
-
-  return { ok: true, training: populatedTraining, player }
+  return { ok: true, player }
 }
 
 export const removeAttendancePlayer = async (playerId: string): Promise<AttendanceResult> => {
@@ -77,7 +74,7 @@ export const removeAttendancePlayer = async (playerId: string): Promise<Attendan
   )
   await activeTraining.save()
 
-  return { ok: true, training: activeTraining, player }
+  return { ok: true, player }
 }
 
 type UpdatePlayerBody = Partial<PlayerShape>
@@ -88,7 +85,7 @@ export const updateAttendancePlayer = async (
 ): Promise<AttendanceResult> => {
   const activeTraining = await Training.findOne({ isActive: true })
   if (!activeTraining) {
-    return { ok: false, status:404, error: 'No active training' }
+    return { ok: false, status: 404, error: 'No active training' }
   }
 
   const inAttendance = activeTraining.attendance.some((p) => p.toString() === playerId)
@@ -101,12 +98,7 @@ export const updateAttendancePlayer = async (
     return { ok: false, status: 404, error: 'Player not found' }
   }
 
-  const updatedTraining = await Training.findOne({ isActive: true }).populate('attendance')
-  if (!updatedTraining) {
-    return { ok: false, status: 500, error: 'Failed to reload training' }
-  }
-
-  return { ok: true, training: updatedTraining, player: updatedPlayer }
+  return { ok: true, player: updatedPlayer }
 }
 
 export const manualCheckInPlayer = async (name: string): Promise<AttendanceResult> => {
@@ -152,5 +144,5 @@ export const manualCheckInPlayer = async (name: string): Promise<AttendanceResul
   const isLate = msElapsed > 45 * 60 * 1000
   await Player.findByIdAndUpdate(player._id, { late: isLate })
 
-  return { ok: true, training: activeTraining, player }
+  return { ok: true, player }
 }
