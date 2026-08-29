@@ -81,8 +81,6 @@ const Dashboard = ({ user }) => {
               attendancePanelProps={attendancePanelProps}
               sharedControlsProps={sharedControlsProps}
               sharedGameProps={sharedGameProps}
-              currentGame={currentGame}
-              currentGameSkillGroup={currentGameSkillGroup}
               training={training}
               attendance={attendance}
               paidIds={paidIds}
