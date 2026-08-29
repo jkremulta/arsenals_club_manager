@@ -4,17 +4,17 @@ import ControlsPanel from "./ControlsPanel"
 import { useUIStore } from "@/stores/useUIStore"
 import StatBar from "../StatBar"
 
-const DashboardLayout = ({ attendance, paidIds, attendancePanelProps, sharedControlsProps, sharedGameProps, currentGame, currentGameSkillGroup, training }) => {
+const DashboardLayout = ({ attendance, paidIds, attendancePanelProps, sharedControlsProps, sharedGameProps, training }) => {
   const { activeTab } = useUIStore()
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-    <StatBar attendance={attendance} paidIds={paidIds} training={training} />
+      <StatBar attendance={attendance} paidIds={paidIds} training={training} />
 
-     <div className="mx-auto hidden w-full max-w-7xl flex-1 gap-4 overflow-hidden px-8 py-4 md:grid md:grid-cols-3">
+      <div className="mx-auto hidden w-full max-w-7xl flex-1 gap-4 overflow-hidden px-8 py-4 md:grid md:grid-cols-3">
         <AttendancePanel {...attendancePanelProps} />
 
-        <GamePanel {...sharedGameProps}/>
+        <GamePanel {...sharedGameProps} />
 
         <ControlsPanel {...sharedControlsProps} />
       </div>

@@ -1,6 +1,15 @@
 import { Card } from "@/components/retroui/Card";
+import type { LucideIcon } from "lucide-react";
 
-function StatCard({ icon: Icon, label, value, accent, valueStyle }) {
+interface StatCardProps {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  accent: string;
+  valueStyle?: React.CSSProperties;
+}
+
+function StatCard({ icon: Icon, label, value, accent, valueStyle }: StatCardProps) {
   return (
     <Card className="shadow-none px-3 py-2.5 md:px-4 md:py-3 border-2 border-black">
       <Card.Header className="flex flex-row items-center gap-3 space-y-0 p-0">

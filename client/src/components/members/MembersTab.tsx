@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react"
 import { useState } from "react";
-import { SlidersHorizontal, Search, X, Pencil, Check, Loader2, Plus, Divide } from "lucide-react";
+import { SlidersHorizontal, Search, X, Pencil, Check, Loader2, Plus } from "lucide-react";
 import { Table } from "@/components/retroui/Table";
 import { useUIStore } from "@/stores/useUIStore";
 import { Dialog } from "@/components/retroui/Dialog"
