@@ -23,18 +23,18 @@ export function LoginForm() {
   const { handleCheckIn, loading: checkingIn } = useManualAttendance()
 
   // ── LOGIN ──
- const handleLoginSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
 
-  try {
-    await loginMutation.mutateAsync({
-      username: username.trim(),
-      password: password.trim(),
-    })
-  } catch (error) {
-    
+    try {
+      await loginMutation.mutateAsync({
+        username: username.trim(),
+        password: password.trim(),
+      })
+    } catch {
+      // errors handled in loginMutation's onError
+    }
   }
-}
 
   // ── ATTENDANCE ──
   const submitAttendance = async () => {
@@ -142,7 +142,7 @@ export function LoginForm() {
             {/* error */}
             {loginMutation.error && (
               <p className="text-center text-sm text-red-500">
-                 {loginMutation.error.response?.data?.error || loginMutation.error.message}
+                {loginMutation.error.response?.data?.error || loginMutation.error.message}
               </p>
             )}
           </form>
