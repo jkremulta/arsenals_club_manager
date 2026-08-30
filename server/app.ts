@@ -33,16 +33,17 @@ app.use('/api/training', trainingRouter)
 // disable register
 // app.use('/api/users', usersRouter)
 
-app.use(express.static(path.join(__dirname, '../client/dist')))
+const clientDistPath = path.join(__dirname, '../../../client/dist')
+
+app.use(express.static(clientDistPath))
 
 app.get('/{*any}', (request, response, next) => {
   if (request.path.startsWith('/api/')) {
     return next()
   }
 
-  response.sendFile(path.join(__dirname, '../client/dist/index.html'))
+  response.sendFile(path.join(clientDistPath, 'index.html'))
 })
-
 app.use(errorHandler)
 app.use(unknownEndpoint)
 

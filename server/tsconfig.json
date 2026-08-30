@@ -6,7 +6,7 @@
     "lib": ["ES2022"],
 
     "outDir": "./dist",
-    "rootDir": "../",
+    "rootDir": "..",
 
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -24,6 +24,6 @@
 
     "ignoreDeprecations": "6.0"
   },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "include": ["**/*.ts", "../shared/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "../client/**/*"]
 }
