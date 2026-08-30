@@ -1,44 +1,58 @@
 import axios from "./axiosInstance"
+import type { Player } from '../../../shared/types/player'
 
 const baseUrl = "/api/attendance"
 
-const authHeaders = (token) => ({
+const authHeaders = (token: string) => ({
   headers: { Authorization: `Bearer ${token}` },
 })
 
-const getAttendance = async (token) => {
-  const response = await axios.get(baseUrl, authHeaders(token))
-  return response.data
+type UpdateAttendanceData = Pick<Player, "paid">
+
+interface RemoveAttendanceResponse {
+  removedPlayer: string
 }
 
-const deleteAttendance = async (id, token) => {
-  const response = await axios.delete(`${baseUrl}/${id}`, authHeaders(token))
-
-  return response.data
+interface AddAttendanceResponse {
+  addedPlayer: string
 }
 
-const updateAttendance = async (id, token, data) => {
-  const response = await axios.put(`${baseUrl}/${id}`, data, authHeaders(token))
-
-  return response.data
+interface ManualAddAttendanceResponse {
+  ok: boolean
 }
 
-const addAttendance = async (id, token) => {
-  const response = await axios.post(baseUrl, { id }, authHeaders(token))
-
-  return response.data
+const getAttendance = async (token: string): Promise<Player[]> => {
+  const { data } = await axios.get<Player[]>(baseUrl, authHeaders(token))
+  return data
 }
 
-const addAttendanceManually = async (name) => {
-  const response = await axios.post(`${baseUrl}/manual`, { name })
-
-  return response.data
+const deleteAttendance = async (id: string, token: string): Promise<RemoveAttendanceResponse> => {
+  const { data } = await axios.delete<RemoveAttendanceResponse>(`${baseUrl}/${id}`, authHeaders(token))
+  return data
 }
 
-export default {
-  get: getAttendance,
-  delete: deleteAttendance,
-  put: updateAttendance,
-  post: addAttendance,
-  addManually: addAttendanceManually,
+const updateAttendance = async (
+  id: string,
+  token: string,
+  data: UpdateAttendanceData
+): Promise<void> => {
+  await axios.put(`${baseUrl}/${id}`, data, authHeaders(token))
+}
+
+const addAttendance = async (id: string, token: string): Promise<AddAttendanceResponse> => {
+  const { data } = await axios.post<AddAttendanceResponse>(baseUrl, { id }, authHeaders(token))
+  return data
+}
+
+const addAttendanceManually = async (name: string): Promise<ManualAddAttendanceResponse> => {
+  const { data } = await axios.post<ManualAddAttendanceResponse>(`${baseUrl}/manual`, { name })
+  return data
+}
+
+export const attendanceApi = {
+  getAttendance,
+  deleteAttendance,
+  updateAttendance,
+  addAttendance,
+  addAttendanceManually,
 }

@@ -6,7 +6,7 @@ const NAV_TABS = [
   { id: 'attendance', label: 'Attendance', icon: Users },
   { id: 'game', label: 'Game', icon: Play },
   { id: 'controls', label: 'Controls', icon: Zap },
-]
+] as const
 
 const BottomNav = () => {
   const { activeTab, setActiveTab } = useUIStore()

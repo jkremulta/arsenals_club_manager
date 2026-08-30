@@ -3,7 +3,7 @@
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import React, { HTMLAttributes, ReactNode } from "react";
+import React, { type HTMLAttributes, type ReactNode } from "react";
 import { X } from "lucide-react";
 
 const Dialog = BaseDialog.Root;
@@ -29,7 +29,7 @@ const overlayVariants = cva(
 
 interface IDialogBackgroupProps
   extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof overlayVariants> {}
+  VariantProps<typeof overlayVariants> { }
 
 const DialogBackdrop = (inputProps: IDialogBackgroupProps & { ref?: React.Ref<HTMLDivElement> }) => {
   const { variant = "default", className, ref, ...props } = inputProps;
@@ -73,7 +73,7 @@ const dialogVariants = cva(
 
 interface IDialogContentProps
   extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof dialogVariants> {
+  VariantProps<typeof dialogVariants> {
   overlay?: IDialogBackgroupProps;
 }
 
@@ -102,7 +102,7 @@ const DialogContent = (inputProps: IDialogContentProps & { ref?: React.Ref<HTMLD
   );
 };
 
-interface IDialogDescriptionProps extends HTMLAttributes<HTMLDivElement> {}
+interface IDialogDescriptionProps extends HTMLAttributes<HTMLDivElement> { }
 const DialogDescription = ({
   children,
   className,
@@ -135,7 +135,7 @@ const dialogFooterVariants = cva(
 
 export interface IDialogFooterProps
   extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof dialogFooterVariants> {}
+  VariantProps<typeof dialogFooterVariants> { }
 
 const DialogFooter = ({
   children,
@@ -186,7 +186,7 @@ const DialogHeaderDefaultLayout = ({ children }: { children: ReactNode }) => {
 
 interface IDialogHeaderProps
   extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof dialogHeaderVariants> {
+  VariantProps<typeof dialogHeaderVariants> {
   asChild?: boolean;
 }
 

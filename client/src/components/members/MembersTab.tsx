@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react"
 import { useState } from "react";
-import { SlidersHorizontal, Search, X, Pencil, Check, Loader2, Plus, Divide } from "lucide-react";
+import { SlidersHorizontal, Search, X, Pencil, Check, Loader2, Plus } from "lucide-react";
 import { Table } from "@/components/retroui/Table";
 import { useUIStore } from "@/stores/useUIStore";
 import { Dialog } from "@/components/retroui/Dialog"
@@ -84,7 +84,9 @@ const MembersTab = () => {
     if (!editMode) {
       return (
         <div className="h-8 px-2 flex items-center">
-          <span className="w-full">{display}</span>
+          <span className={`w-full ${col.key === "gender" ? "capitalize" : ""}`}>
+            {display}
+          </span>
         </div>
       )
     }
@@ -259,7 +261,7 @@ const MembersTab = () => {
                         {renderMobileField(p, MEMBER_FIELDS[2])}
                       </div>
                       {/* Gender */}
-                      <div className="text-sm text-muted-foreground text-right">
+                      <div className="text-sm text-muted-foreground text-right capitalize">
                         {renderMobileField(p, MEMBER_FIELDS[3])}
                       </div>
                     </div>

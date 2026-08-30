@@ -1,10 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useState, useMemo } from "react"
-import playersApi from "../services/players"
+import { playersApi } from "../services/players"
+import { trainingApi } from "@/services/training"
 import helper from "../utils/helper"
+import type { AxiosError } from 'axios'
+import type { CreatePlayer } from '../../../shared/types/player'
+import type { Player } from "../../../shared/types/player"
 
-export const useMembers = (token) => {
+type SortableKey = keyof Pick<Player, "name" | "birthday" | "rank" | "gender">
+type SortDirection = "asc" | "desc"
+
+export const useMembers = (token: string) => {
   const queryClient = useQueryClient()
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["players"] })
@@ -14,11 +21,16 @@ export const useMembers = (token) => {
 
   const playersQuery = useQuery({
     queryKey: ["players"],
-    queryFn: () => playersApi.get(token),
+    queryFn: () => playersApi.getPlayers(token),
+  })
+
+  const trainingQuery = useQuery({
+    queryKey: ["training"],
+    queryFn: () => trainingApi.getTraining(token),
   })
 
   const createPlayerMutation = useMutation({
-    mutationFn: (payload) => playersApi.post(payload, token),
+    mutationFn: (payload: CreatePlayer) => playersApi.createPlayer(payload, token),
     onSuccess: (data) => {
       toast.success(`${data.name} registered`, {
         id: "keep this to only have one toast per update",
@@ -26,22 +38,27 @@ export const useMembers = (token) => {
       })
       invalidate()
     },
-    onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
+    onError: (e: AxiosError<{ error: string }>) => {
+    toast.error(e.response?.data.error)
+    },
   })
 
   const updatePlayerMutation = useMutation({
-    mutationFn: ({ id, payload }) => playersApi.put(id, payload, token),
-    onSuccess: () => {
-      toast.success("Data updated", {
+    mutationFn: ({ id, payload }: { id: string, payload: CreatePlayer }) => playersApi.updatePlayer(id, payload, token),
+    onSuccess: (data) => {
+      toast.success(`${data.name} updated`, {
         id: "keep this to only have one toast per update",
         duration: 2000,
       })
       invalidate()
     },
-    onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
+    onError: (e: AxiosError<{ error: string }>) => {
+    toast.error(e.response?.data.error)
+    },
   })
+
   const deletePlayerMutation = useMutation({
-    mutationFn: (id) => playersApi.delete(id, token),
+    mutationFn: (id: string) => playersApi.deletePlayer(id, token),
     onSuccess: (data) => {
       toast.success(`${data.deletedPlayer} deleted.`, {
         id: "keep this to only have one toast per update",
@@ -49,20 +66,24 @@ export const useMembers = (token) => {
       })
       invalidate()
     },
-    onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
+    onError: (e: AxiosError<{ error: string }>) => {
+    toast.error(e.response?.data.error)
+    },
   })
 
-  // replace the existing updateField with this
-  const handleUpdatePlayer = async (player, changes) => {
+  const handleUpdatePlayer = async (player: Player, changes: Partial<Player>) => {
     // changes = { rank: 5, name: "New Name", ... } only the fields that actually changed
     const updated = { ...player, ...changes }
     if ("rank" in changes) {
       updated.skill = helper.skillFromRank(changes.rank)
     }
     const playerId = player.id
+    
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...payload } = updated
     try {
       await updatePlayerMutation.mutateAsync({ id: playerId, payload })
+      invalidate()
     } catch {
       // errors handled in mutation onError
     }
@@ -90,9 +111,21 @@ export const useMembers = (token) => {
     }
   }
 
-  const handleDeletePlayer = async (id) => {
+  const handleDeletePlayer = async (id: string) => {
+    const training = trainingQuery.data
+
+    const isLocked =
+      training?.current_players?.some((p) => p.id === id) ||
+      training?.initialized_players?.some((p) => p.id === id)
+
+    if (isLocked) {
+      toast.warning("Can't delete a player who's initialized or an active game.", { duration: 2500 })
+      return
+    }
+
     try {
       await deletePlayerMutation.mutateAsync(id)
+      invalidate()
     } catch {
       // errors handled in mutation onError
     }
@@ -102,53 +135,48 @@ export const useMembers = (token) => {
   const [query, setQuery] = useState("") // search names
 
   const filteredPlayers = useMemo(() => {
-    if (!query.trim()) return playersQuery.data
+  const players = playersQuery.data ?? []
+  if (!query.trim()) return players
+  const q = query.trim().toLowerCase()
+  return players.filter((p) => p.name?.toLowerCase().includes(q))
+}, [playersQuery.data, query])
 
-    const q = query.trim().toLowerCase()
+const [sortKey, setSortKey] = useState<SortableKey | null>(null)
+const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
 
-    return playersQuery.data.filter((p) => p.name?.toLowerCase().includes(q))
-  }, [playersQuery.data, query])
-
-  const [sortKey, setSortKey] = useState(null)
-  const [sortDirection, setSortDirection] = useState("asc")
-
-  const toggleSortColumn = (key) => {
-    if (sortKey === key) {
-      setSortKey(null)
-      setSortDirection("asc")
-    } else {
-      setSortKey(key)
-      setSortDirection("asc")
-    }
+const toggleSortColumn = (key: SortableKey) => {
+  if (sortKey === key) {
+    setSortKey(null)
+    setSortDirection("asc")
+  } else {
+    setSortKey(key)
+    setSortDirection("asc")
   }
+}
 
-  const flipDirection = () => {
-    setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
-  }
+const flipDirection = () => {
+  setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
+}
 
-  const visiblePlayers = useMemo(() => {
-    if (!sortKey) return filteredPlayers
+const getComparableValue = (player: Player, key: SortableKey): string | number => {
+  const value = player[key]
+  if (key === "birthday") return new Date(value as string).getTime()
+  if (typeof value === "string") return value.toLowerCase()
+  return value as number
+}
 
-    const sorted = [...filteredPlayers].sort((a, b) => {
-      let aValue = a[sortKey]
-      let bValue = b[sortKey]
+const visiblePlayers = useMemo(() => {
+  if (!sortKey) return filteredPlayers
 
-      if (sortKey === "birthday") {
-        aValue = new Date(aValue).getTime()
-        bValue = new Date(bValue).getTime()
-      } else if (typeof aValue === "string") {
-        aValue = aValue.toLowerCase()
-        bValue = bValue.toLowerCase()
-      }
-
-      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1
-      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1
-
-      return 0
-    })
-
-    return sorted
-  }, [filteredPlayers, sortKey, sortDirection])
+  const direction = sortDirection === "asc" ? 1 : -1
+  return [...filteredPlayers].sort((a, b) => {
+    const aValue = getComparableValue(a, sortKey)
+    const bValue = getComparableValue(b, sortKey)
+    if (aValue < bValue) return -1 * direction
+    if (aValue > bValue) return 1 * direction
+    return 0
+  })
+}, [filteredPlayers, sortKey, sortDirection])
 
   return {
     // query state

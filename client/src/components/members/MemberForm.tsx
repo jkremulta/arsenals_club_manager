@@ -20,7 +20,11 @@ const MemberForm = () => {
   const handleCreate = () => {
     handleCreatePlayer({
       editingId: null,
-      form,
+      form: {
+        ...form,
+        rank: Number(form.rank),
+        birthday: new Date(form.birthday).toISOString(),
+      },
       onSuccess: () => {
         resetForm()
         setMembersFormOpen(false)

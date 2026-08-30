@@ -1,19 +1,26 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import type { AxiosError } from 'axios'
 
-import trainingApi from "../services/training"
-import attendanceApi from "../services/attendance"
-import playersApi from "../services/players"
+import { trainingApi } from "../services/training"
+import { attendanceApi } from "../services/attendance"
+import { playersApi } from "../services/players"
 
 import { useUIStore } from "@/stores/useUIStore"
+import type { Skill } from "../../../shared/types/player"
+const UPDATE_TOAST_ID = "keep this to only have one toast per update"
 
-export const useDashboard = (token) => {
+const onMutationError = (e: AxiosError<{ error: string }>) => {
+  toast.error(e.response?.data?.error ?? "Something went wrong.")
+}
+
+export const useDashboard = (token: string) => {
   const queryClient = useQueryClient()
 
   const { startTime, setCreateSessionOpen, setEndSessionOpen, setSkillGroup } =
     useUIStore()
 
-  const invalidate = (queryKeys) => {
+  const invalidate = (queryKeys: string[]) => {
     queryKeys.forEach((queryKey) => {
       queryClient.invalidateQueries({ queryKey: [queryKey] })
     })
@@ -21,111 +28,93 @@ export const useDashboard = (token) => {
 
   const trainingQuery = useQuery({
     queryKey: ["training"],
-    queryFn: () => trainingApi.get(token),
+    queryFn: () => trainingApi.getTraining(token),
   })
 
   const attendanceQuery = useQuery({
     queryKey: ["attendance"],
-    queryFn: () => attendanceApi.get(token),
+    queryFn: () => attendanceApi.getAttendance(token),
   })
 
   const playersQuery = useQuery({
     queryKey: ["players"],
-    queryFn: () => playersApi.get(token),
+    queryFn: () => playersApi.getPlayers(token),
   })
 
   const createTrainingMutation = useMutation({
-    mutationFn: (startDateIso) => trainingApi.post(startDateIso, token),
+    mutationFn: (startDateIso: string) => trainingApi.createTraining(startDateIso, token),
     onSuccess: () => {
-      toast.success("Training session created.", {
-        id: "keep this to only have one toast per update",
-        duration: 2000,
-      })
+      toast.success("Training session created.", { id: UPDATE_TOAST_ID, duration: 2000 })
       setCreateSessionOpen(false)
       invalidate(["training"])
     },
-    onError: (e) => toast.error(e?.response?.data?.error),
+    onError: onMutationError,
   })
 
   const endTrainingMutation = useMutation({
-    mutationFn: () => trainingApi.delete(token),
+    mutationFn: () => trainingApi.deleteTraining(token),
     onSuccess: () => {
-      toast.success("Training ended.", {
-        id: "keep this to only have one toast per update",
-        duration: 2000,
-      })
+      toast.success("Training ended.", { id: UPDATE_TOAST_ID, duration: 2000 })
       setEndSessionOpen(false)
       invalidate(["training", "attendance"])
     },
-    onError: (e) => toast.error(e?.response?.data?.error),
+    onError: onMutationError,
   })
 
   const addPlayerMutation = useMutation({
-    mutationFn: (playerId) => attendanceApi.post(playerId, token),
+    mutationFn: (playerId: string) => attendanceApi.addAttendance(playerId, token),
     onSuccess: (data) => {
-      toast.success(`${data.addedPlayer} checked in.`, {
-        id: "keep this to only have one toast per update",
-        duration: 2000,
-      })
+      toast.success(`${data.addedPlayer} checked in.`, { id: UPDATE_TOAST_ID, duration: 2000 })
       invalidate(["attendance"])
     },
-    onError: (e) => toast.error(e?.response?.data?.error),
+    onError: onMutationError,
   })
 
   const removePlayerMutation = useMutation({
-    mutationFn: (playerId) => attendanceApi.delete(playerId, token),
+    mutationFn: (playerId: string) => attendanceApi.deleteAttendance(playerId, token),
     onSuccess: (data) => {
-      toast.success(`${data.removedPlayer} removed from attendance.`, {
-        id: "keep this to only have one toast per update",
-        duration: 2000,
-      })
+      toast.success(`${data.removedPlayer} removed from attendance.`, { id: UPDATE_TOAST_ID, duration: 2000 })
       invalidate(["attendance"])
     },
-    onError: (e) => toast.error(e?.response?.data?.error),
+    onError: onMutationError,
   })
 
   const togglePaidMutation = useMutation({
-    mutationFn: ({ id, paid }) => attendanceApi.put(id, token, { paid }),
+    mutationFn: ({ id, paid }: { id: string, paid: boolean }) => attendanceApi.updateAttendance(id, token, { paid }),
     onSuccess: () => invalidate(["attendance"]),
-    onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
+    onError: onMutationError,
   })
 
   const initializeGameMutation = useMutation({
-    mutationFn: (skillGroup) => trainingApi.initializeGame(skillGroup, token),
+    mutationFn: (skillGroup: Skill) => trainingApi.initializeGame(skillGroup, token),
     onSuccess: () => {
-      toast.success("Game initialized.", {
-        id: "keep this to only have one toast per update",
-        duration: 2000,
-      })
+      toast.success("Game initialized.", { id: UPDATE_TOAST_ID, duration: 2000 })
       invalidate(["training"])
     },
-    onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
+    onError: onMutationError,
   })
 
   const startGameMutation = useMutation({
     mutationFn: () => trainingApi.startGame(token),
     onSuccess: () => {
-      toast.success("Game started!", {
-        id: "keep this to only have one toast per update",
-        duration: 2000,
-      })
+      toast.success("Game started!", { id: UPDATE_TOAST_ID, duration: 2000 })
       setSkillGroup("")
       invalidate(["training", "attendance"])
     },
-    onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
+    onError: onMutationError,
   })
 
   const replacePlayerMutation = useMutation({
-    mutationFn: ({ outPlayerId, inPlayerId }) =>
+    mutationFn: ({ outPlayerId, inPlayerId }: { outPlayerId: string, inPlayerId: string }) =>
       trainingApi.replacePlayer(outPlayerId, inPlayerId, token),
     onSuccess: (data) => {
       toast.success(
         `${data.replacedPlayer} was replaced by ${data.replacementPlayer}.`,
-        { id: "keep this to only have one toast per update", duration: 2000 }
+        { id: UPDATE_TOAST_ID, duration: 2000 }
       )
       invalidate(["training"])
     },
-    onError: (e) => toast.error(e?.response?.data?.error, { duration: 2000 }),
+    onError: onMutationError,
   })
 
   // checks the attendance for players that has paid
@@ -133,7 +122,7 @@ export const useDashboard = (token) => {
     attendanceQuery.data?.filter((p) => p.paid).map((p) => p.id)
   )
   // toggles paid status
-  const handleTogglePaid = (id) => {
+  const handleTogglePaid = (id: string) => {
     togglePaidMutation.mutate({ id, paid: !paidIds.has(id) })
   }
 
@@ -144,15 +133,19 @@ export const useDashboard = (token) => {
     createTrainingMutation.mutate(startDate.toISOString())
   }
 
-  const handleInitializeGame = ({ skillGroup }) => {
-    initializeGameMutation.mutate({ skillGroup })
+    const handleEndTraining = () => {
+    endTrainingMutation.mutate()
   }
 
-  const handleAddPlayer = (id) => {
+  const handleInitializeGame = ({ skillGroup }: { skillGroup: Skill }) => {
+    initializeGameMutation.mutate(skillGroup)
+  }
+
+  const handleAddPlayer = (id: string) => {
     addPlayerMutation.mutate(id)
   }
 
-  const handleRemovePlayer = (id) => {
+  const handleRemovePlayer = (id: string) => {
     removePlayerMutation.mutate(id)
   }
 
@@ -160,7 +153,7 @@ export const useDashboard = (token) => {
     startGameMutation.mutate()
   }
 
-  const handleReplacePlayer = (players) => {
+  const handleReplacePlayer = (players: { outPlayerId: string; inPlayerId: string }) => {
     replacePlayerMutation.mutate(players)
   }
 
@@ -181,6 +174,7 @@ export const useDashboard = (token) => {
 
     // handlers
     handleCreateTraining,
+    handleEndTraining,
     handleInitializeGame,
     handleAddPlayer,
     handleRemovePlayer,
