@@ -39,8 +39,8 @@ export const useMembers = (token: string) => {
 
   const updatePlayerMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string, payload: CreatePlayer }) => playersApi.updatePlayer(id, payload, token),
-    onSuccess: () => {
-      toast.success("Data updated", {
+    onSuccess: (data) => {
+      toast.success(`${data.name} updated`, {
         id: "keep this to only have one toast per update",
         duration: 2000,
       })
