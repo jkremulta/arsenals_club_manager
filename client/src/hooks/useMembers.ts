@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useState, useMemo } from "react"
 import { playersApi } from "../services/players"
+import { trainingApi } from "@/services/training"
 import helper from "../utils/helper"
 import type { AxiosError } from 'axios'
 import type { CreatePlayer } from '../../../shared/types/player'
@@ -21,6 +22,11 @@ export const useMembers = (token: string) => {
   const playersQuery = useQuery({
     queryKey: ["players"],
     queryFn: () => playersApi.getPlayers(token),
+  })
+
+  const trainingQuery = useQuery({
+    queryKey: ["training"],
+    queryFn: () => trainingApi.getTraining(token),
   })
 
   const createPlayerMutation = useMutation({
@@ -77,6 +83,7 @@ export const useMembers = (token: string) => {
     const { id, ...payload } = updated
     try {
       await updatePlayerMutation.mutateAsync({ id: playerId, payload })
+      invalidate()
     } catch {
       // errors handled in mutation onError
     }
@@ -105,8 +112,20 @@ export const useMembers = (token: string) => {
   }
 
   const handleDeletePlayer = async (id: string) => {
+    const training = trainingQuery.data
+
+    const isLocked =
+      training?.current_players?.some((p) => p.id === id) ||
+      training?.initialized_players?.some((p) => p.id === id)
+
+    if (isLocked) {
+      toast.warning("Can't delete a player who's initialized or an active game.", { duration: 2500 })
+      return
+    }
+
     try {
       await deletePlayerMutation.mutateAsync(id)
+      invalidate()
     } catch {
       // errors handled in mutation onError
     }
