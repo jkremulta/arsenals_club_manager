@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
 import Training from '../models/training'
 import { userExtractor } from '../utils/middleware'
-import { checkInPlayer, removeAttendancePlayer, updateAttendancePlayer, manualCheckInPlayer } from 'services/attendance.service'
+import { checkInPlayer, removeAttendancePlayer, updateAttendancePlayer, manualCheckInPlayer } from '../services/attendance.service'
 import type { Player } from '../../shared/types/player'
 
 const attendanceRouter = Router()
