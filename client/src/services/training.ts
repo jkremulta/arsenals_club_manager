@@ -9,26 +9,22 @@ const authHeaders = (token: string) => ({
   headers: { Authorization: `Bearer ${token}` }
 })
 
-interface PopulatedTraining extends Omit<Training, 'attendance' | 'current_players' | 'initialized_players'> {
-  attendance: Pick<Player, 'id' | 'name' | 'games_played' | 'paid'>[]
+interface PopulatedTraining extends Omit<Training, 'current_players' | 'initialized_players'> {
   current_players: Player[]
   initialized_players: Player[]
 }
 
 interface ReplacePlayerResult {
-  ordered: Player[]
   replacedPlayer: string
   replacementPlayer: string
 }
 
-const createTraining = async (startTime: string, token: string): Promise<Training> => {
-  const { data } = await axios.post<Training>(baseUrl, { startTime }, authHeaders(token))
-  return data
+const createTraining = async (startTime: string, token: string): Promise<void> => {
+  await axios.post(baseUrl, { startTime }, authHeaders(token))
 }
 
-const deleteTraining = async (token: string): Promise<{ isActive: false }> => {
-  const { data } = await axios.delete<{ isActive: false }>(baseUrl, authHeaders(token))
-  return data
+const deleteTraining = async (token: string): Promise<void> => {
+  await axios.delete(baseUrl, authHeaders(token))
 }
 
 const getTraining = async (token: string): Promise<PopulatedTraining | null> => {
@@ -36,13 +32,8 @@ const getTraining = async (token: string): Promise<PopulatedTraining | null> => 
   return data
 }
 
-const initializeGame = async (skillType: Skill, token: string): Promise<Player[]> => {
-  const { data } = await axios.post<Player[]>(
-    `${baseUrl}/initializeGame`,
-    { skillGroup: skillType },
-    authHeaders(token)
-  )
-  return data
+const initializeGame = async (skillType: Skill, token: string): Promise<void> => {
+  await axios.post(`${baseUrl}/initializeGame`, { skillGroup: skillType }, authHeaders(token))
 }
 
 const startGame = async (token: string): Promise<Player[]> => {

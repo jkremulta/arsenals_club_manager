@@ -1,6 +1,5 @@
 import axios from "./axiosInstance"
 import type { Player } from '../../../shared/types/player'
-import type { Training } from '../../../shared/types/training'
 
 const baseUrl = "/api/attendance"
 
@@ -14,8 +13,12 @@ interface RemoveAttendanceResponse {
   removedPlayer: string
 }
 
-interface AddAttendanceResponse extends Training {
+interface AddAttendanceResponse {
   addedPlayer: string
+}
+
+interface ManualAddAttendanceResponse {
+  ok: boolean
 }
 
 const getAttendance = async (token: string): Promise<Player[]> => {
@@ -41,8 +44,8 @@ const addAttendance = async (id: string, token: string): Promise<AddAttendanceRe
   return data
 }
 
-const addAttendanceManually = async (name: string): Promise<AddAttendanceResponse> => {
-  const { data } = await axios.post<AddAttendanceResponse>(`${baseUrl}/manual`, { name })
+const addAttendanceManually = async (name: string): Promise<ManualAddAttendanceResponse> => {
+  const { data } = await axios.post<ManualAddAttendanceResponse>(`${baseUrl}/manual`, { name })
   return data
 }
 
