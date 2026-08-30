@@ -16,6 +16,7 @@ const Dashboard = ({ user }) => {
 
     handleTogglePaid,
     handleCreateTraining,
+    handleEndTraining,
     handleInitializeGame,
     handleAddPlayer,
     handleRemovePlayer,
@@ -69,6 +70,7 @@ const Dashboard = ({ user }) => {
           training={training}
           createTrainingMutation={createTrainingMutation}
           handleCreateTraining={handleCreateTraining}
+          handleEndTraining={handleEndTraining}
           endTrainingMutation={endTrainingMutation} />
 
         <div className="flex flex-1 flex-col overflow-hidden">

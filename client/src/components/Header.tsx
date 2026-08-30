@@ -12,7 +12,7 @@ const MembersTab = lazy(() => import("./members/MembersTab"))
 
 
 
-function Header({ dashboardLoading, training, createTrainingMutation, endTrainingMutation, handleCreateTraining }) {
+function Header({ dashboardLoading, training, createTrainingMutation, endTrainingMutation, handleCreateTraining, handleEndTraining }) {
 
   const { createSessionOpen, setCreateSessionOpen, endSessionOpen, setEndSessionOpen, membersTabOpen, setMembersTabOpen, startTime, setStartTime } = useUIStore()
   const { logout } = useLoginStore()
@@ -177,7 +177,7 @@ function Header({ dashboardLoading, training, createTrainingMutation, endTrainin
             </p>
             <div className="flex w-full justify-end">
               <Button
-                onClick={() => endTrainingMutation.mutate()}
+                onClick={handleEndTraining}
                 disabled={sessionLoading}
                 className="bg-red-400 text-black border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] disabled:opacity-50"
               >
