@@ -72,7 +72,9 @@ trainingRouter.delete('/', userExtractor, async (_request, response) => {
 
 // initialize game
 const initializeGameSchema = z.object({
-  skillGroup: z.enum(['beginner', 'intermediate', 'advanced']),
+  skillGroup: z.enum(['beginner', 'intermediate', 'advanced'], {
+    error: () => ({ message: 'Please select a skill group.' }),
+  })
 })
 
 trainingRouter.post(

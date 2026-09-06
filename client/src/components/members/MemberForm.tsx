@@ -91,8 +91,8 @@ const MemberForm = () => {
                 </Select.Trigger>
                 <Select.Content className="border-2 border-black text-sm">
                   <Select.Group>
-                    <Select.Item className="capitalize data-[highlighted]:bg-white/10 data-[highlighted]:text-foreground" value="Male">Male</Select.Item>
-                    <Select.Item className="capitalize data-[highlighted]:bg-white/10 data-[highlighted]:text-foreground" value="Female">Female</Select.Item>
+                    <Select.Item className="capitalize data-[highlighted]:bg-white/10 data-[highlighted]:text-foreground" value="male">Male</Select.Item>
+                    <Select.Item className="capitalize data-[highlighted]:bg-white/10 data-[highlighted]:text-foreground" value="female">Female</Select.Item>
                   </Select.Group>
                 </Select.Content>
               </Select>
