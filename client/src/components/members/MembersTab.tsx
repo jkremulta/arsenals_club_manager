@@ -16,7 +16,7 @@ const MEMBER_FIELDS = [
   { key: "name", label: "NAME", align: "left", type: "text" },
   { key: "rank", label: "RANK", align: "center", type: "number", step: 0.5 },
   { key: "birthday", label: "BIRTHDAY", align: "center", type: "date" },
-  { key: "gender", label: "GENDER", align: "center", type: "select", options: ["Male", "Female"] },
+  { key: "gender", label: "GENDER", align: "center", type: "select", options: ["male", "female"] },
 ];
 
 

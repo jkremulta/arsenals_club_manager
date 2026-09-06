@@ -28,7 +28,7 @@ const EditableField = ({
         disabled={isDisabled}
         value={inputValue}
         onChange={(e) => handleDraftChange(player, col, e.target.value)}
-        className={className}
+        className={`${className} capitalize`}
       >
         {col.options.map((opt) => (
           <option key={opt} value={opt}>
